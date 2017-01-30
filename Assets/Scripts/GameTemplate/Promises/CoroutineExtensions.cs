@@ -49,6 +49,26 @@ public class CoroutineExtensions : MonoBehaviour {
 		return Tween(time, Easing.Functions.Linear, onUpdate);
 	}
 
+	public static IPromise<Object> Tween<T>(float time, Easing.Functions easing, T fromValue, T toValue, System.Action<T,T,float> onUpdate)
+	{
+		return Tween(
+			time,
+			easing,
+			t => onUpdate(fromValue, toValue, t)
+		);
+	}
+
+	public static IPromise<Object> Tween<T>(float time, T fromValue, T toValue, System.Action<T,T,float> onUpdate)
+	{
+		return Tween(
+			time,
+			Easing.Functions.Linear,
+			fromValue,
+			toValue,
+			onUpdate
+		);
+	}
+
 	IEnumerator WaitForSecondsRoutine(float time, Promise<Object> promise)
 	{
 		yield return new WaitForSeconds(time);

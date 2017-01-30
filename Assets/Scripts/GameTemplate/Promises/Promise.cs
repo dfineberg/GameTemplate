@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Promises
 {
@@ -10,7 +11,7 @@ namespace Promises
 		REJECTED
 	}
 
-	public interface IPromise<T> 
+	public interface IPromise<T>
 	{
 		ePromiseState currentState { get; }
 
@@ -35,6 +36,12 @@ namespace Promises
 		IPromise<T> ThenTween(float time, Easing.Functions easing, Action<float> onUpdate);
 
 		IPromise<T> ThenTween(float time, Action<float> onUpdate);
+
+		IPromise<T> ThenTween<U>(float time, Easing.Functions easing, U fromValue, U toValue, Action<U,U,float> onUpdate);
+
+		IPromise<T> ThenTween<U>(float time, U fromValue, U toValue, Action<U,U,float> onUpdate);
+
+		IPromise<T> ThenLog(string message);
 
 		IPromise<T> Catch(Action<Exception> exceptionHandler);
 	}
@@ -195,6 +202,47 @@ namespace Promises
         {
             return ThenTween(time, Easing.Functions.Linear, onUpdate);
         }
+
+        public IPromise<T> ThenTween<U>(float time, Easing.Functions easing, U fromValue, U toValue, Action<U, U, float> onUpdate)
+        {
+            Promise<T> p = new Promise<T>();
+
+			Action<T> resolution = t =>{
+				CoroutineExtensions.Tween(
+					time,
+					easing,
+					fromValue,
+					toValue,
+					onUpdate
+				)
+				.ThenDo(o => p.Resolve(t));
+			};
+
+			if(currentState == ePromiseState.RESOLVED)
+				resolution(resolvedObject);
+			else
+				_resolveCallbacks.Add(resolution);
+
+			return p;
+        }
+
+		public IPromise<T> ThenTween<U>(float time, U fromValue, U toValue, Action<U,U,float> onUpdate)
+		{
+			return ThenTween(
+				time,
+				Easing.Functions.Linear,
+				fromValue,
+				toValue,
+				onUpdate
+			);
+		}
+
+		public IPromise<T> ThenLog(string message)
+		{
+			_resolveCallbacks.Add(o => Debug.Log(message));
+
+			return this;
+		}
 
         public IPromise<T> Catch(Action<Exception> exceptionHandler)
         {
