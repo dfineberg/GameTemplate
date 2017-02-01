@@ -17,12 +17,18 @@ public abstract class AbstractTween<T> : MonoBehaviour {
 
 	public Easing.Functions easeType;
 
-
-	public abstract IPromise Animate();
-
-	public abstract T GetValueAtPoint(float normalisedPoint);
+	public abstract T GetValue(float normalisedPoint);
 
 	protected abstract void SetValue(float normalisedPoint);
+
+	public IPromise Animate(bool reverse = false)
+	{
+		return CoroutineExtensions.WaitForSeconds(delay)
+		.ThenTween(
+			duration,
+			f => SetValue(reverse ? 1f - f : f)
+		);
+	}
 
 	protected virtual void Update()
 	{

@@ -9,27 +9,7 @@ public class PositionTween : AbstractTween<Vector3>
 {
 	public bool animateInWorldPosition;
 
-	void Start()
-	{
-		if(Application.isPlaying)
-			Animate();
-	}
-
-    public override IPromise Animate()
-    {
-		var p = new Promise();
-
-		CoroutineExtensions.WaitForSeconds(delay)
-		.ThenTween(
-			duration,
-			f => SetValue(f)
-		)
-		.ThenDo(p.Resolve);
-
-		return p;
-    }
-
-    public override Vector3 GetValueAtPoint(float normalisedPoint)
+    public override Vector3 GetValue(float normalisedPoint)
     {
         return Vector3.Lerp(fromValue, toValue, Easing.Interpolate(normalisedPoint, easeType));
     }
@@ -37,8 +17,8 @@ public class PositionTween : AbstractTween<Vector3>
     protected override void SetValue(float normalisedPoint)
     {
         if(animateInWorldPosition)
-			transform.position = GetValueAtPoint(normalisedPoint);
+			transform.position = GetValue(normalisedPoint);
 		else
-			transform.localPosition = GetValueAtPoint(normalisedPoint);
+			transform.localPosition = GetValue(normalisedPoint);
     }
 }
