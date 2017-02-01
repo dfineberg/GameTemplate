@@ -18,7 +18,7 @@ public abstract class AbstractTween<T> : MonoBehaviour {
 	public Easing.Functions easeType;
 
 
-	public abstract IPromise<AbstractTween<T>> Animate();
+	public abstract IPromise Animate();
 
 	public abstract T GetValueAtPoint(float normalisedPoint);
 

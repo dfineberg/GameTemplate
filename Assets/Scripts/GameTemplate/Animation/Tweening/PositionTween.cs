@@ -15,16 +15,16 @@ public class PositionTween : AbstractTween<Vector3>
 			Animate();
 	}
 
-    public override IPromise<AbstractTween<Vector3>> Animate()
+    public override IPromise Animate()
     {
-		var p = new Promise<AbstractTween<Vector3>>();
+		var p = new Promise();
 
 		CoroutineExtensions.WaitForSeconds(delay)
 		.ThenTween(
 			duration,
 			f => SetValue(f)
 		)
-		.ThenDo(o => p.Resolve(this));
+		.ThenDo(p.Resolve);
 
 		return p;
     }

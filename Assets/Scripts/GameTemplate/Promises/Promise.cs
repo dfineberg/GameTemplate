@@ -11,56 +11,42 @@ namespace Promises
 		REJECTED
 	}
 
-	public interface IPromise<T>
+	public interface IPromise
 	{
 		ePromiseState currentState { get; }
 
-		T resolvedObject { get; }
-
 		Exception rejectedException { get; }
 
-		IPromise<U> Then<U>(Func<T, IPromise<U>> callback);
+		IPromise Then(Func<IPromise> callback);
 
-		IPromise<U> Then<U>(Func<IPromise<U>> callback);
+		IPromise ThenDo(Action callback);
 
-		IPromise<T> ThenDo(Action<T> callback);
+		IPromise ThenAll(params Func<IPromise>[] promises);
 
-		IPromise<T> ThenDo(Action callback);
+		IPromise ThenWaitForSeconds(float time);
 
-		IPromise<T[]> ThenAll(params Func<IPromise<T>>[] promises);
+		IPromise ThenWaitUntil(Func<bool> evaluator);
 
-		IPromise<T> ThenWaitForSeconds(float time);
+		IPromise ThenTween(float time, Easing.Functions easing, Action<float> onUpdate);
 
-		IPromise<T> ThenWaitUntil(Func<bool> evaluator);
+		IPromise ThenTween(float time, Action<float> onUpdate);
 
-		IPromise<T> ThenTween(float time, Easing.Functions easing, Action<float> onUpdate);
+		IPromise ThenTween<U>(float time, Easing.Functions easing, U fromValue, U toValue, Action<U,U,float> onUpdate);
 
-		IPromise<T> ThenTween(float time, Action<float> onUpdate);
+		IPromise ThenTween<U>(float time, U fromValue, U toValue, Action<U,U,float> onUpdate);
 
-		IPromise<T> ThenTween<U>(float time, Easing.Functions easing, U fromValue, U toValue, Action<U,U,float> onUpdate);
+		IPromise ThenLog(string message);
 
-		IPromise<T> ThenTween<U>(float time, U fromValue, U toValue, Action<U,U,float> onUpdate);
-
-		IPromise<T> ThenLog(string message);
-
-		IPromise<T> Catch(Action<Exception> exceptionHandler);
+		IPromise Catch(Action<Exception> exceptionHandler);
 	}
 
-    public class Promise<T> : IPromise<T>
+    public class Promise : IPromise
     {
         public ePromiseState currentState
         {
             get
             {
                 return _currentState;
-            }
-        }
-
-        public T resolvedObject
-        {
-            get
-            {
-                return _resolvedObject;
             }
         }
 
@@ -74,140 +60,128 @@ namespace Promises
 
         private ePromiseState _currentState;
 
-		private T _resolvedObject;
-
 		private Exception _rejectedException;
 
-        private List<Action<T>> _resolveCallbacks;
+        private List<Action> _resolveCallbacks;
 		private List<Action<Exception>> _rejectCallbacks;
 
         public Promise()
 		{
 			_currentState = ePromiseState.PENDING;
-            _resolveCallbacks = new List<Action<T>>();
+            _resolveCallbacks = new List<Action>();
 			_rejectCallbacks = new List<Action<Exception>>();
         }
 
-        public IPromise<U> Then<U>(Func<T, IPromise<U>> callback)
+        public IPromise Then(Func<IPromise> callback)
         {
-			Promise<U> p = new Promise<U>();
+			Promise p = new Promise();
 
-			Action<T> resolution = objT =>{
-				callback(objT)
-				.ThenDo(objU => p.Resolve(objU));
+			Action resolution = () =>{
+				callback()
+				.ThenDo(p.Resolve);
 			};
 			
 			if(currentState == ePromiseState.RESOLVED)
-				resolution(resolvedObject);
+				resolution();
 			else
 				_resolveCallbacks.Add(resolution);
 
 			return p;
         }
 
-		public IPromise<U> Then<U>(Func<IPromise<U>> callback)
-		{
-			return Then(o => callback());
-		}
-
-        public IPromise<T> ThenDo(Action<T> callback)
+        public IPromise ThenDo(Action callback)
         {
 			if(currentState == ePromiseState.RESOLVED)
-				callback(resolvedObject);
+				callback();
 			else				
 				_resolveCallbacks.Add(callback);
 
             return this;
         }
 
-		public IPromise<T> ThenDo(Action callback)
-		{
-			return ThenDo(o => callback());
-		}
-
-        public IPromise<T[]> ThenAll(params Func<IPromise<T>>[] promises)
+        public IPromise ThenAll(params Func<IPromise>[] promises)
         {
-			Promise<T[]> p = new Promise<T[]>();
+			Promise p = new Promise();
 
-			Action<T> resolution = objT =>{
-				IPromise<T>[] invokedPromises = new IPromise<T>[promises.Length];
+			Action resolution = () =>{
+				IPromise[] invokedPromises = new IPromise[promises.Length];
 
 				for(int i = 0; i < promises.Length; i++)
 					invokedPromises[i] = promises[i]();
 
 				All(invokedPromises)
-				.ThenDo(objTs => p.Resolve(objTs));
+				.ThenDo(p.Resolve);
 			};
 
 			if(currentState == ePromiseState.RESOLVED)
-				resolution(resolvedObject);
+				resolution();
 			else
 				_resolveCallbacks.Add(resolution);
 
 			return p;
         }
 
-		public IPromise<T> ThenWaitForSeconds(float time)
+		public IPromise ThenWaitForSeconds(float time)
 		{
-			Promise<T> p = new Promise<T>();
+			Promise p = new Promise();
 
-			Action<T> resolution = t =>{
+			Action resolution = () =>{
 				CoroutineExtensions.WaitForSeconds(time)
-				.ThenDo(o => p.Resolve(t));
+				.ThenDo(p.Resolve);
 			};
 
 			if(currentState == ePromiseState.RESOLVED)
-				resolution(resolvedObject);
+				resolution();
 			else
 				_resolveCallbacks.Add(resolution);
 			
 			return p;
 		}
 
-		public IPromise<T> ThenWaitUntil(Func<bool> evaluator)
+		public IPromise ThenWaitUntil(Func<bool> evaluator)
 		{
-			Promise<T> p = new Promise<T>();
+			Promise p = new Promise();
 
-			Action<T> resolution = t => {
+			Action resolution = () => {
 				CoroutineExtensions.WaitUntil(evaluator)
-				.ThenDo(o => p.Resolve(t));
+				.ThenDo(p.Resolve);
 			};
 
 			if(currentState == ePromiseState.RESOLVED)
-				resolution(resolvedObject);
+				resolution();
 			else
 				_resolveCallbacks.Add(resolution);
 
 			return p;
 		}
 
-        public IPromise<T> ThenTween(float time, Easing.Functions easing, Action<float> onUpdate)
+        public IPromise ThenTween(float time, Easing.Functions easing, Action<float> onUpdate)
         {
-			Promise<T> p = new Promise<T>();
+			Promise p = new Promise();
 
-            Action<T> resolution = t => {
+            Action resolution = () => {
 				CoroutineExtensions.Tween(time, easing, onUpdate)
-				.ThenDo(o => p.Resolve(t));
+				.ThenDo(p.Resolve);
 			};
 
 			if(currentState == ePromiseState.RESOLVED)
-				resolution(resolvedObject);
+				resolution();
 			else
 				_resolveCallbacks.Add(resolution);
 
 			return p;
         }
 
-        public IPromise<T> ThenTween(float time, Action<float> onUpdate)
+        public IPromise ThenTween(float time, Action<float> onUpdate)
         {
             return ThenTween(time, Easing.Functions.Linear, onUpdate);
         }
 
-        public IPromise<T> ThenTween<U>(float time, Easing.Functions easing, U fromValue, U toValue, Action<U, U, float> onUpdate)
+        public IPromise ThenTween<U>(float time, Easing.Functions easing, U fromValue, U toValue, Action<U, U, float> onUpdate)
         {
-            Promise<T> p = new Promise<T>();
+            Promise p = new Promise();
 
-			Action<T> resolution = t =>{
+			Action resolution = () =>{
 				CoroutineExtensions.Tween(
 					time,
 					easing,
@@ -215,18 +189,18 @@ namespace Promises
 					toValue,
 					onUpdate
 				)
-				.ThenDo(o => p.Resolve(t));
+				.ThenDo(p.Resolve);
 			};
 
 			if(currentState == ePromiseState.RESOLVED)
-				resolution(resolvedObject);
+				resolution();
 			else
 				_resolveCallbacks.Add(resolution);
 
 			return p;
         }
 
-		public IPromise<T> ThenTween<U>(float time, U fromValue, U toValue, Action<U,U,float> onUpdate)
+		public IPromise ThenTween<U>(float time, U fromValue, U toValue, Action<U,U,float> onUpdate)
 		{
 			return ThenTween(
 				time,
@@ -237,30 +211,27 @@ namespace Promises
 			);
 		}
 
-		public IPromise<T> ThenLog(string message)
+		public IPromise ThenLog(string message)
 		{
-			_resolveCallbacks.Add(o => Debug.Log(message));
+			_resolveCallbacks.Add(() => Debug.Log(message));
 
 			return this;
 		}
 
-        public IPromise<T> Catch(Action<Exception> exceptionHandler)
+        public IPromise Catch(Action<Exception> exceptionHandler)
         {
             _rejectCallbacks.Add(exceptionHandler);
 
 			return this;
         }
 
-		public static IPromise<T[]> All(params IPromise<T>[] promises)
+		public static IPromise All(params IPromise[] promises)
         {
-			Promise<T[]> p = new Promise<T[]>();
-			T[] returnObjects = new T[promises.Length];
+			Promise p = new Promise();
 
 			foreach(var promise in promises)
 			{
-				promise.ThenDo(o =>{
-					returnObjects[Array.IndexOf(promises, promise)] = o;
-					
+				promise.ThenDo(() =>{					
 					bool resolve = true;
 
 					for(int i = 0; i < promises.Length; i++)
@@ -275,30 +246,29 @@ namespace Promises
 					}
 
 					if(resolve)
-						p.Resolve(returnObjects);
+						p.Resolve();
 				});
 			}
 
 			return p;
         }
 
-		public static IPromise<T> Resolved(T obj)
+		public static IPromise Resolved()
 		{
-			Promise<T> p = new Promise<T>();
-			p.Resolve(obj);
+			Promise p = new Promise();
+			p.Resolve();
 			return p;
 		}
 
-		public void Resolve(T obj)
+		public void Resolve()
 		{
 			if(currentState != ePromiseState.PENDING)
                 return;
 
-			_resolvedObject = obj;
             _currentState = ePromiseState.RESOLVED;
 
 			foreach(var callback in _resolveCallbacks)
-				callback(obj);
+				callback();
 
 			_resolveCallbacks.Clear();
 
