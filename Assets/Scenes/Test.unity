@@ -138,7 +138,7 @@ MonoBehaviour:
   fromValue: {x: -5, y: 3, z: 0}
   toValue: {x: 5, y: 3, z: 0}
   duration: 0.5
-  delay: 0.6
+  delay: 0.3
   easeType: 21
   animateInWorldPosition: 0
 --- !u!23 &149930666
@@ -266,7 +266,7 @@ MonoBehaviour:
   fromValue: {x: -5, y: -1, z: 0}
   toValue: {x: 5, y: -1, z: 0}
   duration: 0.5
-  delay: 0.2
+  delay: 0.1
   easeType: 21
   animateInWorldPosition: 0
 --- !u!23 &261696897
@@ -655,7 +655,7 @@ MonoBehaviour:
   fromValue: {x: -5, y: 5, z: 0}
   toValue: {x: 5, y: 5, z: 0}
   duration: 0.5
-  delay: 0.8
+  delay: 0.4
   easeType: 21
   animateInWorldPosition: 0
 --- !u!23 &1557531568
@@ -855,7 +855,7 @@ MonoBehaviour:
   fromValue: {x: -5, y: 1, z: 0}
   toValue: {x: 5, y: 1, z: 0}
   duration: 0.5
-  delay: 0.4
+  delay: 0.2
   easeType: 21
   animateInWorldPosition: 0
 --- !u!23 &1924343719
