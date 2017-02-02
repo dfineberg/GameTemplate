@@ -139,7 +139,7 @@ MonoBehaviour:
   toValue: {x: 5, y: 3, z: 0}
   duration: 0.5
   delay: 0.3
-  easeType: 21
+  easeType: 15
   animateInWorldPosition: 0
 --- !u!23 &149930666
 MeshRenderer:
@@ -267,7 +267,7 @@ MonoBehaviour:
   toValue: {x: 5, y: -1, z: 0}
   duration: 0.5
   delay: 0.1
-  easeType: 21
+  easeType: 15
   animateInWorldPosition: 0
 --- !u!23 &261696897
 MeshRenderer:
@@ -345,7 +345,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 641113934}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a7d6a3508ea3c43f6a68f94a45f39277, type: 3}
   m_Name: 
@@ -429,12 +429,12 @@ GameObject:
   - component: {fileID: 805940193}
   - component: {fileID: 805940192}
   m_Layer: 0
-  m_Name: AnimationGroup
+  m_Name: AnimateOnOffGroup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &805940192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -544,7 +544,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!23 &986494649
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -656,7 +656,7 @@ MonoBehaviour:
   toValue: {x: 5, y: 5, z: 0}
   duration: 0.5
   delay: 0.4
-  easeType: 21
+  easeType: 15
   animateInWorldPosition: 0
 --- !u!23 &1557531568
 MeshRenderer:
@@ -806,7 +806,7 @@ MonoBehaviour:
   toValue: {x: 5, y: -3, z: 0}
   duration: 0.5
   delay: 0
-  easeType: 21
+  easeType: 15
   animateInWorldPosition: 0
 --- !u!1 &1924343716
 GameObject:
@@ -856,7 +856,7 @@ MonoBehaviour:
   toValue: {x: 5, y: 1, z: 0}
   duration: 0.5
   delay: 0.2
-  easeType: 21
+  easeType: 15
   animateInWorldPosition: 0
 --- !u!23 &1924343719
 MeshRenderer:

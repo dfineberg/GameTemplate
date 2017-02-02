@@ -4,10 +4,27 @@ using UnityEngine;
 public class Test : MonoBehaviour {
 
 	public Transform tweenTransform;
+
+	private GameObject _cube;
 	
 	void Start()
 	{
-		CoroutineExtensions.Tween(
+		ResourceExtensions.LoadAsync<GameObject>(
+			"Cube",
+			o => _cube = Instantiate(o)
+		)
+		.ThenLog("load async complete")
+		.ThenWaitForSeconds(3f)
+		.ThenTween(
+			2f,
+			Easing.Functions.CubicEaseInOut,
+			t => _cube.transform.LerpPosition(Vector3.zero, new Vector3(0f, 5f, 0f), t)
+		)
+		.ThenLog("cube animation complete");
+
+		CoroutineExtensions.WaitForCoroutine(TestRoutine())
+		.ThenLog("wait for coroutine complete")
+		.ThenTween(
 			2f,
 			Easing.Functions.BackEaseOut,
 			new Vector3(-5f, 0f, 0f),
@@ -42,5 +59,10 @@ public class Test : MonoBehaviour {
 			)
 		)
 		.ThenLog("anim 3");
+	}
+
+	IEnumerator TestRoutine()
+	{
+		yield return new WaitForSeconds(3f);
 	}
 }
