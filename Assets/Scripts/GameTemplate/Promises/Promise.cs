@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 namespace Promises
 {
@@ -12,7 +13,7 @@ namespace Promises
 		REJECTED
 	}
 
-	public interface IPromise
+	public interface IPromise : IEnumerator
 	{
 		ePromiseState currentState { get; }
 
@@ -58,6 +59,7 @@ namespace Promises
                 return _rejectedException;
             }
         }
+
 
         private ePromiseState _currentState;
 
@@ -281,5 +283,16 @@ namespace Promises
 
 				_rejectCallbacks.Clear();
 		}
+
+		#region IEnumerator // Allows Promises to work as yield instructions in Coroutines
+        object IEnumerator.Current { get { return null; } }
+
+        bool IEnumerator.MoveNext()
+        {
+            return currentState != ePromiseState.RESOLVED;
+        }
+
+        void IEnumerator.Reset() {}
+		#endregion
     } // Promise
 }
