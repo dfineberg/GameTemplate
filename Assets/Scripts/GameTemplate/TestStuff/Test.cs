@@ -6,7 +6,6 @@ public class Test : MonoBehaviour {
 	public Transform tweenTransform;
 
 	private GameObject _cube;
-	private GameObject _capsule;
 	
 	void Start()
 	{
@@ -14,7 +13,7 @@ public class Test : MonoBehaviour {
 			new [] { "Cube", "Capsule" },
 			resources => {
 				_cube = Instantiate(resources[0], new Vector3(-2f, 0f, 0f), Quaternion.identity);
-				_capsule = Instantiate(resources[1], new Vector3(2f, 0f, 0f), Quaternion.identity);
+				Instantiate(resources[1], new Vector3(2f, 0f, 0f), Quaternion.identity);
 				}
 		)
 		.ThenLog("load async complete")

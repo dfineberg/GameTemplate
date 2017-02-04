@@ -4,15 +4,16 @@ using System;
 using System.Linq;
 using Promises;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public static class ResourceExtensions {
 
-	public static IPromise LoadAsync<T>(string path, Action<T> loadHandler) where T : UnityEngine.Object
+	public static IPromise LoadAsync<T>(string path, Action<T> loadHandler) where T : Object
 	{
 		return CoroutineExtensions.WaitForCoroutine(LoadRoutine(path, loadHandler));
 	}
 
-	public static IPromise LoadAllAsync<T>(string[] paths, Action<T[]> loadHandler) where T : UnityEngine.Object
+	public static IPromise LoadAllAsync<T>(string[] paths, Action<T[]> loadHandler) where T : Object
 	{
 		T[] loadedObjects = new T[paths.Length];
 
@@ -20,6 +21,11 @@ public static class ResourceExtensions {
 		
 		return Promise.All(promises)
 		.ThenDo(() => loadHandler(loadedObjects));
+	}
+
+	public static IPromise LoadAllAsync(string[] paths, Action<Object[]> loadHandler)
+	{
+		return LoadAllAsync(paths, loadHandler);
 	}
 
 	static IEnumerator LoadRoutine<T>(string path, Action<T> loadHandler) where T : UnityEngine.Object
