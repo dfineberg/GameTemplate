@@ -24,22 +24,16 @@ public class AnimateOnOffGroup : MonoBehaviour {
 
 public IPromise AnimateOn()
 	{
-		return Promise.All(
-			_animations.Select(a => 
-			a.AnimateOn()
-			)
-			.ToArray()
-		);
+		return Promise.All(_animations.SelectEach(a => a.AnimateOn()));
 	}
 
 	public IPromise AnimateOff()
 	{
 		return Promise.All(
-			_animations.Select(a => 
+			_animations.SelectEach(a => 
 			CoroutineExtensions.WaitForSeconds(longestOff - a.offDuration)
 			.Then(a.AnimateOff)
 			)
-			.ToArray()
 		);
 	}
 }

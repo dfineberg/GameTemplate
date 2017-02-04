@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -104,12 +105,7 @@ namespace Promises
 			Promise p = new Promise();
 
 			Action resolution = () =>{
-				IPromise[] invokedPromises = new IPromise[promises.Length];
-
-				for(int i = 0; i < promises.Length; i++)
-					invokedPromises[i] = promises[i]();
-
-				All(invokedPromises)
+				All(promises.SelectEach(pr => pr()))
 				.ThenDo(p.Resolve);
 			};
 
@@ -225,33 +221,30 @@ namespace Promises
 			return this;
         }
 
-		public static IPromise All(params IPromise[] promises)
+		public static IPromise All(IEnumerable<IPromise> promises)
         {
-			Promise p = new Promise();
+			Promise returnPromise = new Promise();
 
 			foreach(var promise in promises)
 			{
-				promise.ThenDo(() =>{					
-					bool resolve = true;
+				promise.ThenDo(() =>{
+					var rejected = promises.FirstOrDefault(p => p.currentState == ePromiseState.REJECTED);
 
-					for(int i = 0; i < promises.Length; i++)
-					{
-						if(promises[i].currentState == ePromiseState.REJECTED){
-							p.Reject(p.rejectedException);
-							break;
-						}
+					if(rejected != null)
+						returnPromise.Reject(rejected.rejectedException);
 
-						if(promises[i].currentState == ePromiseState.PENDING)
-							resolve = false;
-					}
-
-					if(resolve)
-						p.Resolve();
+					if(promises.All(p => p.currentState == ePromiseState.RESOLVED))
+						returnPromise.Resolve();
 				});
 			}
 
-			return p;
+			return returnPromise;
         }
+
+		public static IPromise All(params IPromise[] promises)
+		{
+			return All(promises);
+		}
 
 		public static IPromise Resolved()
 		{
