@@ -6,12 +6,16 @@ public class Test : MonoBehaviour {
 	public Transform tweenTransform;
 
 	private GameObject _cube;
+	private GameObject _capsule;
 	
 	void Start()
 	{
-		ResourceExtensions.LoadAsync<GameObject>(
-			"Cube",
-			o => _cube = Instantiate(o)
+		ResourceExtensions.LoadAllAsync<GameObject>(
+			new [] { "Cube", "Capsule" },
+			resources => {
+				_cube = Instantiate(resources[0], new Vector3(-2f, 0f, 0f), Quaternion.identity);
+				_capsule = Instantiate(resources[1], new Vector3(2f, 0f, 0f), Quaternion.identity);
+				}
 		)
 		.ThenLog("load async complete")
 		.ThenWaitForSeconds(3f)
