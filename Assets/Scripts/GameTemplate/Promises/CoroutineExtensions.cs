@@ -26,17 +26,17 @@ public class CoroutineExtensions : MonoBehaviour {
 
 	public static IPromise WaitForSeconds(float time)
 	{
-		return WaitForCoroutine(_instance.WaitForSecondsRoutine(time));
+		return WaitForCoroutine(WaitForSecondsRoutine(time));
 	}
 
 	public static IPromise WaitUntil(System.Func<bool> evaluator)
 	{
-		return WaitForCoroutine(_instance.WaitUntilRoutine(evaluator));
+		return WaitForCoroutine(WaitUntilRoutine(evaluator));
 	}
 
 	public static IPromise Tween(float time, Easing.Functions easing, System.Action<float> onUpdate)
 	{
-		return WaitForCoroutine(_instance.TweenRoutine(time, easing, onUpdate));
+		return WaitForCoroutine(TweenRoutine(time, easing, onUpdate));
 	}
 
 	public static IPromise Tween(float time, System.Action<float> onUpdate)
@@ -70,17 +70,17 @@ public class CoroutineExtensions : MonoBehaviour {
 		promise.Resolve();
 	}
 
-	IEnumerator WaitForSecondsRoutine(float time)
+	static IEnumerator WaitForSecondsRoutine(float time)
 	{
 		yield return new WaitForSeconds(time);
 	}
 
-	IEnumerator WaitUntilRoutine(System.Func<bool> evaluator)
+	static IEnumerator WaitUntilRoutine(System.Func<bool> evaluator)
 	{
 		yield return new WaitUntil(evaluator);
 	}
 
-	IEnumerator TweenRoutine(float time, Easing.Functions easing, System.Action<float> onUpdate)
+	static IEnumerator TweenRoutine(float time, Easing.Functions easing, System.Action<float> onUpdate)
 	{
 		float f = 0f;
 
