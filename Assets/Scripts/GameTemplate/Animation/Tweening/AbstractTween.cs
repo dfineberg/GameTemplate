@@ -18,6 +18,8 @@ public abstract class AbstractTween<T> : MonoBehaviour, IAnimateOnOff {
 
 	public Easing.Functions easeType;
 
+    private eAnimateOnOffState _currentState = eAnimateOnOffState.OFF;
+
     public float onDuration
     {
         get
@@ -34,29 +36,57 @@ public abstract class AbstractTween<T> : MonoBehaviour, IAnimateOnOff {
         }
     }
 
+    public eAnimateOnOffState currentState
+    {
+        get
+        {
+            return _currentState;
+        }
+    }
+
     public abstract T GetValue(float normalisedPoint);
 
 	protected abstract void SetValue(float normalisedPoint);
 
 	public IPromise AnimateOn()
 	{
-		return CoroutineExtensions.WaitForSeconds(delay)
-		.ThenTween(
-			duration,
-			f => SetValue(f)
-		);
+        _currentState = eAnimateOnOffState.ANIMATING_ON;
+
+        return CoroutineExtensions.WaitForSeconds(delay)
+        .ThenTween(
+            duration,
+            f => SetValue(f)
+        )
+        .ThenDo(() => _currentState = eAnimateOnOffState.ON);
 	}
 
 	public IPromise AnimateOff()
 	{
-		return CoroutineExtensions.Tween(
-			duration,
-			f => SetValue(1f - f)
-		)
-		.ThenWaitForSeconds(delay);
-	}
+        _currentState = eAnimateOnOffState.ANIMATING_OFF;
 
-	protected virtual void Update()
+        return CoroutineExtensions.Tween(
+            duration,
+            f => SetValue(1f - f)
+        )
+        .ThenWaitForSeconds(delay)
+        .ThenDo(() => _currentState = eAnimateOnOffState.OFF);
+    }
+
+    public void SetOn()
+    {
+        SetValue(1f);
+
+        _currentState = eAnimateOnOffState.ON;
+    }
+
+    public void SetOff()
+    {
+        SetValue(0f);
+
+        _currentState = eAnimateOnOffState.OFF;
+    }
+
+    protected virtual void Update()
 	{
 		if(Application.isEditor && !Application.isPlaying)
 			SetValue(testPosition);
