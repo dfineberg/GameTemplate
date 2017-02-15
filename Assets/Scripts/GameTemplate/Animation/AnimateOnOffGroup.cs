@@ -7,7 +7,7 @@ using System;
 
 public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff {
 
-	IAnimateOnOff[] _animations;
+	List<IAnimateOnOff> _animations;
 
 	float _longestOn;
 	float _longestOff;
@@ -40,10 +40,13 @@ public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff {
 
     void Awake()
 	{
-		_animations = GetComponentsInChildren<IAnimateOnOff>();
+        _animations = new List<IAnimateOnOff>();
 
-		foreach(var a in _animations)
+		foreach(var a in GetComponentsInChildren<IAnimateOnOff>())
 		{
+            if (a == this)
+                continue;
+
             if (a is AnimateOnOffGroup)
             {
                 Debug.LogException(new Exception("Can't have an AnimateOnOffGroup in an AnimateOnOffGroup: " + gameObject.name));
@@ -52,6 +55,8 @@ public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff {
 
             _longestOn = Mathf.Max(_longestOn, a.onDuration);
 			_longestOff = Mathf.Max(_longestOff, a.offDuration);
+
+            _animations.Add(a);
 		}
 	}
 
