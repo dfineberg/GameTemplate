@@ -5,14 +5,21 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour {
 
-	private StateMachine _stateMachine;
+    private StateMachine _stateMachine;
+
+    [SerializeField]
+    private AnimateOnOffGroup _loadingScreen;
 
     public static AnimateOnOffGroup loadingScreen { get; private set; }
 
+    public static Canvas canvas { get; private set; }
+
 	void Awake()
 	{
-        loadingScreen = GetComponentInChildren<AnimateOnOffGroup>();
-		_stateMachine = gameObject.AddComponent<StateMachine>();
+        loadingScreen = _loadingScreen;
+        CanvasExtensions.SetLoadingScreenTransform(loadingScreen.transform);
+        canvas = GetComponentInChildren<Canvas>();
+        _stateMachine = gameObject.AddComponent<StateMachine>();
 	}
 
     void Start()
@@ -28,6 +35,6 @@ public class GameManager : MonoBehaviour {
 
     void RunStateMachine()
     {
-        _stateMachine.Run(new AnimateOnOffState());
+        _stateMachine.Run(new TitleScreenState());
     }
 }

@@ -3,17 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using Promises;
 
-public class State {
+public abstract class State {
 
 	public State nextState { get; protected set; }
 
-	public virtual IPromise OnEnter()
-	{
-		return Promise.Resolved();
-	}
+    public abstract IPromise OnEnter();
 
-	public virtual IPromise OnExit()
-	{
-		return Promise.Resolved();
-	}
+    public abstract IPromise OnExit();
 }

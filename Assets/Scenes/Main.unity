@@ -267,6 +267,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2712f2ee81aa0df4cae922aefd57a045, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _loadingScreen: {fileID: 971383576}
 --- !u!4 &536762312
 Transform:
   m_ObjectHideFlags: 0
@@ -356,6 +357,7 @@ GameObject:
   - component: {fileID: 971383573}
   - component: {fileID: 971383576}
   - component: {fileID: 971383575}
+  - component: {fileID: 971383577}
   m_Layer: 5
   m_Name: LoadingScreen
   m_TagString: Untagged
@@ -446,6 +448,17 @@ MonoBehaviour:
   onDelay: 0
   offDelay: 1
   _awakeState: 0
+--- !u!225 &971383577
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 971383571}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &1327975138
 GameObject:
   m_ObjectHideFlags: 0
