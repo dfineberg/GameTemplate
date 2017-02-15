@@ -92,6 +92,45 @@ static public class Easing
 			case Functions.BounceEaseInOut:			return BounceEaseInOut(p);
 		}
 	}
+
+    static public Functions Reverse(Functions f)
+    {
+        switch (f)
+        {
+            default:
+            case Functions.Linear:                  return Functions.Linear;
+            case Functions.QuadraticEaseOut:        return Functions.QuadraticEaseIn;
+            case Functions.QuadraticEaseIn:         return Functions.QuadraticEaseOut;
+            case Functions.QuadraticEaseInOut:      return Functions.QuadraticEaseInOut;
+            case Functions.CubicEaseIn:             return Functions.CubicEaseOut;
+            case Functions.CubicEaseOut:            return Functions.CubicEaseIn;
+            case Functions.CubicEaseInOut:          return Functions.CubicEaseInOut;
+            case Functions.QuarticEaseIn:           return Functions.QuarticEaseOut;
+            case Functions.QuarticEaseOut:          return Functions.QuarticEaseIn;
+            case Functions.QuarticEaseInOut:        return Functions.QuarticEaseInOut;
+            case Functions.QuinticEaseIn:           return Functions.QuinticEaseOut;
+            case Functions.QuinticEaseOut:          return Functions.QuinticEaseIn;
+            case Functions.QuinticEaseInOut:        return Functions.QuinticEaseInOut;
+            case Functions.SineEaseIn:              return Functions.SineEaseOut;
+            case Functions.SineEaseOut:             return Functions.SineEaseIn;
+            case Functions.SineEaseInOut:           return Functions.SineEaseInOut;
+            case Functions.CircularEaseIn:          return Functions.CircularEaseOut;
+            case Functions.CircularEaseOut:         return Functions.CircularEaseIn;
+            case Functions.CircularEaseInOut:       return Functions.CircularEaseInOut;
+            case Functions.ExponentialEaseIn:       return Functions.ExponentialEaseOut;
+            case Functions.ExponentialEaseOut:      return Functions.ExponentialEaseIn;
+            case Functions.ExponentialEaseInOut:    return Functions.ExponentialEaseInOut;
+            case Functions.ElasticEaseIn:           return Functions.ElasticEaseOut;
+            case Functions.ElasticEaseOut:          return Functions.ElasticEaseIn;
+            case Functions.ElasticEaseInOut:        return Functions.ElasticEaseInOut;
+            case Functions.BackEaseIn:              return Functions.BackEaseOut;
+            case Functions.BackEaseOut:             return Functions.BackEaseIn;
+            case Functions.BackEaseInOut:           return Functions.BackEaseInOut;
+            case Functions.BounceEaseIn:            return Functions.BounceEaseOut;
+            case Functions.BounceEaseOut:           return Functions.BounceEaseIn;
+            case Functions.BounceEaseInOut:         return Functions.BounceEaseInOut;
+        }
+    }
 	
 	/// <summary>
 	/// Modeled after the line y = x

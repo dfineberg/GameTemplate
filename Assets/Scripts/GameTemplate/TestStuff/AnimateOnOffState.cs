@@ -13,6 +13,7 @@ public class AnimateOnOffState : State {
 			"Test/AnimateOnOffGroup",
 			o => _animator = Object.Instantiate(o).GetComponent<AnimateOnOffGroup>()
 		)
+        .Then(() => GameManager.loadingScreen.AnimateOff())
 		.Then(() => _animator.AnimateOn());
 
 		CoroutineExtensions.WaitForSeconds(5f)
@@ -24,6 +25,7 @@ public class AnimateOnOffState : State {
 	public override IPromise OnExit()
 	{
 		return _animator.AnimateOff()
+            .Then(GameManager.loadingScreen.AnimateOn)
 		.ThenDo(() => Object.Destroy(_animator.gameObject));
 	}
 }

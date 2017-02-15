@@ -5,13 +5,13 @@ using Promises;
 using UnityEngine;
 
 [AddComponentMenu("Animation/Position Tween")]
-public class PositionTween : AbstractTween<Vector3>
+public class TweenPosition : AbstractTween<Vector3>
 {
 	public bool animateInWorldPosition;
 
     public override Vector3 GetValue(float normalisedPoint)
     {
-        return Vector3.Lerp(fromValue, toValue, Easing.Interpolate(normalisedPoint, easeType));
+        return Vector3.Lerp(fromValue, toValue, normalisedPoint);
     }
 
     protected override void SetValue(float normalisedPoint)

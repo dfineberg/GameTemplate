@@ -23,7 +23,9 @@ namespace Promises
 
 		IPromise ThenDo(Action callback);
 
-		IPromise ThenAll(params Func<IPromise>[] promises);
+        IPromise ThenAll(Func<IEnumerable<IPromise>> promises);
+
+        IPromise ThenAll(params Func<IPromise>[] promises);
 
 		IPromise ThenWaitForSeconds(float time);
 
@@ -102,24 +104,30 @@ namespace Promises
             return this;
         }
 
-        public IPromise ThenAll(params Func<IPromise>[] promises)
+        public IPromise ThenAll(Func<IEnumerable<IPromise>> promises)
         {
-			Promise p = new Promise();
+            Promise p = new Promise();
 
-			Action resolution = () =>{
-				All(promises.SelectEach(pr => pr()))
-				.ThenDo(p.Resolve);
-			};
+            Action resolution = () =>
+            {
+                All(promises())
+                .ThenDo(p.Resolve);
+            };
 
-			if(currentState == ePromiseState.RESOLVED)
-				resolution();
-			else
-				_resolveCallbacks.Add(resolution);
+            if (currentState == ePromiseState.RESOLVED)
+                resolution();
+            else
+                _resolveCallbacks.Add(resolution);
 
-			return p;
+            return p;
         }
 
-		public IPromise ThenWaitForSeconds(float time)
+        public IPromise ThenAll(params Func<IPromise>[] promises)
+        {
+            return ThenAll(promises);
+        }
+
+        public IPromise ThenWaitForSeconds(float time)
 		{
 			Promise p = new Promise();
 

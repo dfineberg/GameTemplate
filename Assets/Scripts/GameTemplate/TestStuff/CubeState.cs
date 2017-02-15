@@ -15,8 +15,12 @@ public class CubeState : State {
 			o => {
 				_cube = Object.Instantiate(o[0], new Vector3(-2f, 0f, 0f), Quaternion.identity);
 				_capsule = Object.Instantiate(o[1], new Vector3(2f, 0f, 0f), Quaternion.identity);
+
+                _cube.transform.localScale = Vector3.zero;
+                _capsule.transform.localScale = Vector3.zero;
 			}
 		)
+        .Then(GameManager.loadingScreen.AnimateOff)
 		.ThenTween(
 			0.2f,
 			Easing.Functions.BackEaseOut,
@@ -42,6 +46,7 @@ public class CubeState : State {
 				_capsule.transform.LerpScale(1f, 0f, f);
 			}
 		)
+        .Then(GameManager.loadingScreen.AnimateOn)
 		.ThenDo(() =>{
 			Object.Destroy(_cube);
 			Object.Destroy(_capsule);

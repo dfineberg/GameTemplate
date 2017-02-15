@@ -18,6 +18,8 @@ public abstract class AbstractTween<T> : MonoBehaviour, IAnimateOnOff {
 
 	public Easing.Functions easeType;
 
+    private bool _initComplete = false;
+
     private eAnimateOnOffState _currentState = eAnimateOnOffState.OFF;
 
     public float onDuration
@@ -48,18 +50,18 @@ public abstract class AbstractTween<T> : MonoBehaviour, IAnimateOnOff {
 
 	protected abstract void SetValue(float normalisedPoint);
 
-    protected virtual void Awake()
-    {
-        SetOff();
-    }
+    protected virtual void Init() { }
 
 	public IPromise AnimateOn()
 	{
+        InitCheck();
+
         _currentState = eAnimateOnOffState.ANIMATING_ON;
 
         return CoroutineExtensions.WaitForSeconds(delay)
         .ThenTween(
             duration,
+            easeType,
             f => SetValue(f)
         )
         .ThenDo(() => _currentState = eAnimateOnOffState.ON);
@@ -67,10 +69,13 @@ public abstract class AbstractTween<T> : MonoBehaviour, IAnimateOnOff {
 
 	public IPromise AnimateOff()
 	{
+        InitCheck();
+
         _currentState = eAnimateOnOffState.ANIMATING_OFF;
 
         return CoroutineExtensions.Tween(
             duration,
+            Easing.Reverse(easeType),
             f => SetValue(1f - f)
         )
         .ThenWaitForSeconds(delay)
@@ -79,6 +84,8 @@ public abstract class AbstractTween<T> : MonoBehaviour, IAnimateOnOff {
 
     public void SetOn()
     {
+        InitCheck();
+
         SetValue(1f);
 
         _currentState = eAnimateOnOffState.ON;
@@ -86,6 +93,8 @@ public abstract class AbstractTween<T> : MonoBehaviour, IAnimateOnOff {
 
     public void SetOff()
     {
+        InitCheck();
+
         SetValue(0f);
 
         _currentState = eAnimateOnOffState.OFF;
@@ -93,7 +102,18 @@ public abstract class AbstractTween<T> : MonoBehaviour, IAnimateOnOff {
 
     protected virtual void Update()
 	{
+        InitCheck();
+
 		if(Application.isEditor && !Application.isPlaying)
-			SetValue(testPosition);
+			SetValue(Easing.Interpolate(testPosition, easeType));
 	}
+
+    private void InitCheck()
+    {
+        if (!_initComplete)
+        {
+            Init();
+            _initComplete = true;
+        }
+    }
 }

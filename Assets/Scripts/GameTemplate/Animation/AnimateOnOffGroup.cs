@@ -7,6 +7,12 @@ using System;
 
 public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff {
 
+    public float onDelay;
+    public float offDelay;
+
+    [SerializeField]
+    eAnimateOnOffState _awakeState = eAnimateOnOffState.OFF;
+
 	List<IAnimateOnOff> _animations;
 
 	float _longestOn;
@@ -18,7 +24,7 @@ public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff {
     {
         get
         {
-            return _longestOn;
+            return onDelay + _longestOn;
         }
     }
 
@@ -26,7 +32,7 @@ public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff {
     {
         get
         {
-            return _longestOff;
+            return offDelay + _longestOff;
         }
     }
 
@@ -58,21 +64,35 @@ public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff {
 
             _animations.Add(a);
 		}
+
+        switch(_awakeState)
+        {
+            case eAnimateOnOffState.ANIMATING_OFF:
+                AnimateOff();
+                break;
+            case eAnimateOnOffState.ANIMATING_ON:
+                AnimateOn();
+                break;
+            case eAnimateOnOffState.OFF:
+                SetOff();
+                break;
+            case eAnimateOnOffState.ON:
+                SetOn();
+                break;
+        }
 	}
 
     public IPromise AnimateOn()
 	{
-		return Promise.All(_animations.SelectEach(a => a.AnimateOn()));
+        return CoroutineExtensions.WaitForSeconds(onDelay)
+            .ThenAll(() => GetAnimateOnPromises());
 	}
 
 	public IPromise AnimateOff()
 	{
-		return Promise.All(
-			_animations.SelectEach(a => 
-			CoroutineExtensions.WaitForSeconds(_longestOff - a.offDuration)
-			.Then(a.AnimateOff)
-			)
-		);
+        return CoroutineExtensions.WaitForSeconds(offDelay)
+            .ThenLog("off delay complete")
+            .ThenAll(() => GetAnimateOffPromises());
 	}
 
     public void SetOn()
@@ -85,5 +105,20 @@ public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff {
     {
         foreach (var a in _animations)
             a.SetOff();
+    }
+
+    private IEnumerable<IPromise> GetAnimateOnPromises()
+    {
+        return _animations.SelectEach(
+                a => a.AnimateOn()
+            );
+    }
+
+    private IEnumerable<IPromise> GetAnimateOffPromises()
+    {
+        return _animations.SelectEach(
+                a => CoroutineExtensions.WaitForSeconds(_longestOff - a.offDuration)
+                .Then(a.AnimateOff)
+            );
     }
 }
