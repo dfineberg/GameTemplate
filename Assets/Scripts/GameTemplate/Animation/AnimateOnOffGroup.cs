@@ -12,6 +12,8 @@ public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff {
 	float _longestOn;
 	float _longestOff;
 
+    eAnimateOnOffState _currentState = eAnimateOnOffState.OFF;
+
     public float onDuration
     {
         get
@@ -25,6 +27,14 @@ public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff {
         get
         {
             return _longestOff;
+        }
+    }
+
+    public eAnimateOnOffState currentState
+    {
+        get
+        {
+            return _currentState;
         }
     }
 
@@ -42,8 +52,6 @@ public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff {
 
             _longestOn = Mathf.Max(_longestOn, a.onDuration);
 			_longestOff = Mathf.Max(_longestOff, a.offDuration);
-
-            a.SetOff();
 		}
 	}
 

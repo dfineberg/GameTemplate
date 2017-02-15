@@ -48,6 +48,11 @@ public abstract class AbstractTween<T> : MonoBehaviour, IAnimateOnOff {
 
 	protected abstract void SetValue(float normalisedPoint);
 
+    protected virtual void Awake()
+    {
+        SetOff();
+    }
+
 	public IPromise AnimateOn()
 	{
         _currentState = eAnimateOnOffState.ANIMATING_ON;
