@@ -84,25 +84,49 @@ public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff {
 
     public IPromise AnimateOn()
 	{
+        if (CheckIfAnimating())
+            return Promise.Resolved();
+
+        if (currentState == eAnimateOnOffState.ON)
+            return Promise.Resolved();
+
+        _currentState = eAnimateOnOffState.ANIMATING_ON;
+
+        gameObject.SetActive(true);
+
         return CoroutineExtensions.WaitForSeconds(onDelay)
-            .ThenAll(() => GetAnimateOnPromises());
+            .ThenAll(() => GetAnimateOnPromises())
+            .ThenDo(() => _currentState = eAnimateOnOffState.ON);
 	}
 
 	public IPromise AnimateOff()
 	{
+        if (CheckIfAnimating())
+            return Promise.Resolved();
+
+        if (currentState == eAnimateOnOffState.OFF)
+            return Promise.Resolved();
+
+        _currentState = eAnimateOnOffState.ANIMATING_OFF;
+
         return CoroutineExtensions.WaitForSeconds(offDelay)
-            .ThenLog("off delay complete")
-            .ThenAll(() => GetAnimateOffPromises());
+            .ThenAll(() => GetAnimateOffPromises())
+            .ThenDo(() => _currentState = eAnimateOnOffState.OFF);
 	}
 
     public void SetOn()
     {
+        _currentState = eAnimateOnOffState.ON;
+        gameObject.SetActive(true);
+
         foreach (var a in _animations)
             a.SetOn();
     }
 
     public void SetOff()
     {
+        _currentState = eAnimateOnOffState.OFF;
+
         foreach (var a in _animations)
             a.SetOff();
     }
@@ -120,5 +144,16 @@ public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff {
                 a => CoroutineExtensions.WaitForSeconds(_longestOff - a.offDuration)
                 .Then(a.AnimateOff)
             );
+    }
+
+    private bool CheckIfAnimating()
+    {
+        if (currentState == eAnimateOnOffState.ANIMATING_ON || currentState == eAnimateOnOffState.ANIMATING_OFF)
+        {
+            Debug.LogError("Animating while we're animating: " + gameObject.name);
+            return true;
+        }
+
+        return false;
     }
 }
