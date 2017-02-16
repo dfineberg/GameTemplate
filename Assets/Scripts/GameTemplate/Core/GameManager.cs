@@ -12,14 +12,13 @@ public class GameManager : MonoBehaviour {
 
     public static AnimateOnOffGroup loadingScreen { get; private set; }
 
+    public static SaveManager saveManager { get; private set; }
+
     public static Canvas canvas { get; private set; }
 
 	void Awake()
 	{
         loadingScreen = _loadingScreen;
-        CanvasExtensions.SetLoadingScreenTransform(loadingScreen.transform);
-        canvas = GetComponentInChildren<Canvas>();
-        _stateMachine = gameObject.AddComponent<StateMachine>();
 	}
 
     void Start()
@@ -30,6 +29,17 @@ public class GameManager : MonoBehaviour {
 
     IPromise InitialLoadSequence()
     {
+        saveManager = GetComponentInChildren<SaveManager>();
+
+        if (!saveManager)
+            saveManager = gameObject.AddComponent<SaveManager>();
+
+        saveManager.LoadSaveFile();
+
+        CanvasExtensions.SetLoadingScreenTransform(loadingScreen.transform);
+        canvas = GetComponentInChildren<Canvas>();
+
+        _stateMachine = gameObject.AddComponent<StateMachine>();
         return CoroutineExtensions.WaitForSeconds(1f);
     }
 
