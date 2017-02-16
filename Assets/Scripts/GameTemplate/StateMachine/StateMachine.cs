@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class StateMachine : MonoBehaviour {
 
-	private State _currentState;
+	private AbstractState _currentState;
 
-	private State _nextState;
+	private AbstractState _nextState;
 
 	private bool _isRunning = false;
 
@@ -27,7 +27,7 @@ public class StateMachine : MonoBehaviour {
 		}
 	}
 	
-	public void Run(State firstState)
+	public void Run(AbstractState firstState)
 	{
 		_currentState = firstState;
 		_isRunning = true;

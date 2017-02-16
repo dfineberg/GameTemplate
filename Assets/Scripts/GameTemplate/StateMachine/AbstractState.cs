@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Promises;
 
-public abstract class State {
+public abstract class AbstractState {
 
-	public State nextState { get; protected set; }
+	public AbstractState nextState { get; protected set; }
 
     public abstract IPromise OnEnter();
 

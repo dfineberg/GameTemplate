@@ -34,6 +34,11 @@ public class CoroutineExtensions : MonoBehaviour {
 		return WaitForCoroutine(WaitUntilRoutine(evaluator));
 	}
 
+    public static IPromise WaitUntil(YieldInstruction yieldInstruction)
+    {
+        return WaitForCoroutine(WaitUntilRoutine(yieldInstruction));
+    }
+
 	public static IPromise Tween(float time, Easing.Functions easing, System.Action<float> onUpdate)
 	{
 		return WaitForCoroutine(TweenRoutine(time, easing, onUpdate));
@@ -79,6 +84,11 @@ public class CoroutineExtensions : MonoBehaviour {
 	{
 		yield return new WaitUntil(evaluator);
 	}
+
+    static IEnumerator WaitUntilRoutine(YieldInstruction yieldInstruction)
+    {
+        yield return yieldInstruction;
+    }
 
 	static IEnumerator TweenRoutine(float time, Easing.Functions easing, System.Action<float> onUpdate)
 	{

@@ -6,7 +6,7 @@ public class UIScreen : MonoBehaviour {
 
 	public AnimateOnOffGroup animator { get; private set; }
 
-    public bool canFireEvents { get; set; }
+    public bool bCanFireEvents { get; set; }
 
     public delegate void UIScreenEventHandler(int i);
 
@@ -15,12 +15,12 @@ public class UIScreen : MonoBehaviour {
     void Awake()
     {
         animator = GetComponentInChildren<AnimateOnOffGroup>();
-        canFireEvents = true;
+        bCanFireEvents = true;
     }
 
     public void ButtonPress(int i)
     {
-        if (!canFireEvents)
+        if (!bCanFireEvents)
             return;
 
         if (eButtonPressed != null)

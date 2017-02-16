@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Promises;
 using UnityEngine;
 
-public class CubeState : State {
+public class CubeState : AbstractState {
 
 	private GameObject _cube;
 	private GameObject _capsule;
@@ -31,7 +31,7 @@ public class CubeState : State {
 		);
 
 		CoroutineExtensions.WaitForSeconds(3f)
-		.ThenDo(() => nextState = new AnimateOnOffState());
+		.ThenDo(() => nextState = new TitleScreenState());
 
 		return loadAndAnim;
 	}

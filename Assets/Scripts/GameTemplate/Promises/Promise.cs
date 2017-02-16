@@ -31,6 +31,8 @@ namespace Promises
 
 		IPromise ThenWaitUntil(Func<bool> evaluator);
 
+        IPromise ThenWaitUntil(YieldInstruction yieldInstruction);
+
 		IPromise ThenTween(float time, Easing.Functions easing, Action<float> onUpdate);
 
 		IPromise ThenTween(float time, Action<float> onUpdate);
@@ -65,41 +67,41 @@ namespace Promises
 
         private ePromiseState _currentState;
 
-		private Exception _rejectedException;
+        private Exception _rejectedException;
 
         private List<Action> _resolveCallbacks;
-		private List<Action<Exception>> _rejectCallbacks;
+        private List<Action<Exception>> _rejectCallbacks;
 
         public Promise()
-		{
-			_currentState = ePromiseState.PENDING;
+        {
+            _currentState = ePromiseState.PENDING;
             _resolveCallbacks = new List<Action>();
-			_rejectCallbacks = new List<Action<Exception>>();
+            _rejectCallbacks = new List<Action<Exception>>();
         }
 
         public IPromise Then(Func<IPromise> callback)
         {
-			Promise p = new Promise();
+            Promise p = new Promise();
 
-			Action resolution = () =>{
-				callback()
-				.ThenDo(p.Resolve);
-			};
-			
-			if(currentState == ePromiseState.RESOLVED)
-				resolution();
-			else
-				_resolveCallbacks.Add(resolution);
+            Action resolution = () => {
+                callback()
+                .ThenDo(p.Resolve);
+            };
 
-			return p;
+            if (currentState == ePromiseState.RESOLVED)
+                resolution();
+            else
+                _resolveCallbacks.Add(resolution);
+
+            return p;
         }
 
         public IPromise ThenDo(Action callback)
         {
-			if(currentState == ePromiseState.RESOLVED)
-				callback();
-			else				
-				_resolveCallbacks.Add(callback);
+            if (currentState == ePromiseState.RESOLVED)
+                callback();
+            else
+                _resolveCallbacks.Add(callback);
 
             return this;
         }
@@ -124,42 +126,59 @@ namespace Promises
 
         public IPromise ThenAll(params Func<IPromise>[] promises)
         {
-            return ThenAll(promises);
+            return ThenAll(() => promises.SelectEach(p => p()));
         }
 
         public IPromise ThenWaitForSeconds(float time)
-		{
-			Promise p = new Promise();
+        {
+            Promise p = new Promise();
 
-			Action resolution = () =>{
-				CoroutineExtensions.WaitForSeconds(time)
-				.ThenDo(p.Resolve);
-			};
+            Action resolution = () => {
+                CoroutineExtensions.WaitForSeconds(time)
+                .ThenDo(p.Resolve);
+            };
 
-			if(currentState == ePromiseState.RESOLVED)
-				resolution();
-			else
-				_resolveCallbacks.Add(resolution);
-			
-			return p;
-		}
+            if (currentState == ePromiseState.RESOLVED)
+                resolution();
+            else
+                _resolveCallbacks.Add(resolution);
 
-		public IPromise ThenWaitUntil(Func<bool> evaluator)
-		{
-			Promise p = new Promise();
+            return p;
+        }
 
-			Action resolution = () => {
-				CoroutineExtensions.WaitUntil(evaluator)
-				.ThenDo(p.Resolve);
-			};
+        public IPromise ThenWaitUntil(Func<bool> evaluator)
+        {
+            Promise p = new Promise();
 
-			if(currentState == ePromiseState.RESOLVED)
-				resolution();
-			else
-				_resolveCallbacks.Add(resolution);
+            Action resolution = () => {
+                CoroutineExtensions.WaitUntil(evaluator)
+                .ThenDo(p.Resolve);
+            };
 
-			return p;
-		}
+            if (currentState == ePromiseState.RESOLVED)
+                resolution();
+            else
+                _resolveCallbacks.Add(resolution);
+
+            return p;
+        }
+
+        public IPromise ThenWaitUntil(YieldInstruction yieldInstruction)
+        {
+            Promise p = new Promise();
+
+            Action resolution = () => {
+                CoroutineExtensions.WaitUntil(yieldInstruction)
+                    .ThenDo(p.Resolve);
+            };
+
+            if (currentState == ePromiseState.RESOLVED)
+                resolution();
+            else
+                _resolveCallbacks.Add(resolution);
+
+            return p;
+        }
 
         public IPromise ThenTween(float time, Easing.Functions easing, Action<float> onUpdate)
         {
