@@ -1,14 +1,11 @@
 ﻿using Promises;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public static class SceneManagerExtensions
 {
     public static IPromise LoadSceneAsync(string sceneName, LoadSceneMode mode = LoadSceneMode.Additive)
     {
-        Scene scene = default(Scene);
+        var scene = default(Scene);
 
         return CoroutineExtensions.WaitUntil(SceneManager.LoadSceneAsync(sceneName, mode))
             .ThenDo(() => scene = SceneManager.GetSceneByName(sceneName))
@@ -17,7 +14,7 @@ public static class SceneManagerExtensions
 
     public static IPromise LoadSceneAsync(int sceneBuildIndex, LoadSceneMode mode = LoadSceneMode.Additive)
     {
-        Scene scene = default(Scene);
+        var scene = default(Scene);
 
         return CoroutineExtensions.WaitUntil(SceneManager.LoadSceneAsync(sceneBuildIndex, mode))
             .ThenDo(() => scene = SceneManager.GetSceneByBuildIndex(sceneBuildIndex))

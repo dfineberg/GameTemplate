@@ -1,49 +1,46 @@
 ﻿using Promises;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour {
-
+public class GameManager : MonoBehaviour
+{
     private StateMachine _stateMachine;
 
-    [SerializeField]
-    private AnimateOnOffGroup _loadingScreen;
+    [SerializeField] private AnimateOnOffGroup _loadingScreen;
 
-    public static AnimateOnOffGroup loadingScreen { get; private set; }
+    public static AnimateOnOffGroup LoadingScreen { get; private set; }
 
-    public static SaveManager saveManager { get; private set; }
+    public static SaveManager SaveManager { get; private set; }
 
-    public static Canvas canvas { get; private set; }
+    public static Canvas Canvas { get; private set; }
 
-	void Awake()
-	{
-        loadingScreen = _loadingScreen;
-	}
+    private void Awake()
+    {
+        LoadingScreen = _loadingScreen;
+    }
 
-    void Start()
+    private void Start()
     {
         InitialLoadSequence()
             .ThenDo(RunStateMachine);
     }
 
-    IPromise InitialLoadSequence()
+    private IPromise InitialLoadSequence()
     {
-        saveManager = GetComponentInChildren<SaveManager>();
+        SaveManager = GetComponentInChildren<SaveManager>();
 
-        if (!saveManager)
-            saveManager = gameObject.AddComponent<SaveManager>();
+        if (!SaveManager)
+            SaveManager = gameObject.AddComponent<SaveManager>();
 
-        saveManager.LoadSaveFile();
+        SaveManager.LoadSaveFile();
 
-        CanvasExtensions.SetLoadingScreenTransform(loadingScreen.transform);
-        canvas = GetComponentInChildren<Canvas>();
+        CanvasExtensions.SetLoadingScreenTransform(LoadingScreen.transform);
+        Canvas = GetComponentInChildren<Canvas>();
 
         _stateMachine = gameObject.AddComponent<StateMachine>();
         return CoroutineExtensions.WaitForSeconds(1f);
     }
 
-    void RunStateMachine()
+    private void RunStateMachine()
     {
         _stateMachine.Run(new TitleScreenState());
     }

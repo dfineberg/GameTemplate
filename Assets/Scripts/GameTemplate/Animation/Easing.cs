@@ -1,17 +1,16 @@
-using System;
 using UnityEngine;
 
-static public class Easing
+public static class Easing
 {
 	/// <summary>
 	/// Constant Pi.
 	/// </summary>
-	private const float PI = Mathf.PI; 
+	private const float Pi = Mathf.PI; 
 	
 	/// <summary>
 	/// Constant Pi / 2.
 	/// </summary>
-	private const float HALFPI = Mathf.PI / 2.0f; 
+	private const float Halfpi = Mathf.PI / 2.0f; 
 	
 	/// <summary>
 	/// Easing Functions enumeration
@@ -54,12 +53,11 @@ static public class Easing
 	/// <summary>
 	/// Interpolate using the specified function.
 	/// </summary>
-	static public float Interpolate(float p, Functions function)
+	public static float Interpolate(float p, Functions function)
 	{
 		switch(function)
 		{
-			default:
-			case Functions.Linear: 					return Linear(p);
+			default:                                return Linear(p);
 			case Functions.QuadraticEaseOut:		return QuadraticEaseOut(p);
 			case Functions.QuadraticEaseIn:			return QuadraticEaseIn(p);
 			case Functions.QuadraticEaseInOut:		return QuadraticEaseInOut(p);
@@ -93,12 +91,11 @@ static public class Easing
 		}
 	}
 
-    static public Functions Reverse(Functions f)
+    public static Functions Reverse(Functions f)
     {
         switch (f)
         {
-            default:
-            case Functions.Linear:                  return Functions.Linear;
+            default:                                return Functions.Linear;
             case Functions.QuadraticEaseOut:        return Functions.QuadraticEaseIn;
             case Functions.QuadraticEaseIn:         return Functions.QuadraticEaseOut;
             case Functions.QuadraticEaseInOut:      return Functions.QuadraticEaseInOut;
@@ -135,7 +132,7 @@ static public class Easing
 	/// <summary>
 	/// Modeled after the line y = x
 	/// </summary>
-	static public float Linear(float p)
+	public static float Linear(float p)
 	{
 		return p;
 	}
@@ -143,7 +140,7 @@ static public class Easing
 	/// <summary>
 	/// Modeled after the parabola y = x^2
 	/// </summary>
-	static public float QuadraticEaseIn(float p)
+	public static float QuadraticEaseIn(float p)
 	{
 		return p * p;
 	}
@@ -151,7 +148,7 @@ static public class Easing
 	/// <summary>
 	/// Modeled after the parabola y = -x^2 + 2x
 	/// </summary>
-	static public float QuadraticEaseOut(float p)
+	public static float QuadraticEaseOut(float p)
 	{
 		return -(p * (p - 2));
 	}
@@ -161,22 +158,19 @@ static public class Easing
 	/// y = (1/2)((2x)^2)             ; [0, 0.5)
 	/// y = -(1/2)((2x-1)*(2x-3) - 1) ; [0.5, 1]
 	/// </summary>
-	static public float QuadraticEaseInOut(float p)
+	public static float QuadraticEaseInOut(float p)
 	{
-		if(p < 0.5f)
+	    if(p < 0.5f)
 		{
 			return 2 * p * p;
 		}
-		else
-		{
-			return (-2 * p * p) + (4 * p) - 1;
-		}
+	    return (-2 * p * p) + (4 * p) - 1;
 	}
 	
 	/// <summary>
 	/// Modeled after the cubic y = x^3
 	/// </summary>
-	static public float CubicEaseIn(float p)
+	public static float CubicEaseIn(float p)
 	{
 		return p * p * p;
 	}
@@ -184,9 +178,9 @@ static public class Easing
 	/// <summary>
 	/// Modeled after the cubic y = (x - 1)^3 + 1
 	/// </summary>
-	static public float CubicEaseOut(float p)
+	public static float CubicEaseOut(float p)
 	{
-		float f = (p - 1);
+		var f = (p - 1);
 		return f * f * f + 1;
 	}
 	
@@ -195,23 +189,20 @@ static public class Easing
 	/// y = (1/2)((2x)^3)       ; [0, 0.5)
 	/// y = (1/2)((2x-2)^3 + 2) ; [0.5, 1]
 	/// </summary>
-	static public float CubicEaseInOut(float p)
+	public static float CubicEaseInOut(float p)
 	{
 		if(p < 0.5f)
 		{
 			return 4 * p * p * p;
 		}
-		else
-		{
-			float f = ((2 * p) - 2);
-			return 0.5f * f * f * f + 1;
-		}
+	    var f = ((2 * p) - 2);
+	    return 0.5f * f * f * f + 1;
 	}
 	
 	/// <summary>
 	/// Modeled after the quartic x^4
 	/// </summary>
-	static public float QuarticEaseIn(float p)
+	public static float QuarticEaseIn(float p)
 	{
 		return p * p * p * p;
 	}
@@ -219,9 +210,9 @@ static public class Easing
 	/// <summary>
 	/// Modeled after the quartic y = 1 - (x - 1)^4
 	/// </summary>
-	static public float QuarticEaseOut(float p)
+	public static float QuarticEaseOut(float p)
 	{
-		float f = (p - 1);
+		var f = (p - 1);
 		return f * f * f * (1 - p) + 1;
 	}
 	
@@ -230,23 +221,20 @@ static public class Easing
 	// y = (1/2)((2x)^4)        ; [0, 0.5)
 	// y = -(1/2)((2x-2)^4 - 2) ; [0.5, 1]
 	/// </summary>
-	static public float QuarticEaseInOut(float p) 
+	public static float QuarticEaseInOut(float p)
 	{
 		if(p < 0.5f)
 		{
 			return 8 * p * p * p * p;
 		}
-		else
-		{
-			float f = (p - 1);
-			return -8 * f * f * f * f + 1;
-		}
+	    var f = (p - 1);
+	    return -8 * f * f * f * f + 1;
 	}
 	
 	/// <summary>
 	/// Modeled after the quintic y = x^5
 	/// </summary>
-	static public float QuinticEaseIn(float p) 
+	public static float QuinticEaseIn(float p)
 	{
 		return p * p * p * p * p;
 	}
@@ -254,9 +242,9 @@ static public class Easing
 	/// <summary>
 	/// Modeled after the quintic y = (x - 1)^5 + 1
 	/// </summary>
-	static public float QuinticEaseOut(float p) 
+	public static float QuinticEaseOut(float p)
 	{
-		float f = (p - 1);
+		var f = (p - 1);
 		return f * f * f * f * f + 1;
 	}
 	
@@ -265,47 +253,44 @@ static public class Easing
 	/// y = (1/2)((2x)^5)       ; [0, 0.5)
 	/// y = (1/2)((2x-2)^5 + 2) ; [0.5, 1]
 	/// </summary>
-	static public float QuinticEaseInOut(float p) 
+	public static float QuinticEaseInOut(float p)
 	{
 		if(p < 0.5f)
 		{
 			return 16 * p * p * p * p * p;
 		}
-		else
-		{
-			float f = ((2 * p) - 2);
-			return 0.5f * f * f * f * f * f + 1;
-		}
+	    var f = ((2 * p) - 2);
+	    return 0.5f * f * f * f * f * f + 1;
 	}
 	
 	/// <summary>
 	/// Modeled after quarter-cycle of sine wave
 	/// </summary>
-	static public float SineEaseIn(float p)
+	public static float SineEaseIn(float p)
 	{
-		return Mathf.Sin((p - 1) * HALFPI) + 1;
+		return Mathf.Sin((p - 1) * Halfpi) + 1;
 	}
 	
 	/// <summary>
 	/// Modeled after quarter-cycle of sine wave (different phase)
 	/// </summary>
-	static public float SineEaseOut(float p)
+	public static float SineEaseOut(float p)
 	{
-		return Mathf.Sin(p * HALFPI);
+		return Mathf.Sin(p * Halfpi);
 	}
 	
 	/// <summary>
 	/// Modeled after half sine wave
 	/// </summary>
-	static public float SineEaseInOut(float p)
+	public static float SineEaseInOut(float p)
 	{
-		return 0.5f * (1 - Mathf.Cos(p * PI));
+		return 0.5f * (1 - Mathf.Cos(p * Pi));
 	}
 	
 	/// <summary>
 	/// Modeled after shifted quadrant IV of unit circle
 	/// </summary>
-	static public float CircularEaseIn(float p)
+	public static float CircularEaseIn(float p)
 	{
 		return 1 - Mathf.Sqrt(1 - (p * p));
 	}
@@ -313,7 +298,7 @@ static public class Easing
 	/// <summary>
 	/// Modeled after shifted quadrant II of unit circle
 	/// </summary>
-	static public float CircularEaseOut(float p)
+	public static float CircularEaseOut(float p)
 	{
 		return Mathf.Sqrt((2 - p) * p);
 	}
@@ -323,22 +308,19 @@ static public class Easing
 	/// y = (1/2)(1 - Mathf.Sqrt(1 - 4x^2))           ; [0, 0.5)
 	/// y = (1/2)(Mathf.Sqrt(-(2x - 3)*(2x - 1)) + 1) ; [0.5, 1]
 	/// </summary>
-	static public float CircularEaseInOut(float p)
+	public static float CircularEaseInOut(float p)
 	{
-		if(p < 0.5f)
+	    if(p < 0.5f)
 		{
 			return 0.5f * (1 - Mathf.Sqrt(1 - 4 * (p * p)));
 		}
-		else
-		{
-			return 0.5f * (Mathf.Sqrt(-((2 * p) - 3) * ((2 * p) - 1)) + 1);
-		}
+	    return 0.5f * (Mathf.Sqrt(-((2 * p) - 3) * ((2 * p) - 1)) + 1);
 	}
 	
 	/// <summary>
 	/// Modeled after the exponential function y = 2^(10(x - 1))
 	/// </summary>
-	static public float ExponentialEaseIn(float p)
+	public static float ExponentialEaseIn(float p)
 	{
 		return (p == 0.0f) ? p : Mathf.Pow(2, 10 * (p - 1));
 	}
@@ -346,7 +328,7 @@ static public class Easing
 	/// <summary>
 	/// Modeled after the exponential function y = -2^(-10x) + 1
 	/// </summary>
-	static public float ExponentialEaseOut(float p)
+	public static float ExponentialEaseOut(float p)
 	{
 		return (p == 1.0f) ? p : 1 - Mathf.Pow(2, -10 * p);
 	}
@@ -356,7 +338,7 @@ static public class Easing
 	/// y = (1/2)2^(10(2x - 1))         ; [0,0.5)
 	/// y = -(1/2)*2^(-10(2x - 1))) + 1 ; [0.5,1]
 	/// </summary>
-	static public float ExponentialEaseInOut(float p)
+	public static float ExponentialEaseInOut(float p)
 	{
 		if(p == 0.0 || p == 1.0) return p;
 		
@@ -364,26 +346,23 @@ static public class Easing
 		{
 			return 0.5f * Mathf.Pow(2, (20 * p) - 10);
 		}
-		else
-		{
-			return -0.5f * Mathf.Pow(2, (-20 * p) + 10) + 1;
-		}
+	    return -0.5f * Mathf.Pow(2, (-20 * p) + 10) + 1;
 	}
 	
 	/// <summary>
 	/// Modeled after the damped sine wave y = sin(13pi/2*x)*Mathf.Pow(2, 10 * (x - 1))
 	/// </summary>
-	static public float ElasticEaseIn(float p)
+	public static float ElasticEaseIn(float p)
 	{
-		return Mathf.Sin(13 * HALFPI * p) * Mathf.Pow(2, 10 * (p - 1));
+		return Mathf.Sin(13 * Halfpi * p) * Mathf.Pow(2, 10 * (p - 1));
 	}
 	
 	/// <summary>
 	/// Modeled after the damped sine wave y = sin(-13pi/2*(x + 1))*Mathf.Pow(2, -10x) + 1
 	/// </summary>
-	static public float ElasticEaseOut(float p)
+	public static float ElasticEaseOut(float p)
 	{
-		return Mathf.Sin(-13 * HALFPI * (p + 1)) * Mathf.Pow(2, -10 * p) + 1;
+		return Mathf.Sin(-13 * Halfpi * (p + 1)) * Mathf.Pow(2, -10 * p) + 1;
 	}
 	
 	/// <summary>
@@ -391,33 +370,30 @@ static public class Easing
 	/// y = (1/2)*sin(13pi/2*(2*x))*Mathf.Pow(2, 10 * ((2*x) - 1))      ; [0,0.5)
 	/// y = (1/2)*(sin(-13pi/2*((2x-1)+1))*Mathf.Pow(2,-10(2*x-1)) + 2) ; [0.5, 1]
 	/// </summary>
-	static public float ElasticEaseInOut(float p)
+	public static float ElasticEaseInOut(float p)
 	{
-		if(p < 0.5f)
+	    if(p < 0.5f)
 		{
-			return 0.5f * Mathf.Sin(13 * HALFPI * (2 * p)) * Mathf.Pow(2, 10 * ((2 * p) - 1));
+			return 0.5f * Mathf.Sin(13 * Halfpi * (2 * p)) * Mathf.Pow(2, 10 * ((2 * p) - 1));
 		}
-		else
-		{
-			return 0.5f * (Mathf.Sin(-13 * HALFPI * ((2 * p - 1) + 1)) * Mathf.Pow(2, -10 * (2 * p - 1)) + 2);
-		}
+	    return 0.5f * (Mathf.Sin(-13 * Halfpi * ((2 * p - 1) + 1)) * Mathf.Pow(2, -10 * (2 * p - 1)) + 2);
 	}
 	
 	/// <summary>
 	/// Modeled after the overshooting cubic y = x^3-x*sin(x*pi)
 	/// </summary>
-	static public float BackEaseIn(float p)
+	public static float BackEaseIn(float p)
 	{
-		return p * p * p - p * Mathf.Sin(p * PI);
+		return p * p * p - p * Mathf.Sin(p * Pi);
 	}
 	
 	/// <summary>
 	/// Modeled after overshooting cubic y = 1-((1-x)^3-(1-x)*sin((1-x)*pi))
 	/// </summary>	
-	static public float BackEaseOut(float p)
+	public static float BackEaseOut(float p)
 	{
-		float f = (1 - p);
-		return 1 - (f * f * f - f * Mathf.Sin(f * PI));
+		var f = (1 - p);
+		return 1 - (f * f * f - f * Mathf.Sin(f * Pi));
 	}
 	
 	/// <summary>
@@ -425,61 +401,55 @@ static public class Easing
 	/// y = (1/2)*((2x)^3-(2x)*sin(2*x*pi))           ; [0, 0.5)
 	/// y = (1/2)*(1-((1-x)^3-(1-x)*sin((1-x)*pi))+1) ; [0.5, 1]
 	/// </summary>
-	static public float BackEaseInOut(float p)
+	public static float BackEaseInOut(float p)
 	{
 		if(p < 0.5f)
 		{
-			float f = 2 * p;
-			return 0.5f * (f * f * f - f * Mathf.Sin(f * PI));
+			var f = 2 * p;
+			return 0.5f * (f * f * f - f * Mathf.Sin(f * Pi));
 		}
 		else
 		{
-			float f = (1 - (2*p - 1));
-			return 0.5f * (1 - (f * f * f - f * Mathf.Sin(f * PI))) + 0.5f;
+			var f = (1 - (2*p - 1));
+			return 0.5f * (1 - (f * f * f - f * Mathf.Sin(f * Pi))) + 0.5f;
 		}
 	}
 	
 	/// <summary>
 	/// </summary>
-	static public float BounceEaseIn(float p)
+	public static float BounceEaseIn(float p)
 	{
 		return 1 - BounceEaseOut(1 - p);
 	}
 	
 	/// <summary>
 	/// </summary>
-	static public float BounceEaseOut(float p)
+	public static float BounceEaseOut(float p)
 	{
-		if(p < 4/11.0f)
+	    if(p < 4/11.0f)
 		{
 			return (121 * p * p)/16.0f;
 		}
-		else if(p < 8/11.0f)
-		{
-			return (363/40.0f * p * p) - (99/10.0f * p) + 17/5.0f;
-		}
-		else if(p < 9/10.0f)
-		{
-			return (4356/361.0f * p * p) - (35442/1805.0f * p) + 16061/1805.0f;
-		}
-		else
-		{
-			return (54/5.0f * p * p) - (513/25.0f * p) + 268/25.0f;
-		}
+	    if(p < 8/11.0f)
+	    {
+	        return (363/40.0f * p * p) - (99/10.0f * p) + 17/5.0f;
+	    }
+	    if(p < 9/10.0f)
+	    {
+	        return (4356/361.0f * p * p) - (35442/1805.0f * p) + 16061/1805.0f;
+	    }
+	    return (54/5.0f * p * p) - (513/25.0f * p) + 268/25.0f;
 	}
 	
 	/// <summary>
 	/// </summary>
-	static public float BounceEaseInOut(float p)
+	public static float BounceEaseInOut(float p)
 	{
-		if(p < 0.5f)
+	    if(p < 0.5f)
 		{
 			return 0.5f * BounceEaseIn(p*2);
 		}
-		else
-		{
-			return 0.5f * BounceEaseOut(p * 2 - 1) + 0.5f;
-		}
+	    return 0.5f * BounceEaseOut(p * 2 - 1) + 0.5f;
 	}
 }
  	

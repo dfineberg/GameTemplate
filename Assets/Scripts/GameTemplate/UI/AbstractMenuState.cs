@@ -1,40 +1,37 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Promises;
+﻿using Promises;
 using UnityEngine;
 
-public abstract class AbstractUIState : AbstractState {
+public abstract class AbstractMenuState : AbstractState
+{
+    private readonly string _resourcePath;
 
-    string _resourcePath;
+    private MenuScreen _screen;
 
-    UIScreen _screen;
-
-	public AbstractUIState(string UIScreenResourcePath)
+    protected AbstractMenuState(string uiScreenResourcePath)
     {
-        _resourcePath = UIScreenResourcePath;
+        _resourcePath = uiScreenResourcePath;
     }
-
-    protected abstract void HandleUIButtonPressed(int i);
 
     public override IPromise OnEnter()
     {
         return ResourceExtensions.LoadAsync<GameObject>(
-            _resourcePath,
-            o => _screen = GameManager.canvas.InstantiateBehindLoadingScreen(o).GetComponent<UIScreen>()
+                _resourcePath,
+                o => _screen = GameManager.Canvas.InstantiateBehindLoadingScreen(o).GetComponent<MenuScreen>()
             )
-            .Then(GameManager.loadingScreen.AnimateOff)
-            .Then(() => _screen.animator.AnimateOn())
-            .ThenDo(() => _screen.eButtonPressed += HandleUIButtonPressed);
+            .Then(GameManager.LoadingScreen.AnimateOff)
+            .Then(() => _screen.Animator.AnimateOn())
+            .ThenDo(() => _screen.ButtonPressedEvent += HandleUiButtonPressed);
     }
 
     public override IPromise OnExit()
     {
-        _screen.bCanFireEvents = false;
-        _screen.eButtonPressed -= HandleUIButtonPressed;
+        _screen.CanFireEvents = false;
+        _screen.ButtonPressedEvent -= HandleUiButtonPressed;
 
-        return _screen.animator.AnimateOff()
-            .Then(() => nextState is IRequireLoadingScreen ? GameManager.loadingScreen.AnimateOn() : Promise.Resolved())
-            .ThenDo(() => UnityEngine.Object.Destroy(_screen.gameObject));
+        return _screen.Animator.AnimateOff()
+            .Then(() => NextState is IRequireLoadingScreen ? GameManager.LoadingScreen.AnimateOn() : Promise.Resolved())
+            .ThenDo(() => Object.Destroy(_screen.gameObject));
     }
+
+    protected abstract void HandleUiButtonPressed(int i);
 }

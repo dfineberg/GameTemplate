@@ -1,122 +1,109 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
 using Promises;
-using System;
+using UnityEngine;
 
-public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff {
+public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff
+{
+    public float OnDelay;
+    public float OffDelay;
 
-    public float onDelay;
-    public float offDelay;
+    [SerializeField] private EAnimateOnOffState _awakeState = EAnimateOnOffState.Off;
 
-    [SerializeField]
-    eAnimateOnOffState _awakeState = eAnimateOnOffState.OFF;
+    private List<IAnimateOnOff> _animations;
 
-	List<IAnimateOnOff> _animations;
+    private float _longestOn;
+    private float _longestOff;
 
-	float _longestOn;
-	float _longestOff;
-
-    eAnimateOnOffState _currentState = eAnimateOnOffState.OFF;
-
-    public float onDuration
+    public float OnDuration
     {
-        get
-        {
-            return onDelay + _longestOn;
-        }
+        get { return OnDelay + _longestOn; }
     }
 
-    public float offDuration
+    public float OffDuration
     {
-        get
-        {
-            return offDelay + _longestOff;
-        }
+        get { return OffDelay + _longestOff; }
     }
 
-    public eAnimateOnOffState currentState
-    {
-        get
-        {
-            return _currentState;
-        }
-    }
+    public EAnimateOnOffState CurrentState { get; private set; }
 
-    void Awake()
-	{
+    private void Awake()
+    {
+        CurrentState = EAnimateOnOffState.Off;
+
         _animations = new List<IAnimateOnOff>();
 
-		foreach(var a in GetComponentsInChildren<IAnimateOnOff>())
-		{
-            if (a == this)
+        foreach (var a in GetComponentsInChildren<IAnimateOnOff>())
+        {
+            if (ReferenceEquals(a, this))
                 continue;
 
             if (a is AnimateOnOffGroup)
             {
-                Debug.LogException(new Exception("Can't have an AnimateOnOffGroup in an AnimateOnOffGroup: " + gameObject.name));
+                Debug.LogException(new Exception("Can't have an AnimateOnOffGroup in an AnimateOnOffGroup: " +
+                                                 gameObject.name));
                 break;
             }
 
-            _longestOn = Mathf.Max(_longestOn, a.onDuration);
-			_longestOff = Mathf.Max(_longestOff, a.offDuration);
+            _longestOn = Mathf.Max(_longestOn, a.OnDuration);
+            _longestOff = Mathf.Max(_longestOff, a.OffDuration);
 
             _animations.Add(a);
-		}
+        }
 
-        switch(_awakeState)
+        switch (_awakeState)
         {
-            case eAnimateOnOffState.ANIMATING_OFF:
-                AnimateOff();
-                break;
-            case eAnimateOnOffState.ANIMATING_ON:
-                AnimateOn();
-                break;
-            case eAnimateOnOffState.OFF:
-                SetOff();
-                break;
-            case eAnimateOnOffState.ON:
+            default:
                 SetOn();
                 break;
+            case EAnimateOnOffState.Off:
+                SetOff();
+                break;
+            case EAnimateOnOffState.AnimatingOn:
+                AnimateOn();
+                break;
+            case EAnimateOnOffState.AnimatingOff:
+                AnimateOff();
+                break;
         }
-	}
+    }
 
     public IPromise AnimateOn()
-	{
+    {
         if (CheckIfAnimating())
             return Promise.Resolved();
 
-        if (currentState == eAnimateOnOffState.ON)
+        if (CurrentState == EAnimateOnOffState.On)
             return Promise.Resolved();
 
-        _currentState = eAnimateOnOffState.ANIMATING_ON;
+        CurrentState = EAnimateOnOffState.AnimatingOn;
 
         gameObject.SetActive(true);
 
-        return CoroutineExtensions.WaitForSeconds(onDelay)
+        return CoroutineExtensions.WaitForSeconds(OnDelay)
             .ThenAll(() => GetAnimateOnPromises())
-            .ThenDo(() => _currentState = eAnimateOnOffState.ON);
-	}
+            .ThenDo(() => CurrentState = EAnimateOnOffState.On);
+    }
 
-	public IPromise AnimateOff()
-	{
+    public IPromise AnimateOff()
+    {
         if (CheckIfAnimating())
             return Promise.Resolved();
 
-        if (currentState == eAnimateOnOffState.OFF)
+        if (CurrentState == EAnimateOnOffState.Off)
             return Promise.Resolved();
 
-        _currentState = eAnimateOnOffState.ANIMATING_OFF;
+        CurrentState = EAnimateOnOffState.AnimatingOff;
 
-        return CoroutineExtensions.WaitForSeconds(offDelay)
+        return CoroutineExtensions.WaitForSeconds(OffDelay)
             .ThenAll(() => GetAnimateOffPromises())
-            .ThenDo(() => _currentState = eAnimateOnOffState.OFF);
-	}
+            .ThenDo(() => CurrentState = EAnimateOnOffState.Off);
+    }
 
     public void SetOn()
     {
-        _currentState = eAnimateOnOffState.ON;
+        CurrentState = EAnimateOnOffState.On;
         gameObject.SetActive(true);
 
         foreach (var a in _animations)
@@ -125,7 +112,7 @@ public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff {
 
     public void SetOff()
     {
-        _currentState = eAnimateOnOffState.OFF;
+        CurrentState = EAnimateOnOffState.Off;
 
         foreach (var a in _animations)
             a.SetOff();
@@ -134,21 +121,21 @@ public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff {
     private IEnumerable<IPromise> GetAnimateOnPromises()
     {
         return _animations.SelectEach(
-                a => a.AnimateOn()
-            );
+            a => a.AnimateOn()
+        );
     }
 
     private IEnumerable<IPromise> GetAnimateOffPromises()
     {
         return _animations.SelectEach(
-                a => CoroutineExtensions.WaitForSeconds(_longestOff - a.offDuration)
+            a => CoroutineExtensions.WaitForSeconds(_longestOff - a.OffDuration)
                 .Then(a.AnimateOff)
-            );
+        );
     }
 
     private bool CheckIfAnimating()
     {
-        if (currentState == eAnimateOnOffState.ANIMATING_ON || currentState == eAnimateOnOffState.ANIMATING_OFF)
+        if (CurrentState == EAnimateOnOffState.AnimatingOn || CurrentState == EAnimateOnOffState.AnimatingOff)
         {
             Debug.LogError("Animating while we're animating: " + gameObject.name);
             return true;

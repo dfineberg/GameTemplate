@@ -1,70 +1,69 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using UnityEngine;
 
-[System.Serializable]
+[Serializable]
 public struct SaveFile
 {
-    public bool testBool;
-    public int testInt;
-    public string testString;
+    public bool TestBool;
+    public int TestInt;
+    public string TestString;
 }
 
-public class SaveManager : MonoBehaviour {
+public class SaveManager : MonoBehaviour
+{
+    public SaveFile SaveFile;
 
-    public SaveFile saveFile;
+    public bool UseDebugSaveFile;
 
-    public bool useDebugSaveFile;
+    public int LoadedSaveFileNo { get; private set; }
 
-    public int loadedSaveFileNo { get; private set; }
+    private string _directoryPath;
 
-    string directoryPath;
-
-    void Awake()
+    private void Awake()
     {
-        loadedSaveFileNo = -1;
+        LoadedSaveFileNo = -1;
 
-        directoryPath = directoryPath = Application.persistentDataPath + "/saveFiles";
+        _directoryPath = Application.persistentDataPath + "/saveFiles";
     }
 
     public void LoadSaveFile(int fileNo = 0)
     {
-        loadedSaveFileNo = fileNo;
-        string filePath = directoryPath + "/saveFile" + fileNo;
+        LoadedSaveFileNo = fileNo;
+        var filePath = _directoryPath + "/saveFile" + fileNo;
 
-        if (useDebugSaveFile)
+        if (UseDebugSaveFile)
             return;
 
-        if(!File.Exists(filePath))
+        if (!File.Exists(filePath))
         {
-            saveFile = new SaveFile();
+            SaveFile = new SaveFile();
             return;
         }
 
         var binaryFormatter = new BinaryFormatter();
         var fileStream = new FileStream(filePath, FileMode.OpenOrCreate);
 
-        saveFile = (SaveFile)binaryFormatter.Deserialize(fileStream);
+        SaveFile = (SaveFile) binaryFormatter.Deserialize(fileStream);
     }
 
     public void Save(int fileNo = 0)
     {
-        string filePath = directoryPath + "/saveFile" + fileNo;
+        var filePath = _directoryPath + "/saveFile" + fileNo;
 
-        if (!Directory.Exists(directoryPath))
-            Directory.CreateDirectory(directoryPath);
+        if (!Directory.Exists(_directoryPath))
+            Directory.CreateDirectory(_directoryPath);
 
         var binaryFormatter = new BinaryFormatter();
         var fileStream = File.OpenWrite(filePath);
 
-        binaryFormatter.Serialize(fileStream, saveFile);
+        binaryFormatter.Serialize(fileStream, SaveFile);
     }
 
     public void DeleteSaveFile(int fileNo = 0)
     {
-        string filePath = directoryPath + "/saveFile" + fileNo;
+        var filePath = _directoryPath + "/saveFile" + fileNo;
 
         if (!File.Exists(filePath))
             return;
@@ -74,18 +73,18 @@ public class SaveManager : MonoBehaviour {
 
     public void DeleteAllSaveFiles()
     {
-        if (!Directory.Exists(directoryPath))
+        if (!Directory.Exists(_directoryPath))
             return;
 
-        foreach (string file in Directory.GetFiles(directoryPath))
+        foreach (var file in Directory.GetFiles(_directoryPath))
             File.Delete(file);
     }
 
     public int GetSaveFileCount()
     {
-        if (!Directory.Exists(directoryPath))
+        if (!Directory.Exists(_directoryPath))
             return 0;
 
-        return Directory.GetFiles(directoryPath).Length;
+        return Directory.GetFiles(_directoryPath).Length;
     }
 }

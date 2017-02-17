@@ -1,39 +1,41 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
-namespace System.Linq {
-	public static class LinqExtensions {
+namespace System.Linq
+{
+    public static class LinqExtensions
+    {
+        public static IEnumerable<T> Each<T>(this IEnumerable<T> enumerable, Action<T, int> action)
+        {
+            var i = 0;
 
-		public static IEnumerable<T> Each<T>(this IEnumerable<T> enumerable, System.Action<T,int> action)
-		{
-			int i = 0;
+            var each = enumerable as T[] ?? enumerable.ToArray();
 
-			foreach(var e in enumerable){
-				action(e, i);
-				i++;
-			}
+            foreach (var e in each)
+            {
+                action(e, i);
+                i++;
+            }
 
-			return enumerable;
-		}
+            return each;
+        }
 
-		public static IEnumerable<T> Each<T>(this IEnumerable<T> enumerable, System.Action<T> action)
-		{
-			return enumerable.Each((t, i) => action(t));
-		}
+        public static IEnumerable<T> Each<T>(this IEnumerable<T> enumerable, Action<T> action)
+        {
+            return enumerable.Each((t, i) => action(t));
+        }
 
-		public static IEnumerable<U> SelectEach<T,U>(this IEnumerable<T> enumerable, System.Func<T,int,U> func)
-		{
-			List<U> list = new List<U>();
+        public static IEnumerable<TU> SelectEach<T, TU>(this IEnumerable<T> enumerable, Func<T, int, TU> func)
+        {
+            var list = new List<TU>();
 
-			enumerable.Each((t,i) => list.Add(func(t,i)));
+            enumerable.Each((t, i) => list.Add(func(t, i)));
 
-			return list;
-		}
+            return list;
+        }
 
-		public static IEnumerable<U> SelectEach<T,U>(this IEnumerable<T> enumerable, System.Func<T,U> func)
-		{
-			return enumerable.SelectEach((t, i) => func(t));
-		}
-	}
+        public static IEnumerable<TU> SelectEach<T, TU>(this IEnumerable<T> enumerable, Func<T, TU> func)
+        {
+            return enumerable.SelectEach((t, i) => func(t));
+        }
+    }
 }

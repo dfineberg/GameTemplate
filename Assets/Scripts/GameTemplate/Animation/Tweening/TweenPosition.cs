@@ -1,24 +1,20 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Promises;
-using UnityEngine;
+﻿using UnityEngine;
 
 [AddComponentMenu("Animation/Position Tween")]
 public class TweenPosition : AbstractTween<Vector3>
 {
-	public bool animateInWorldPosition;
+    public bool AnimateInWorldPosition;
 
-    public override Vector3 GetValue(float normalisedPoint)
+    public virtual Vector3 GetValue(float normalisedPoint)
     {
-        return Vector3.Lerp(fromValue, toValue, normalisedPoint);
+        return Vector3.Lerp(FromValue, ToValue, normalisedPoint);
     }
 
     protected override void SetValue(float normalisedPoint)
     {
-        if(animateInWorldPosition)
-			transform.position = GetValue(normalisedPoint);
-		else
-			transform.localPosition = GetValue(normalisedPoint);
+        if (AnimateInWorldPosition)
+            transform.position = GetValue(normalisedPoint);
+        else
+            transform.localPosition = GetValue(normalisedPoint);
     }
 }

@@ -1,28 +1,25 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Promises;
-using UnityEngine;
+﻿using Promises;
 
-public enum eAnimateOnOffState
+public enum EAnimateOnOffState
 {
-    ON,
-    OFF,
-    ANIMATING_ON,
-    ANIMATING_OFF
+    On,
+    Off,
+    AnimatingOn,
+    AnimatingOff
 }
 
-public interface IAnimateOnOff {
+public interface IAnimateOnOff
+{
+    IPromise AnimateOn();
 
-	IPromise AnimateOn();
-
-	IPromise AnimateOff();
+    IPromise AnimateOff();
 
     void SetOn();
 
     void SetOff();
 
-	float onDuration { get; }
-	float offDuration { get; }
+    float OnDuration { get; }
+    float OffDuration { get; }
 
-    eAnimateOnOffState currentState { get; }
+    EAnimateOnOffState CurrentState { get; }
 }

@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657868, g: 0.49641263, b: 0.57481706, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -264,7 +264,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 536762310}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2712f2ee81aa0df4cae922aefd57a045, type: 3}
+  m_Script: {fileID: 11500000, guid: 38a96d9b54a55417bb45fb585faf4797, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _loadingScreen: {fileID: 971383576}
@@ -425,15 +425,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 971383571}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dacf756bb894dd743a6ef225c18ff47f, type: 3}
+  m_Script: {fileID: 11500000, guid: 7e932e3325f654187afce3fdcaf82ab5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testPosition: 1
-  fromValue: 0
-  toValue: 1
-  duration: 0.3
-  delay: 0
-  easeType: 6
+  TestPosition: 0
+  FromValue: 0
+  ToValue: 1
+  Duration: 0.2
+  Delay: 0
+  EaseType: 9
 --- !u!114 &971383576
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -442,11 +442,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 971383571}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31a3d0cc4422ef44bab7f492f105ee48, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c28771a5c451432b82e3f75277cd3b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onDelay: 0
-  offDelay: 1
+  OnDelay: 0
+  OffDelay: 0.5
   _awakeState: 0
 --- !u!225 &971383577
 CanvasGroup:
@@ -455,7 +455,7 @@ CanvasGroup:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 971383571}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
@@ -585,7 +585,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 100}
+  m_AnchoredPosition: {x: 0, y: -50}
   m_SizeDelta: {x: 363, y: 68}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1858885975
@@ -635,12 +635,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1858885973}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e5649fa2dcc9554b825a02268e3019c, type: 3}
+  m_Script: {fileID: 11500000, guid: 74dad8ad7a2d941e886a8cbcf863256f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testPosition: 1
-  fromValue: {x: 0, y: -100}
-  toValue: {x: 0, y: 100}
-  duration: 0.3
-  delay: 0.3
-  easeType: 5
+  TestPosition: 0
+  FromValue: {x: 0, y: -50}
+  ToValue: {x: 0, y: 50}
+  Duration: 0.3
+  Delay: 0.2
+  EaseType: 8

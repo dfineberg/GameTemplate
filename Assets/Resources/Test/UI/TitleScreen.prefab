@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 224348386904435866}
   - component: {fileID: 222548215036368460}
   - component: {fileID: 114467431565243492}
-  - component: {fileID: 114509212574683336}
+  - component: {fileID: 114587152839365568}
   m_Layer: 5
   m_Name: TitleText
   m_TagString: Untagged
@@ -39,7 +39,7 @@ GameObject:
   - component: {fileID: 224640771797363392}
   - component: {fileID: 222861198670940024}
   - component: {fileID: 114133398957552578}
-  - component: {fileID: 114340028778571912}
+  - component: {fileID: 114347711320734704}
   m_Layer: 5
   m_Name: Instructions
   m_TagString: Untagged
@@ -100,7 +100,7 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Press anywhere to continue
---- !u!114 &114340028778571912
+--- !u!114 &114347711320734704
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -108,15 +108,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1832549939122668}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e5649fa2dcc9554b825a02268e3019c, type: 3}
+  m_Script: {fileID: 11500000, guid: 74dad8ad7a2d941e886a8cbcf863256f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testPosition: 1
-  fromValue: {x: 0, y: -100}
-  toValue: {x: 0, y: 100}
-  duration: 0.3
-  delay: 0.2
-  easeType: 5
+  TestPosition: 0
+  FromValue: {x: 0, y: -50}
+  ToValue: {x: 0, y: 50}
+  Duration: 0.3
+  Delay: 0.1
+  EaseType: 8
 --- !u!114 &114467431565243492
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -150,7 +150,7 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Really Good Game
---- !u!114 &114509212574683336
+--- !u!114 &114587152839365568
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -158,15 +158,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1128661049928038}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e5649fa2dcc9554b825a02268e3019c, type: 3}
+  m_Script: {fileID: 11500000, guid: 74dad8ad7a2d941e886a8cbcf863256f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testPosition: 1
-  fromValue: {x: 0, y: 150}
-  toValue: {x: 0, y: -150}
-  duration: 0.3
-  delay: 0
-  easeType: 5
+  TestPosition: 0
+  FromValue: {x: 0, y: 100}
+  ToValue: {x: 0, y: -100}
+  Duration: 0.3
+  Delay: 0
+  EaseType: 8
 --- !u!114 &114592499019628114
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -175,7 +175,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1996669282455350}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4292199b8adcb5a47af24e93c07b05b0, type: 3}
+  m_Script: {fileID: 11500000, guid: 4ec66b3e375ec4d6780d0eb89e63bd4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &114844706191713162
@@ -265,11 +265,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1996669282455350}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31a3d0cc4422ef44bab7f492f105ee48, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c28771a5c451432b82e3f75277cd3b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onDelay: 0
-  offDelay: 0
+  OnDelay: 0
+  OffDelay: 0
   _awakeState: 1
 --- !u!222 &222382702319990162
 CanvasRenderer:
@@ -324,7 +324,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -150}
+  m_AnchoredPosition: {x: 0, y: 100}
   m_SizeDelta: {x: 745, y: 140}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224640771797363392
@@ -342,6 +342,6 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 100}
+  m_AnchoredPosition: {x: 0, y: -50}
   m_SizeDelta: {x: 745, y: 140}
   m_Pivot: {x: 0.5, y: 0.5}

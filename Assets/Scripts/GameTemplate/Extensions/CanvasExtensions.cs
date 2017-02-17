@@ -1,36 +1,36 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
-public static class CanvasExtensions {
-
-    static Transform _loadingScreenTransform;
+public static class CanvasExtensions
+{
+    private static Transform _loadingScreenTransform;
 
     public static void SetLoadingScreenTransform(Transform t)
     {
         _loadingScreenTransform = t;
     }
 
-	public static GameObject InstantiateBehindLoadingScreen(this Canvas canvas, GameObject prefab)
+    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+    public static GameObject InstantiateBehindLoadingScreen(this Canvas canvas, GameObject prefab)
     {
-        GameObject newScreenObject = Object.Instantiate<GameObject>(prefab, canvas.transform);
+        var newScreenObject = Object.Instantiate(prefab, canvas.transform);
 
-        if(_loadingScreenTransform)
+        if (_loadingScreenTransform)
             newScreenObject.transform.SetSiblingIndex(Mathf.Max(_loadingScreenTransform.GetSiblingIndex() - 1, 0));
         else
             Debug.LogError("No loading screen set in CanvasExtensions!");
 
-        if (newScreenObject.transform is RectTransform)
-        {
-            RectTransform prefabRt = prefab.transform as RectTransform;
-            RectTransform rt = newScreenObject.transform as RectTransform;
 
-            rt.anchorMin = prefabRt.anchorMin;
-            rt.anchorMax = prefabRt.anchorMax;
+        var prefabRt = prefab.transform as RectTransform;
+        var rt = newScreenObject.transform as RectTransform;
 
-            rt.sizeDelta = prefabRt.sizeDelta;
-            rt.anchoredPosition = prefabRt.anchoredPosition;
-        }
+        if (rt == null) return newScreenObject;
+
+        rt.anchorMin = prefabRt.anchorMin;
+        rt.anchorMax = prefabRt.anchorMax;
+
+        rt.sizeDelta = prefabRt.sizeDelta;
+        rt.anchoredPosition = prefabRt.anchoredPosition;
 
         return newScreenObject;
     }

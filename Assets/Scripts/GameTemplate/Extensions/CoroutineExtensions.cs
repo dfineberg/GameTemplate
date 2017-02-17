@@ -1,106 +1,107 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Promises;
 using UnityEngine;
 
-public class CoroutineExtensions : MonoBehaviour {
+public class CoroutineExtensions : MonoBehaviour
+{
+    private static CoroutineExtensions _instance;
 
-	private static CoroutineExtensions _instance;
+    private static void Init()
+    {
+        var obj = new GameObject("CoroutineExtensions") {hideFlags = HideFlags.HideInHierarchy};
+        DontDestroyOnLoad(obj);
+        _instance = obj.AddComponent<CoroutineExtensions>();
+    }
 
-	static void Init()
-	{
-		GameObject obj = new GameObject("CoroutineExtensions");
-		obj.hideFlags = HideFlags.HideInHierarchy;
-		DontDestroyOnLoad(obj);
-		_instance = obj.AddComponent<CoroutineExtensions>();
-	}
+    public static IPromise WaitForCoroutine(IEnumerator coroutine)
+    {
+        if (!_instance)
+            Init();
 
-	public static IPromise WaitForCoroutine(IEnumerator coroutine)
-	{
-		if(!_instance)
-			Init();
+        var p = new Promise();
+        _instance.StartCoroutine(_instance.WaitForCoroutine(coroutine, p));
+        return p;
+    }
 
-		Promise p = new Promise();
-		_instance.StartCoroutine(_instance.WaitForCoroutine(coroutine, p));
-		return p;
-	}
+    public static IPromise WaitForSeconds(float time)
+    {
+        return WaitForCoroutine(WaitForSecondsRoutine(time));
+    }
 
-	public static IPromise WaitForSeconds(float time)
-	{
-		return WaitForCoroutine(WaitForSecondsRoutine(time));
-	}
-
-	public static IPromise WaitUntil(System.Func<bool> evaluator)
-	{
-		return WaitForCoroutine(WaitUntilRoutine(evaluator));
-	}
+    public static IPromise WaitUntil(Func<bool> evaluator)
+    {
+        return WaitForCoroutine(WaitUntilRoutine(evaluator));
+    }
 
     public static IPromise WaitUntil(YieldInstruction yieldInstruction)
     {
         return WaitForCoroutine(WaitUntilRoutine(yieldInstruction));
     }
 
-	public static IPromise Tween(float time, Easing.Functions easing, System.Action<float> onUpdate)
-	{
-		return WaitForCoroutine(TweenRoutine(time, easing, onUpdate));
-	}
+    public static IPromise Tween(float time, Easing.Functions easing, Action<float> onUpdate)
+    {
+        return WaitForCoroutine(TweenRoutine(time, easing, onUpdate));
+    }
 
-	public static IPromise Tween(float time, System.Action<float> onUpdate)
-	{
-		return Tween(time, Easing.Functions.Linear, onUpdate);
-	}
+    public static IPromise Tween(float time, Action<float> onUpdate)
+    {
+        return Tween(time, Easing.Functions.Linear, onUpdate);
+    }
 
-	public static IPromise Tween<T>(float time, Easing.Functions easing, T fromValue, T toValue, System.Action<T,T,float> onUpdate)
-	{
-		return Tween(
-			time,
-			easing,
-			t => onUpdate(fromValue, toValue, t)
-		);
-	}
+    public static IPromise Tween<T>(float time, Easing.Functions easing, T fromValue, T toValue,
+        Action<T, T, float> onUpdate)
+    {
+        return Tween(
+            time,
+            easing,
+            t => onUpdate(fromValue, toValue, t)
+        );
+    }
 
-	public static IPromise Tween<T>(float time, T fromValue, T toValue, System.Action<T,T,float> onUpdate)
-	{
-		return Tween(
-			time,
-			Easing.Functions.Linear,
-			fromValue,
-			toValue,
-			onUpdate
-		);
-	}
+    public static IPromise Tween<T>(float time, T fromValue, T toValue, Action<T, T, float> onUpdate)
+    {
+        return Tween(
+            time,
+            Easing.Functions.Linear,
+            fromValue,
+            toValue,
+            onUpdate
+        );
+    }
 
-	IEnumerator WaitForCoroutine(IEnumerator coroutine, Promise promise)
-	{
-		yield return StartCoroutine(coroutine);
-		promise.Resolve();
-	}
+    private IEnumerator WaitForCoroutine(IEnumerator coroutine, Promise promise)
+    {
+        yield return StartCoroutine(coroutine);
+        promise.Resolve();
+    }
 
-	static IEnumerator WaitForSecondsRoutine(float time)
-	{
-		yield return new WaitForSeconds(time);
-	}
+    private static IEnumerator WaitForSecondsRoutine(float time)
+    {
+        yield return new WaitForSeconds(time);
+    }
 
-	static IEnumerator WaitUntilRoutine(System.Func<bool> evaluator)
-	{
-		yield return new WaitUntil(evaluator);
-	}
+    private static IEnumerator WaitUntilRoutine(Func<bool> evaluator)
+    {
+        yield return new WaitUntil(evaluator);
+    }
 
-    static IEnumerator WaitUntilRoutine(YieldInstruction yieldInstruction)
+    private static IEnumerator WaitUntilRoutine(YieldInstruction yieldInstruction)
     {
         yield return yieldInstruction;
     }
 
-	static IEnumerator TweenRoutine(float time, Easing.Functions easing, System.Action<float> onUpdate)
-	{
-		float f = 0f;
+    private static IEnumerator TweenRoutine(float time, Easing.Functions easing, Action<float> onUpdate)
+    {
+        var f = 0f;
 
-		while(f <= time)
-		{
-			onUpdate(Easing.Interpolate(f / time, easing));
-			f += Time.deltaTime;
-			yield return null;
-		}
+        while (f <= time)
+        {
+            onUpdate(Easing.Interpolate(f / time, easing));
+            f += Time.deltaTime;
+            yield return null;
+        }
 
-		onUpdate(1f);
-	}
+        onUpdate(1f);
+    }
 }

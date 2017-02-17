@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Promises;
-using UnityEngine;
-
-public class TitleScreenState : AbstractUIState
+﻿public class TitleScreenState : AbstractMenuState
 {
-    public TitleScreenState() : base("Test/UI/TitleScreen") { }
-
-    protected override void HandleUIButtonPressed(int i)
+    public TitleScreenState() : base("Test/UI/TitleScreen")
     {
-        nextState = new LoadSceneState();
+    }
+
+    protected override void HandleUiButtonPressed(int i)
+    {
+        NextState = new LoadSceneState();
     }
 }

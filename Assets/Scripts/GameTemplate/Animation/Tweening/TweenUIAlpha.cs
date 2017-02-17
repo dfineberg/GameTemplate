@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class TweenUIAlpha : AbstractTween<float>
 {
-    CanvasGroup _canvasGroup;
-    Graphic _graphic;
+    private CanvasGroup _canvasGroup;
+    private Graphic _graphic;
 
     protected override void Init()
     {
@@ -15,20 +12,20 @@ public class TweenUIAlpha : AbstractTween<float>
         _graphic = GetComponent<Graphic>();
     }
 
-    public override float GetValue(float normalisedPoint)
+    public virtual float GetValue(float normalisedPoint)
     {
-        return Mathf.Lerp(fromValue, toValue, normalisedPoint);
+        return Mathf.Lerp(FromValue, ToValue, normalisedPoint);
     }
 
     protected override void SetValue(float normalisedPoint)
     {
-        if(_canvasGroup)
+        if (_canvasGroup)
         {
             _canvasGroup.alpha = GetValue(normalisedPoint);
             return;
         }
 
-        Color c = _graphic.color;
+        var c = _graphic.color;
         c.a = GetValue(normalisedPoint);
         _graphic.color = c;
     }

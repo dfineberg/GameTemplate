@@ -119,16 +119,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1428981648256858}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a301e9ceae59e5e48b4b8595acdc0153, type: 3}
+  m_Script: {fileID: 11500000, guid: 9df36b766509e4ad8ad669e57604b0f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testPosition: 0
-  fromValue: {x: -5, y: 0, z: 0}
-  toValue: {x: 5, y: 0, z: 0}
-  duration: 0.5
-  delay: 0
-  easeType: 17
-  animateInWorldPosition: 0
+  TestPosition: 0
+  FromValue: {x: -5, y: 0, z: 0}
+  ToValue: {x: 5, y: 0, z: 0}
+  Duration: 0.5
+  Delay: 0
+  EaseType: 20
+  AnimateInWorldPosition: 0
 --- !u!114 &114932582199779224
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -137,9 +137,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1290760772818446}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31a3d0cc4422ef44bab7f492f105ee48, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c28771a5c451432b82e3f75277cd3b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OnDelay: 0
+  OffDelay: 0
+  _awakeState: 1
 --- !u!135 &135330723616337366
 SphereCollider:
   m_ObjectHideFlags: 1

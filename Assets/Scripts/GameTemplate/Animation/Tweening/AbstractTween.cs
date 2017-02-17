@@ -1,85 +1,72 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Promises;
+﻿using Promises;
 using UnityEngine;
 
 [ExecuteInEditMode]
-public abstract class AbstractTween<T> : MonoBehaviour, IAnimateOnOff {
+public abstract class AbstractTween<T> : MonoBehaviour, IAnimateOnOff
+{
+    [Range(0f, 1f)] public float TestPosition;
 
-	[RangeAttribute(0f, 1f)]
-	public float testPosition;
+    public T FromValue;
+    public T ToValue;
 
-	public T fromValue;
-	public T toValue;
+    public float Duration;
+    public float Delay;
 
-	public float duration;
-	public float delay;
+    public Easing.Functions EaseType;
 
-	public Easing.Functions easeType;
+    private bool _initComplete;
 
-    private bool _initComplete = false;
+    private EAnimateOnOffState _currentState = EAnimateOnOffState.Off;
 
-    private eAnimateOnOffState _currentState = eAnimateOnOffState.OFF;
-
-    public float onDuration
+    public float OnDuration
     {
-        get
-        {
-            return duration + delay;
-        }
+        get { return Duration + Delay; }
     }
 
-    public float offDuration
+    public float OffDuration
     {
-        get
-        {
-            return duration + delay;
-        }
+        get { return Duration + Delay; }
     }
 
-    public eAnimateOnOffState currentState
+    public EAnimateOnOffState CurrentState
     {
-        get
-        {
-            return _currentState;
-        }
+        get { return _currentState; }
     }
 
-    public abstract T GetValue(float normalisedPoint);
+    protected abstract void SetValue(float normalisedPoint);
 
-	protected abstract void SetValue(float normalisedPoint);
+    protected virtual void Init()
+    {
+    }
 
-    protected virtual void Init() { }
-
-	public IPromise AnimateOn()
-	{
+    public IPromise AnimateOn()
+    {
         InitCheck();
 
-        _currentState = eAnimateOnOffState.ANIMATING_ON;
+        _currentState = EAnimateOnOffState.AnimatingOn;
 
-        return CoroutineExtensions.WaitForSeconds(delay)
-        .ThenTween(
-            duration,
-            easeType,
-            f => SetValue(f)
-        )
-        .ThenDo(() => _currentState = eAnimateOnOffState.ON);
-	}
+        return CoroutineExtensions.WaitForSeconds(Delay)
+            .ThenTween(
+                Duration,
+                EaseType,
+                SetValue
+            )
+            .ThenDo(() => _currentState = EAnimateOnOffState.On);
+    }
 
-	public IPromise AnimateOff()
-	{
+    public IPromise AnimateOff()
+    {
         InitCheck();
 
-        _currentState = eAnimateOnOffState.ANIMATING_OFF;
+        _currentState = EAnimateOnOffState.AnimatingOff;
 
         return CoroutineExtensions.Tween(
-            duration,
-            Easing.Reverse(easeType),
-            f => SetValue(1f - f)
-        )
-        .ThenWaitForSeconds(delay)
-        .ThenDo(() => _currentState = eAnimateOnOffState.OFF);
+                Duration,
+                Easing.Reverse(EaseType),
+                f => SetValue(1f - f)
+            )
+            .ThenWaitForSeconds(Delay)
+            .ThenDo(() => _currentState = EAnimateOnOffState.Off);
     }
 
     public void SetOn()
@@ -88,7 +75,7 @@ public abstract class AbstractTween<T> : MonoBehaviour, IAnimateOnOff {
 
         SetValue(1f);
 
-        _currentState = eAnimateOnOffState.ON;
+        _currentState = EAnimateOnOffState.On;
     }
 
     public void SetOff()
@@ -97,23 +84,21 @@ public abstract class AbstractTween<T> : MonoBehaviour, IAnimateOnOff {
 
         SetValue(0f);
 
-        _currentState = eAnimateOnOffState.OFF;
+        _currentState = EAnimateOnOffState.Off;
     }
 
-    protected virtual void Update()
-	{
+    protected void Update()
+    {
         InitCheck();
 
-		if(Application.isEditor && !Application.isPlaying)
-			SetValue(Easing.Interpolate(testPosition, easeType));
-	}
+        if (Application.isEditor && !Application.isPlaying)
+            SetValue(Easing.Interpolate(TestPosition, EaseType));
+    }
 
     private void InitCheck()
     {
-        if (!_initComplete)
-        {
-            Init();
-            _initComplete = true;
-        }
+        if (_initComplete) return;
+        Init();
+        _initComplete = true;
     }
 }

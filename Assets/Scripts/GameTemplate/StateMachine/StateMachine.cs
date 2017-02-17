@@ -1,63 +1,56 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class StateMachine : MonoBehaviour {
+public class StateMachine : MonoBehaviour
+{
+    private AbstractState _currentState;
 
-	private AbstractState _currentState;
+    private AbstractState _nextState;
 
-	private AbstractState _nextState;
-
-	private bool _isRunning = false;
+    private bool _isRunning;
 
 
-	public string currentStateName
-	{
-		get
-		{
-			return _currentState == null ? string.Empty : _currentState.GetType().ToString();
-		}
-	}
+    public string CurrentStateName
+    {
+        get { return _currentState == null ? string.Empty : _currentState.GetType().ToString(); }
+    }
 
-	public string NextStateName
-	{
-		get
-		{
-			return _nextState == null ? string.Empty : _nextState.GetType().ToString();
-		}
-	}
-	
-	public void Run(AbstractState firstState)
-	{
-		_currentState = firstState;
-		_isRunning = true;
-		StartCoroutine(StateMachineRoutine());
-	}
+    public string NextStateName
+    {
+        get { return _nextState == null ? string.Empty : _nextState.GetType().ToString(); }
+    }
 
-	public void Stop()
-	{
-		_isRunning = false;
-	}
+    public void Run(AbstractState firstState)
+    {
+        _currentState = firstState;
+        _isRunning = true;
+        StartCoroutine(StateMachineRoutine());
+    }
 
-	IEnumerator StateMachineRoutine()
-	{
-		while(_isRunning)
-		{
-			yield return _currentState.OnEnter();
+    public void Stop()
+    {
+        _isRunning = false;
+    }
 
-			while(_nextState == null && _isRunning)
-			{
-				_nextState = _currentState.nextState;
-				yield return null;
-			}
+    private IEnumerator StateMachineRoutine()
+    {
+        while (_isRunning)
+        {
+            yield return _currentState.OnEnter();
 
-			if(!_isRunning)
-				break;
+            while (_nextState == null && _isRunning)
+            {
+                _nextState = _currentState.NextState;
+                yield return null;
+            }
 
-			yield return _currentState.OnExit();
+            if (!_isRunning)
+                break;
 
-			_currentState = _nextState;
-			_nextState = null;
-		}
-	}
+            yield return _currentState.OnExit();
+
+            _currentState = _nextState;
+            _nextState = null;
+        }
+    }
 }
