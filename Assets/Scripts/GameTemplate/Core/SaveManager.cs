@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
 [Serializable]
@@ -42,23 +41,17 @@ public class SaveManager : MonoBehaviour
             return;
         }
 
-        var binaryFormatter = new BinaryFormatter();
-        var fileStream = new FileStream(filePath, FileMode.OpenOrCreate);
-
-        SaveFile = (SaveFile) binaryFormatter.Deserialize(fileStream);
+        SaveFile = ObjectSerialiser.LoadObjectAt<SaveFile>(filePath);
     }
 
     public void Save(int fileNo = 0)
     {
-        var filePath = _directoryPath + "/saveFile" + fileNo;
-
         if (!Directory.Exists(_directoryPath))
             Directory.CreateDirectory(_directoryPath);
 
-        var binaryFormatter = new BinaryFormatter();
-        var fileStream = File.OpenWrite(filePath);
+        var filePath = _directoryPath + "/saveFile" + fileNo;
 
-        binaryFormatter.Serialize(fileStream, SaveFile);
+        ObjectSerialiser.SaveObjectAt(SaveFile, filePath);
     }
 
     public void DeleteSaveFile(int fileNo = 0)
@@ -82,9 +75,6 @@ public class SaveManager : MonoBehaviour
 
     public int GetSaveFileCount()
     {
-        if (!Directory.Exists(_directoryPath))
-            return 0;
-
-        return Directory.GetFiles(_directoryPath).Length;
+        return Directory.Exists(_directoryPath) ? Directory.GetFiles(_directoryPath).Length : 0;
     }
 }
