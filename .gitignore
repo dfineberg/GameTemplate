@@ -139,3 +139,4 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+.idea/.idea.GameTemplate/.idea
