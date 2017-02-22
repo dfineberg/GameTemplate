@@ -42,6 +42,6 @@ public class GameManager : MonoBehaviour
 
     private void RunStateMachine()
     {
-        _stateMachine.Run(new TitleScreenState());
+        // _stateMachine.Run( FIRST STATE GOES HERE );
     }
 }
