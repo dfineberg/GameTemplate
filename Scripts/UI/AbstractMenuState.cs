@@ -5,7 +5,7 @@ public abstract class AbstractMenuState : AbstractState
 {
     private readonly string _resourcePath;
 
-    private MenuScreen _screen;
+    protected MenuScreen Screen;
 
     protected AbstractMenuState(string uiScreenResourcePath)
     {
@@ -16,21 +16,26 @@ public abstract class AbstractMenuState : AbstractState
     {
         return ResourceExtensions.LoadAsync<GameObject>(
                 _resourcePath,
-                o => _screen = GameManager.Canvas.InstantiateBehindLoadingScreen(o).GetComponent<MenuScreen>()
+                HandleResourceLoaded
             )
             .Then(GameManager.LoadingScreen.AnimateOff)
-            .Then(() => _screen.Animator.AnimateOn())
-            .ThenDo(() => _screen.ButtonPressedEvent += HandleUiButtonPressed);
+            .Then(() => Screen.Animator.AnimateOn())
+            .ThenDo(() => Screen.ButtonPressedEvent += HandleUiButtonPressed);
     }
 
     public override IPromise OnExit()
     {
-        _screen.CanFireEvents = false;
-        _screen.ButtonPressedEvent -= HandleUiButtonPressed;
+        Screen.CanFireEvents = false;
+        Screen.ButtonPressedEvent -= HandleUiButtonPressed;
 
-        return _screen.Animator.AnimateOff()
+        return Screen.Animator.AnimateOff()
             .Then(() => NextState is IRequireLoadingScreen ? GameManager.LoadingScreen.AnimateOn() : Promise.Resolved())
-            .ThenDo(() => Object.Destroy(_screen.gameObject));
+            .ThenDo(() => Object.Destroy(Screen.gameObject));
+    }
+
+    protected virtual void HandleResourceLoaded(GameObject loadedObject)
+    {
+        Screen = GameManager.Canvas.InstantiateBehindLoadingScreen(loadedObject).GetComponent<MenuScreen>();
     }
 
     protected abstract void HandleUiButtonPressed(int i);
