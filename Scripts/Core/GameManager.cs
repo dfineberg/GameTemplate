@@ -13,6 +13,10 @@ public class GameManager : MonoBehaviour
 
     public static Canvas Canvas { get; private set; }
 
+    public static StringLibrary SceneDefsLibrary { get; private set; }
+
+    public static StringLibrary BlockDefsLibrary { get; private set; }
+
     private void Awake()
     {
         LoadingScreen = _loadingScreen;
@@ -36,8 +40,20 @@ public class GameManager : MonoBehaviour
         CanvasExtensions.SetLoadingScreenTransform(LoadingScreen.transform);
         Canvas = GetComponentInChildren<Canvas>();
 
+        var loadDefs = ResourceExtensions.LoadAllAsync<StringLibrary>(
+            new[] {"Data/SceneLibrary", "Data/BlockLibrary"},
+            o =>
+            {
+                SceneDefsLibrary = o[0];
+                BlockDefsLibrary = o[1];
+            }
+        );
+
         _stateMachine = gameObject.AddComponent<StateMachine>();
-        return CoroutineExtensions.WaitForSeconds(1f);
+
+        var artificialWait = Application.isEditor ? CoroutineExtensions.WaitForSeconds(1f) : Promise.Resolved();
+
+        return Promise.All(loadDefs, artificialWait);
     }
 
     private void RunStateMachine()
