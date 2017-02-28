@@ -33,6 +33,8 @@ public static class CanvasExtensions
         rt.sizeDelta = prefabRt.sizeDelta;
         rt.anchoredPosition = prefabRt.anchoredPosition;
 
+        rt.localScale = Vector3.one;
+
         return newScreenObject;
     }
 
