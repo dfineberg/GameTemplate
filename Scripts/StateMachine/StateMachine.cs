@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class StateMachine : MonoBehaviour
 {
@@ -36,7 +37,12 @@ public class StateMachine : MonoBehaviour
     {
         while (_isRunning)
         {
+            if(!(_currentState is IDontDisableEventSystem))
+                GameManager.EventSystem.enabled = false;
+
             yield return _currentState.OnEnter();
+
+            GameManager.EventSystem.enabled = true;
 
             while (_nextState == null && _isRunning)
             {
@@ -46,6 +52,9 @@ public class StateMachine : MonoBehaviour
 
             if (!_isRunning)
                 break;
+
+            if(!(_currentState is IDontDisableEventSystem))
+                GameManager.EventSystem.enabled = false;
 
             yield return _currentState.OnExit();
 
