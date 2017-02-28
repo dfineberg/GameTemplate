@@ -39,6 +39,11 @@ public class CoroutineExtensions : MonoBehaviour
         return WaitForCoroutine(WaitUntilRoutine(yieldInstruction));
     }
 
+    public static IPromise WaitForEndOfFrame()
+    {
+        return WaitForCoroutine(WaitForEndOfFrameRoutine());
+    }
+
     public static IPromise Tween(float time, Easing.Functions easing, Action<float> onUpdate)
     {
         return WaitForCoroutine(TweenRoutine(time, easing, onUpdate));
@@ -89,6 +94,11 @@ public class CoroutineExtensions : MonoBehaviour
     private static IEnumerator WaitUntilRoutine(YieldInstruction yieldInstruction)
     {
         yield return yieldInstruction;
+    }
+
+    private static IEnumerator WaitForEndOfFrameRoutine()
+    {
+        yield return new WaitForEndOfFrame();
     }
 
     private static IEnumerator TweenRoutine(float time, Easing.Functions easing, Action<float> onUpdate)

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
+using UnityEngine.UI;
 
 public static class CanvasExtensions
 {
@@ -32,6 +33,18 @@ public static class CanvasExtensions
         rt.sizeDelta = prefabRt.sizeDelta;
         rt.anchoredPosition = prefabRt.anchoredPosition;
 
+        rt.localScale = Vector3.one;
+
         return newScreenObject;
+    }
+
+    public static bool GetRaycasterEnabled(this Canvas canvas)
+    {
+        return canvas.GetComponent<GraphicRaycaster>().enabled;
+    }
+
+    public static void SetRaycasterEnabled(this Canvas canvas, bool enabled)
+    {
+        canvas.GetComponent<GraphicRaycaster>().enabled = enabled;
     }
 }

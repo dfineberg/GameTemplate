@@ -9,7 +9,8 @@ public static class SceneManagerExtensions
 
         return CoroutineExtensions.WaitUntil(SceneManager.LoadSceneAsync(sceneName, mode))
             .ThenDo(() => scene = SceneManager.GetSceneByName(sceneName))
-            .ThenWaitUntil(() => scene.isLoaded);
+            .ThenWaitUntil(() => scene.isLoaded)
+            .ThenDo(() => SceneManager.SetActiveScene(scene));
     }
 
     public static IPromise LoadSceneAsync(int sceneBuildIndex, LoadSceneMode mode = LoadSceneMode.Additive)
@@ -18,7 +19,8 @@ public static class SceneManagerExtensions
 
         return CoroutineExtensions.WaitUntil(SceneManager.LoadSceneAsync(sceneBuildIndex, mode))
             .ThenDo(() => scene = SceneManager.GetSceneByBuildIndex(sceneBuildIndex))
-            .ThenWaitUntil(() => scene.isLoaded);
+            .ThenWaitUntil(() => scene.isLoaded)
+            .ThenDo(() => SceneManager.SetActiveScene(scene));
     }
 
     public static IPromise UnloadSceneAsync(int sceneBuildIndex)

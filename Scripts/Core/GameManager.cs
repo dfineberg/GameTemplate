@@ -1,5 +1,6 @@
 ﻿using Promises;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,9 +14,17 @@ public class GameManager : MonoBehaviour
 
     public static Canvas Canvas { get; private set; }
 
+
     public static StringLibrary SceneDefsLibrary { get; private set; }
 
     public static StringLibrary BlockDefsLibrary { get; private set; }
+
+    public static EventSystem EventSystem { get; private set; }
+
+    public static TouchInput TouchInput { get; private set; }
+
+    public static Camera MainCamera { get; private set; }
+
 
     private void Awake()
     {
@@ -48,6 +57,12 @@ public class GameManager : MonoBehaviour
                 BlockDefsLibrary = o[1];
             }
         );
+
+        EventSystem = FindObjectOfType<EventSystem>();
+
+        TouchInput = gameObject.AddComponent<TouchInput>();
+
+        MainCamera = Camera.main;
 
         _stateMachine = gameObject.AddComponent<StateMachine>();
 
