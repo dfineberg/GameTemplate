@@ -7,4 +7,8 @@ public abstract class AbstractState
     public abstract IPromise OnEnter();
 
     public abstract IPromise OnExit();
+
+    public virtual void CleanUp()
+    {
+    }
 }
