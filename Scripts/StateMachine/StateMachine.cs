@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class StateMachine : MonoBehaviour
 {
@@ -61,5 +60,23 @@ public class StateMachine : MonoBehaviour
             _currentState = _nextState;
             _nextState = null;
         }
+    }
+
+    private void FixedUpdate()
+    {
+        if(_currentState is IFixedUpdate)
+            (_currentState as IFixedUpdate).FixedUpdate();
+    }
+
+    private void LateUpdate()
+    {
+        if (_currentState is ILateUpdate)
+            (_currentState as ILateUpdate).LateUpdate();
+    }
+
+    private void Update()
+    {
+        if (_currentState is IUpdate)
+            (_currentState as IUpdate).Update();
     }
 }
