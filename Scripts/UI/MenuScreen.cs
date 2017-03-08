@@ -11,9 +11,11 @@ public class MenuScreen : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDr
     public bool CanFireEvents { get; set; }
 
     public delegate void MenuScreenButtonEventHandler(int i);
+    public delegate void MenuScreenBackButtonEventHandler();
     public delegate void MenuScreenPointerEventHandler(PointerEventData eventData);
 
     public event MenuScreenButtonEventHandler ButtonPressedEvent;
+    public event MenuScreenBackButtonEventHandler BackButtonPressedEvent;
     public event MenuScreenPointerEventHandler DragEvent;
     public event MenuScreenPointerEventHandler BeginDragEvent;
     public event MenuScreenPointerEventHandler EndDragEvent;
@@ -37,6 +39,15 @@ public class MenuScreen : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDr
 
         if (ButtonPressedEvent != null)
             ButtonPressedEvent(i);
+    }
+
+    public void BackButtonPress()
+    {
+        if (!CanFireEvents)
+            return;
+
+        if (BackButtonPressedEvent != null)
+            BackButtonPressedEvent();
     }
 
     public void OnDrag(PointerEventData eventData)
