@@ -26,7 +26,7 @@ public class GenericSaveManager<T> : MonoBehaviour where T : new()
         get { return Directory.Exists(_directoryPath) ? Directory.GetFiles(_directoryPath) : new string[0]; }
     }
 
-    private void Awake()
+    protected virtual void Awake()
     {
         LoadedSaveFileNo = -1;
 
@@ -38,7 +38,7 @@ public class GenericSaveManager<T> : MonoBehaviour where T : new()
         LoadSaveFile(SaveFileCount);
     }
 
-    public void LoadSaveFile(int fileNo = 0)
+    public virtual void LoadSaveFile(int fileNo = 0)
     {
         LoadedSaveFileNo = fileNo;
         var filePath = _directoryPath + "/"+ TypeString + fileNo;
@@ -55,7 +55,7 @@ public class GenericSaveManager<T> : MonoBehaviour where T : new()
         SaveFile = ObjectSerialiser.LoadObjectAt<T>(filePath);
     }
 
-    public void Save(int fileNo = 0)
+    public virtual void Save(int fileNo = 0)
     {
         if (!Directory.Exists(_directoryPath))
             Directory.CreateDirectory(_directoryPath);
@@ -70,7 +70,7 @@ public class GenericSaveManager<T> : MonoBehaviour where T : new()
         Save(LoadedSaveFileNo);
     }
 
-    public void DeleteSaveFile(int fileNo = 0)
+    public virtual void DeleteSaveFile(int fileNo = 0)
     {
         var filePath = _directoryPath + "/" + TypeString + fileNo;
 
@@ -88,7 +88,7 @@ public class GenericSaveManager<T> : MonoBehaviour where T : new()
             File.Move(files[i], _directoryPath + "/" + TypeString + i);
     }
 
-    public void DeleteAllSaveFiles()
+    public virtual void DeleteAllSaveFiles()
     {
         if (!Directory.Exists(_directoryPath))
             return;
