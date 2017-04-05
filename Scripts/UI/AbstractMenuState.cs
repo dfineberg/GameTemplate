@@ -16,10 +16,8 @@ public abstract class AbstractMenuState : AbstractState
     {
         GameManager.EventSystem.enabled = false;
 
-        return ResourceExtensions.LoadAsync<GameObject>(
-                _resourcePath,
-                HandleResourceLoaded
-            )
+        return ResourceExtensions.LoadAsync(_resourcePath)
+            .ThenDo<GameObject>(HandleResourceLoaded)
             .Then(GameManager.LoadingScreen.AnimateOff)
             .Then(() => Screen.Animator.AnimateOn())
             .ThenDo(() =>

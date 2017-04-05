@@ -1,39 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Promises;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 public static class ResourceExtensions
 {
-    public static IPromise LoadAsync<T>(string path, Action<T> loadHandler) where T : Object
+    public static IPromise LoadAsync(string path)
     {
-        var resourceRequest = Resources.LoadAsync<T>(path);
+        var resourceRequest = Resources.LoadAsync(path);
 
         return CoroutineExtensions.WaitUntil(resourceRequest)
             .ThenLog("Loaded resource at: " + path)
-            .ThenDo(() => loadHandler(resourceRequest.asset as T));
+            .ThenSetPromised(() => resourceRequest.asset);
     }
 
-    public static IPromise LoadAsync(string path, Action<Object> loadHandler)
-    {
-        return LoadAsync<Object>(path, loadHandler);
-    }
-
-    public static IPromise LoadAllAsync<T>(IEnumerable<string> paths, Action<T[]> loadHandler) where T : Object
+    public static IPromise LoadAllAsync(IEnumerable<string> paths)
     {
         var pathsArray = paths as string[] ?? paths.ToArray();
-        var loadedObjects = new T[pathsArray.Length];
+        var loadedObjects = new Object[pathsArray.Length];
 
-        var promises = pathsArray.SelectEach((path, i) => LoadAsync<T>(path, o => loadedObjects[i] = o));
+        var promises = pathsArray.SelectEach((path, i) => LoadAsync(path).ThenDo<Object>(t => loadedObjects[i] = t));
 
         return Promise.All(promises)
-            .ThenDo(() => loadHandler(loadedObjects));
+            .ThenSetPromised(() => loadedObjects);
     }
 
-    public static IPromise LoadAllAsync(IEnumerable<string> paths, Action<Object[]> loadHandler)
+    public static IPromise LoadAllAsync(params string[] paths)
     {
-        return LoadAllAsync<Object>(paths, loadHandler);
+        return LoadAllAsync(paths as IEnumerable<string>);
     }
 }

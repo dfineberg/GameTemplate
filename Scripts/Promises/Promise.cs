@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Object = System.Object;
 
 namespace Promises
 {
@@ -19,13 +20,21 @@ namespace Promises
 
         Exception RejectedException { get; }
 
+        object PromisedObject { get; }
+
         IPromise Then(Func<IPromise> callback);
 
+        IPromise Then<T>(Func<T, IPromise> callback);
+
         IPromise ThenDo(Action callback);
+
+        IPromise ThenDo<T>(Action<T> callback);
 
         IPromise ThenAll(Func<IEnumerable<IPromise>> promises);
 
         IPromise ThenAll(params Func<IPromise>[] promises);
+
+        IPromise ThenSetPromised(Func<object> getPromisedDelegate);
 
         IPromise ThenWaitForSeconds(float time);
 
@@ -52,7 +61,7 @@ namespace Promises
         public EPromiseState CurrentState { get; private set; }
 
         public Exception RejectedException { get; private set; }
-
+        public object PromisedObject { get; private set; }
 
         private readonly List<Action> _resolveCallbacks;
         private readonly List<Action<Exception>> _rejectCallbacks;
@@ -71,7 +80,25 @@ namespace Promises
             Action resolution = () =>
             {
                 callback()
-                    .ThenDo(p.Resolve);
+                    .ThenDo<object>(o => p.Resolve(o));
+            };
+
+            if (CurrentState == EPromiseState.Resolved)
+                resolution();
+            else
+                _resolveCallbacks.Add(resolution);
+
+            return p;
+        }
+
+        public IPromise Then<T>(Func<T, IPromise> callback)
+        {
+            var p = new Promise();
+
+            Action resolution = () =>
+            {
+                callback((T)PromisedObject)
+                    .ThenDo<object>(o => p.Resolve(o));
             };
 
             if (CurrentState == EPromiseState.Resolved)
@@ -92,6 +119,16 @@ namespace Promises
             return this;
         }
 
+        public IPromise ThenDo<T>(Action<T> callback)
+        {
+            if (CurrentState == EPromiseState.Resolved)
+                callback((T)PromisedObject);
+            else
+                _resolveCallbacks.Add(() => callback((T)PromisedObject));
+
+            return this;
+        }
+
         public IPromise ThenAll(Func<IEnumerable<IPromise>> promises)
         {
             var p = new Promise();
@@ -99,7 +136,7 @@ namespace Promises
             Action resolution = () =>
             {
                 All(promises())
-                    .ThenDo(p.Resolve);
+                    .ThenDo(() => p.Resolve());
             };
 
             if (CurrentState == EPromiseState.Resolved)
@@ -115,6 +152,16 @@ namespace Promises
             return ThenAll(() => promises.SelectEach(p => p()));
         }
 
+        public IPromise ThenSetPromised(Func<object> getPromisedDelegate)
+        {
+            if (CurrentState == EPromiseState.Resolved)
+                PromisedObject = getPromisedDelegate();
+            else
+                _resolveCallbacks.Add(() => PromisedObject = getPromisedDelegate());
+
+            return this;
+        }
+
         public IPromise ThenWaitForSeconds(float time)
         {
             var p = new Promise();
@@ -122,7 +169,7 @@ namespace Promises
             Action resolution = () =>
             {
                 CoroutineExtensions.WaitForSeconds(time)
-                    .ThenDo(p.Resolve);
+                    .ThenDo(() => p.Resolve());
             };
 
             if (CurrentState == EPromiseState.Resolved)
@@ -141,7 +188,7 @@ namespace Promises
             Action resolution = () =>
             {
                 CoroutineExtensions.WaitUntil(evaluator)
-                    .ThenDo(p.Resolve);
+                    .ThenDo(() => p.Resolve());
             };
 
             if (CurrentState == EPromiseState.Resolved)
@@ -159,7 +206,7 @@ namespace Promises
             Action resolution = () =>
             {
                 CoroutineExtensions.WaitUntil(yieldInstruction)
-                    .ThenDo(p.Resolve);
+                    .ThenDo(() => p.Resolve());
             };
 
             if (CurrentState == EPromiseState.Resolved)
@@ -177,7 +224,7 @@ namespace Promises
             Action resolution = () =>
             {
                 CoroutineExtensions.Tween(time, easing, onUpdate)
-                    .ThenDo(p.Resolve);
+                    .ThenDo(() => p.Resolve());
             };
 
             if (CurrentState == EPromiseState.Resolved)
@@ -207,7 +254,7 @@ namespace Promises
                         toValue,
                         onUpdate
                     )
-                    .ThenDo(p.Resolve);
+                    .ThenDo(() => p.Resolve());
             };
 
             if (CurrentState == EPromiseState.Resolved)
@@ -271,18 +318,19 @@ namespace Promises
             return All(promises as IEnumerable<IPromise>);
         }
 
-        public static IPromise Resolved()
+        public static IPromise Resolved(Object promisedObject = null)
         {
             var p = new Promise();
-            p.Resolve();
+            p.Resolve(promisedObject);
             return p;
         }
 
-        public void Resolve()
+        public void Resolve(Object promisedObject = null)
         {
             if (CurrentState != EPromiseState.Pending)
                 return;
 
+            PromisedObject = promisedObject;
             CurrentState = EPromiseState.Resolved;
 
             foreach (var callback in _resolveCallbacks)
