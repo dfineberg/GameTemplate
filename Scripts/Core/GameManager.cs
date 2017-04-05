@@ -1,9 +1,14 @@
-﻿using Promises;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Promises;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class GameManager : MonoBehaviour
 {
+    public string GoogleMapsApiKey;
+    public Vector2 DebugLocation;
+
     private StateMachine _stateMachine;
 
     [SerializeField] private AnimateOnOffGroup _loadingScreen;
@@ -12,12 +17,16 @@ public class GameManager : MonoBehaviour
 
     public static SaveManager SaveManager { get; private set; }
 
+    public static ProgressSaveManager ProgressSaveManager { get; private set; }
+
     public static Canvas Canvas { get; private set; }
 
 
     public static StringLibrary SceneDefsLibrary { get; private set; }
 
     public static StringLibrary BlockDefsLibrary { get; private set; }
+
+    public static StringLibrary BuildingDefLibrary { get; private set; }
 
     public static EventSystem EventSystem { get; private set; }
 
@@ -37,6 +46,11 @@ public class GameManager : MonoBehaviour
             .ThenDo(RunStateMachine);
     }
 
+    private void OnDisable()
+    {
+        ProgressSaveManager.SaveCurrentFile();
+    }
+
     private IPromise InitialLoadSequence()
     {
         SaveManager = GetComponentInChildren<SaveManager>();
@@ -49,14 +63,24 @@ public class GameManager : MonoBehaviour
         CanvasExtensions.SetLoadingScreenTransform(LoadingScreen.transform);
         Canvas = GetComponentInChildren<Canvas>();
 
-        var loadDefs = ResourceExtensions.LoadAllAsync<StringLibrary>(
-            new[] {"Data/SceneLibrary", "Data/BlockLibrary"},
-            o =>
+        var loadDefs = ResourceExtensions.LoadAllAsync(
+                "Data/SceneLibrary",
+                "Data/BlockLibrary",
+                "Data/BuildingLibrary"
+            )
+            .ThenDo<Object[]>(o =>
             {
-                SceneDefsLibrary = o[0];
-                BlockDefsLibrary = o[1];
-            }
-        );
+                SceneDefsLibrary = (StringLibrary)o[0];
+                BlockDefsLibrary = (StringLibrary)o[1];
+                BuildingDefLibrary = (StringLibrary)o[2];
+
+                ProgressSaveManager = GetComponentInChildren<ProgressSaveManager>();
+
+                if (!ProgressSaveManager)
+                    ProgressSaveManager = gameObject.AddComponent<ProgressSaveManager>();
+
+                ProgressSaveManager.LoadSaveFile();
+            });
 
         EventSystem = FindObjectOfType<EventSystem>();
 
@@ -73,6 +97,6 @@ public class GameManager : MonoBehaviour
 
     private void RunStateMachine()
     {
-         _stateMachine.Run(new MainMenuState());
+        _stateMachine.Run(new MainMenuState());
     }
 }
