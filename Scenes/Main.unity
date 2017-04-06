@@ -267,6 +267,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a96d9b54a55417bb45fb585faf4797, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  GoogleMapsApiKey: 
+  DebugLocation: {x: 51.51767, y: -0.12017}
   _loadingScreen: {fileID: 971383576}
 --- !u!4 &536762312
 Transform:
