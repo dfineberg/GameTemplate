@@ -36,6 +36,8 @@ namespace Promises
 
         IPromise ThenSetPromised(Func<object> getPromisedDelegate);
 
+        IPromise ThenSetPromised<T>(Func<T, object> getPromisedDelegate);
+
         IPromise ThenWaitForSeconds(float time);
 
         IPromise ThenWaitUntil(Func<bool> evaluator);
@@ -158,6 +160,16 @@ namespace Promises
                 PromisedObject = getPromisedDelegate();
             else
                 _resolveCallbacks.Add(() => PromisedObject = getPromisedDelegate());
+
+            return this;
+        }
+
+        public IPromise ThenSetPromised<T>(Func<T, object> getPromisedDelegate)
+        {
+            if (CurrentState == EPromiseState.Resolved)
+                PromisedObject = getPromisedDelegate((T) PromisedObject);
+            else
+                _resolveCallbacks.Add(() => PromisedObject = getPromisedDelegate((T) PromisedObject));
 
             return this;
         }
