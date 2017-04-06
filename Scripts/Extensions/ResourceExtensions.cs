@@ -7,22 +7,25 @@ public static class ResourceExtensions
 {
     public static IPromise LoadAsync(string path)
     {
+        var p = new Promise();
         var resourceRequest = Resources.LoadAsync(path);
 
-        return CoroutineExtensions.WaitUntil(resourceRequest)
+        CoroutineExtensions.WaitUntil(resourceRequest)
             .ThenLog("Loaded resource at: " + path)
-            .ThenSetPromised(() => resourceRequest.asset);
+            .ThenDo(() => p.Resolve(resourceRequest.asset));
+
+        return p;
     }
 
     public static IPromise LoadAllAsync(IEnumerable<string> paths)
     {
-        var pathsArray = paths as string[] ?? paths.ToArray();
-        var loadedObjects = new Object[pathsArray.Length];
+        var p = new Promise();
+        var promises = paths.SelectEach(LoadAsync);
 
-        var promises = pathsArray.SelectEach((path, i) => LoadAsync(path).ThenDo<Object>(t => loadedObjects[i] = t));
+        Promise.All(promises)
+            .ThenDo<object>(o => p.Resolve(o));
 
-        return Promise.All(promises)
-            .ThenSetPromised(() => loadedObjects);
+        return p;
     }
 
     public static IPromise LoadAllAsync(params string[] paths)
