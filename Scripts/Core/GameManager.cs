@@ -68,7 +68,7 @@ public class GameManager : MonoBehaviour
                 "Data/BlockLibrary",
                 "Data/BuildingLibrary"
             )
-            .ThenDo<Object[]>(o =>
+            .ThenDo<object[]>(o =>
             {
                 SceneDefsLibrary = (StringLibrary)o[0];
                 BlockDefsLibrary = (StringLibrary)o[1];
