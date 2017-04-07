@@ -7,6 +7,8 @@ public abstract class AbstractMenuState : AbstractState
 
     protected MenuScreen Screen;
 
+    protected abstract AbstractMenuState BackButtonState { get; }
+
     protected AbstractMenuState(string uiScreenResourcePath)
     {
         _resourcePath = uiScreenResourcePath;
@@ -51,9 +53,12 @@ public abstract class AbstractMenuState : AbstractState
         Screen = GameManager.Canvas.InstantiateBehindLoadingScreen(loadedObject).GetComponent<MenuScreen>();
     }
 
-    protected virtual void HandleBackButtonPressed()
+    private void HandleBackButtonPressed()
     {
+        NextState = BackButtonState;
     }
 
-    protected abstract void HandleButtonPressed(int i);
+    protected virtual void HandleButtonPressed(int i)
+    {
+    }
 }
