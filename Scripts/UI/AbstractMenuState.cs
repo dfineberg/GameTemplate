@@ -1,5 +1,4 @@
-﻿using Promises;
-using UnityEngine;
+﻿using UnityEngine;
 
 public abstract class AbstractMenuState : AbstractState
 {
@@ -12,11 +11,11 @@ public abstract class AbstractMenuState : AbstractState
         _resourcePath = uiScreenResourcePath;
     }
 
-    public override IPromise OnEnter()
+    public override void OnEnter()
     {
         GameManager.EventSystem.enabled = false;
 
-        return ResourceExtensions.LoadAsync(_resourcePath)
+        ResourceExtensions.LoadAsync(_resourcePath)
             .ThenDo<GameObject>(HandleResourceLoaded)
             .Then(GameManager.LoadingScreen.AnimateOff)
             .Then(() => Screen.Animator.AnimateOn())
@@ -28,17 +27,18 @@ public abstract class AbstractMenuState : AbstractState
             });
     }
 
-    public override IPromise OnExit()
+    private void ExitRoutine(AbstractState nextState)
     {
         GameManager.EventSystem.enabled = false;
         Screen.CanFireEvents = false;
         Screen.ButtonPressedEvent -= HandleButtonPressed;
         Screen.BackButtonPressedEvent -= HandleBackButtonPressed;
 
-        return Screen.Animator.AnimateOff();
+        Screen.Animator.AnimateOff()
+            .ThenDo(() => NextState = nextState);
     }
 
-    public override void CleanUp()
+    public override void OnExit()
     {
         Object.Destroy(Screen.gameObject);
 

@@ -36,7 +36,8 @@ public class StateMachine : MonoBehaviour
     {
         while (_isRunning)
         {
-            yield return _currentState.OnEnter();
+            _currentState.SetGameObject(gameObject);
+            _currentState.OnEnter();
 
             while (_nextState == null && _isRunning)
             {
@@ -47,9 +48,7 @@ public class StateMachine : MonoBehaviour
             if (!_isRunning)
                 break;
 
-            yield return _currentState.OnExit();
-
-            _currentState.CleanUp();
+            _currentState.OnExit();
 
             _currentState = _nextState;
             _nextState = null;
