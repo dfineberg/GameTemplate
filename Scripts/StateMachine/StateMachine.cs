@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class StateMachine : MonoBehaviour
@@ -36,6 +37,7 @@ public class StateMachine : MonoBehaviour
     {
         while (_isRunning)
         {
+            _currentState.ForceNextStateEvent += HandleForceNextState;
             _currentState.SetGameObject(gameObject);
             _currentState.OnEnter();
 
@@ -48,11 +50,24 @@ public class StateMachine : MonoBehaviour
             if (!_isRunning)
                 break;
 
+            _currentState.ForceNextStateEvent -= HandleForceNextState;
             _currentState.OnExit();
 
             _currentState = _nextState;
             _nextState = null;
         }
+    }
+
+    private void HandleForceNextState(AbstractState forceState)
+    {
+        _currentState.ForceNextStateEvent -= HandleForceNextState;
+        _currentState.OnExit();
+
+        _currentState = forceState;
+
+        _currentState.SetGameObject(gameObject);
+        _currentState.ForceNextStateEvent += HandleForceNextState;
+        _currentState.OnEnter();
     }
 
     private void FixedUpdate()

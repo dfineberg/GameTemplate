@@ -3,6 +3,8 @@
 
 public abstract class AbstractState
 {
+    public event System.Action<AbstractState> ForceNextStateEvent;
+
     public AbstractState NextState { get; protected set; }
 
     protected GameObject gameObject { get; private set; }
@@ -19,5 +21,11 @@ public abstract class AbstractState
     public void SetGameObject(GameObject o)
     {
         gameObject = o;
+    }
+
+    protected void ForceNextState(AbstractState state)
+    {
+        if (ForceNextStateEvent != null)
+            ForceNextStateEvent(state);
     }
 }
