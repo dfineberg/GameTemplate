@@ -265,7 +265,10 @@ namespace Promises
 
         public IPromise ThenLog(string message)
         {
-            _resolveCallbacks.Add(() => Debug.Log(message));
+            if (CurrentState == EPromiseState.Resolved)
+                Debug.Log(message);
+            else
+                _resolveCallbacks.Add(() => Debug.Log(message));
 
             return this;
         }
@@ -283,6 +286,9 @@ namespace Promises
 
             var promisesArray = promises as IPromise[] ?? promises.ToArray();
             var promisedObjects = new object[promisesArray.Length];
+
+            if (promisesArray.Length == 0)
+                return Resolved();
 
             foreach (var promise in promisesArray)
             {
