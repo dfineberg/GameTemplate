@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Promises;
+using UnityEngine;
 
 public abstract class AbstractMenuState : AbstractState
 {
@@ -14,8 +15,12 @@ public abstract class AbstractMenuState : AbstractState
     public override void OnEnter()
     {
         GameManager.EventSystem.enabled = false;
+        EnterRoutine();
+    }
 
-        ResourceExtensions.LoadAsync(_resourcePath)
+    protected virtual IPromise EnterRoutine()
+    {
+        return ResourceExtensions.LoadAsync(_resourcePath)
             .ThenDo<GameObject>(HandleResourceLoaded)
             .Then(GameManager.LoadingScreen.AnimateOff)
             .Then(() => Screen.Animator.AnimateOn())
