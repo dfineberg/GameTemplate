@@ -55,6 +55,6 @@ public class GameManager : MonoBehaviour
 
     private void RunStateMachine()
     {
-        // _stateMachine.Run( FIRST STATE GOES HERE );
+        _stateMachine.Run(new MainMenuState(true));
     }
 }
