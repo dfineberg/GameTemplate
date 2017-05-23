@@ -55,6 +55,6 @@ public class GameManager : MonoBehaviour
 
     private void RunStateMachine()
     {
-        _stateMachine.Run(new MainMenuState(true));
+        _stateMachine.Run(new CharacterSelectState());
     }
 }

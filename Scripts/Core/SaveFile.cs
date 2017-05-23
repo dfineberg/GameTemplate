@@ -3,8 +3,6 @@
 [Serializable]
 public struct SaveFile
 {
-    public bool TestBool;
-    public int TestInt;
-    public string TestString;
-
+    public int CharacterType; // 0: boy, 1: girl
+    public string Name;
 }
