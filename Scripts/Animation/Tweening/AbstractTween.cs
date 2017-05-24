@@ -13,7 +13,9 @@ public abstract class AbstractTween<T> : MonoBehaviour, IAnimateOnOff
     public float Delay;
 
     public Easing.Functions EaseType;
-
+    
+    [SerializeField] private bool _ignoreAnimationGroup;
+    
     private bool _initComplete;
 
     private EAnimateOnOffState _currentState = EAnimateOnOffState.Off;
@@ -26,6 +28,14 @@ public abstract class AbstractTween<T> : MonoBehaviour, IAnimateOnOff
     public float OffDuration
     {
         get { return Duration + Delay; }
+    }
+
+    public AnimateOnOffGroup Group { get; set; }
+
+    public bool IgnoreAnimationGroup
+    {
+        get { return _ignoreAnimationGroup; }
+        set { _ignoreAnimationGroup = value; }
     }
 
     public EAnimateOnOffState CurrentState
