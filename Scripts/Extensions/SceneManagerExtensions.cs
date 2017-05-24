@@ -37,4 +37,10 @@ public static class SceneManagerExtensions
     {
         return CoroutineExtensions.WaitUntil(SceneManager.UnloadSceneAsync(scene));
     }
+
+    public static IPromise UnloadSceneAsync()
+    {
+        var loadedScene = SceneManager.GetActiveScene().name;
+        return UnloadSceneAsync(loadedScene);
+    }
 }

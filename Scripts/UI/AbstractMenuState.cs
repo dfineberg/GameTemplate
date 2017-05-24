@@ -35,7 +35,7 @@ public abstract class AbstractMenuState : AbstractState
     }
 
     // call this when you want to move to a new state
-    protected virtual void ExitRoutine(AbstractState nextState)
+    protected virtual IPromise ExitRoutine(AbstractState nextState, bool showLoadingScreen = false)
     {
         // unregisters callbacks and disables the EventSystem
         GameManager.EventSystem.enabled = false;
@@ -43,7 +43,8 @@ public abstract class AbstractMenuState : AbstractState
         Screen.ButtonPressedEvent -= HandleButtonPressed;
         Screen.BackButtonPressedEvent -= HandleBackButtonPressed;
 
-        Screen.Animator.AnimateOff() // animate the current screen off
+        return Screen.Animator.AnimateOff() // animate the current screen off
+            .Then(() => showLoadingScreen ? GameManager.LoadingScreen.AnimateOn() : Promise.Resolved())
             .ThenDo(() => NextState = nextState); // then go to the next state
     }
 

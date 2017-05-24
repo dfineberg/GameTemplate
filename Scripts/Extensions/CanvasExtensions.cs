@@ -17,7 +17,7 @@ public static class CanvasExtensions
         var newScreenObject = Object.Instantiate(prefab, canvas.transform);
 
         if (_loadingScreenTransform)
-            newScreenObject.transform.SetSiblingIndex(Mathf.Max(_loadingScreenTransform.GetSiblingIndex() - 1, 0));
+            newScreenObject.transform.SetSiblingIndex(_loadingScreenTransform.GetSiblingIndex());
         else
             Debug.LogError("No loading screen set in CanvasExtensions!");
 
