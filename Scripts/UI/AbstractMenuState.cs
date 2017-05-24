@@ -34,7 +34,8 @@ public abstract class AbstractMenuState : AbstractState
             });
     }
 
-    protected virtual void ExitRoutine(AbstractState nextState) // call this when you want to move to a new state
+    // call this when you want to move to a new state
+    protected virtual void ExitRoutine(AbstractState nextState)
     {
         // unregisters callbacks and disables the EventSystem
         GameManager.EventSystem.enabled = false;
@@ -54,6 +55,7 @@ public abstract class AbstractMenuState : AbstractState
             GameManager.EventSystem.enabled = true;
     }
 
+    // override this if the screen prefab has scripts on it that need initialising
     protected virtual void HandleResourceLoaded(GameObject loadedObject)
     {
         Screen = GameManager.Canvas.InstantiateBehindLoadingScreen(loadedObject).GetComponent<MenuScreen>();

@@ -10,11 +10,18 @@ public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff
     public float OffDelay;
 
     [SerializeField] private EAnimateOnOffState _awakeState = EAnimateOnOffState.Off;
+    [SerializeField] private bool _ignoreAnimationGroup;
 
     private List<IAnimateOnOff> _animations;
 
     private float _longestOn;
     private float _longestOff;
+    private bool _initialised;
+
+    public AnimateOnOffGroup()
+    {
+        _ignoreAnimationGroup = false;
+    }
 
     public float OnDuration
     {
@@ -26,25 +33,43 @@ public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff
         get { return OffDelay + _longestOff; }
     }
 
+    public AnimateOnOffGroup Group { get; set; }
+
+    public bool IgnoreAnimationGroup
+    {
+        get { return _ignoreAnimationGroup; }
+        set { _ignoreAnimationGroup = value; }
+    }
+
     public EAnimateOnOffState CurrentState { get; private set; }
 
     private void Awake()
     {
+        Init();
+    }
+    
+    public void Init()
+    {
+        if (_initialised) // do nothing if initialisation has already happened - prevents infinite recursion
+            return;
+
+        _initialised = true;
         CurrentState = EAnimateOnOffState.Off;
 
+        var subGroups = GetComponentsInChildren<AnimateOnOffGroup>();
+
+        // make sure any child groups are initialised before this one - doesn't matter if they're already initialised at this point
+        foreach (var group in subGroups)
+            group.Init();
+        
         _animations = new List<IAnimateOnOff>();
 
         foreach (var a in GetComponentsInChildren<IAnimateOnOff>())
-        {
-            if (ReferenceEquals(a, this))
+        {            
+            if (ReferenceEquals(a, this) || a.IgnoreAnimationGroup || a.Group != null)
                 continue;
 
-            if (a is AnimateOnOffGroup)
-            {
-                Debug.LogException(new Exception("Can't have an AnimateOnOffGroup in an AnimateOnOffGroup: " +
-                                                 gameObject.name));
-                break;
-            }
+            a.Group = this;
 
             _longestOn = Mathf.Max(_longestOn, a.OnDuration);
             _longestOff = Mathf.Max(_longestOff, a.OffDuration);
@@ -98,7 +123,11 @@ public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff
 
         return CoroutineExtensions.WaitForSeconds(OffDelay)
             .ThenAll(() => GetAnimateOffPromises())
-            .ThenDo(() => CurrentState = EAnimateOnOffState.Off);
+            .ThenDo(() =>
+            {
+                gameObject.SetActive(false);
+                CurrentState = EAnimateOnOffState.Off;
+            });
     }
 
     public void SetOn()
@@ -113,6 +142,7 @@ public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff
     public void SetOff()
     {
         CurrentState = EAnimateOnOffState.Off;
+        gameObject.SetActive(false);
 
         foreach (var a in _animations)
             a.SetOff();

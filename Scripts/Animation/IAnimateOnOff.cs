@@ -20,6 +20,10 @@ public interface IAnimateOnOff
 
     float OnDuration { get; }
     float OffDuration { get; }
+    
+    AnimateOnOffGroup Group { get; set; }
+    
+    bool IgnoreAnimationGroup { get; }
 
     EAnimateOnOffState CurrentState { get; }
 }
