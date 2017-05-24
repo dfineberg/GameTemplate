@@ -38,21 +38,22 @@ public class GenericSaveManager<T> : MonoBehaviour where T : new()
         LoadSaveFile(SaveFileCount);
     }
 
-    public virtual void LoadSaveFile(int fileNo = 0)
+    public virtual T LoadSaveFile(int fileNo = 0)
     {
         LoadedSaveFileNo = fileNo;
         var filePath = _directoryPath + "/"+ TypeString + fileNo;
 
         if (UseDebugSaveFile)
-            return;
+            return default(T);
 
         if (!File.Exists(filePath))
         {
             SaveFile = new T();
-            return;
+            return default(T);
         }
 
         SaveFile = ObjectSerialiser.LoadObjectAt<T>(filePath);
+        return SaveFile;
     }
 
     public virtual void Save(int fileNo = 0)
@@ -60,7 +61,7 @@ public class GenericSaveManager<T> : MonoBehaviour where T : new()
         if (!Directory.Exists(_directoryPath))
             Directory.CreateDirectory(_directoryPath);
 
-        var filePath = _directoryPath + "/" + TypeString + fileNo;
+        var filePath = _directoryPath + "/" + TypeString + LoadedSaveFileNo;
 
         ObjectSerialiser.SaveObjectAt(SaveFile, filePath);
     }
@@ -72,7 +73,7 @@ public class GenericSaveManager<T> : MonoBehaviour where T : new()
 
     public virtual void DeleteSaveFile(int fileNo = 0)
     {
-        var filePath = _directoryPath + "/" + TypeString + fileNo;
+        var filePath = _directoryPath + "/" + TypeString + LoadedSaveFileNo;
 
         if (!File.Exists(filePath))
             return;
@@ -84,7 +85,7 @@ public class GenericSaveManager<T> : MonoBehaviour where T : new()
 
         if (fileNo == files.Length) return;
 
-        for(var i = fileNo; i <= files.Length; i++)
+        for(var i = fileNo; i < files.Length; i++)
             File.Move(files[i], _directoryPath + "/" + TypeString + i);
     }
 
