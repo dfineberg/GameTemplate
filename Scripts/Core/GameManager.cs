@@ -1,4 +1,5 @@
-﻿using Promises;
+﻿using System.Linq;
+using Promises;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -19,6 +20,8 @@ public class GameManager : MonoBehaviour
     public static TouchInput TouchInput { get; private set; }
 
     public static Camera MainCamera { get; private set; }
+    
+    public static PlanetDefinition[] PlanetDefinitions { get; private set; }
 
     private void Awake()
     {
@@ -50,7 +53,9 @@ public class GameManager : MonoBehaviour
         MainCamera = Camera.main;
 
         _stateMachine = gameObject.AddComponent<StateMachine>();
-        return CoroutineExtensions.WaitForSeconds(1f);
+        
+        return PlanetDefinition.LoadAllDefinitions()
+            .ThenDo<object[]>(defs => PlanetDefinitions = defs.Cast<PlanetDefinition>().ToArray());
     }
 
     private void RunStateMachine()
