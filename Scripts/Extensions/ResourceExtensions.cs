@@ -32,4 +32,10 @@ public static class ResourceExtensions
     {
         return LoadAllAsync(paths as IEnumerable<string>);
     }
+
+    public static IPromise LoadAllAsync(string prefix, params string[] paths)
+    {
+        var prefixedPaths = paths.SelectEach(p => string.Concat(prefix, p));
+        return LoadAllAsync(prefixedPaths);
+    }
 }

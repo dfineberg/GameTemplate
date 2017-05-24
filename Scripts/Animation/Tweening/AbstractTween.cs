@@ -4,7 +4,7 @@ using UnityEngine;
 [ExecuteInEditMode]
 public abstract class AbstractTween<T> : MonoBehaviour, IAnimateOnOff
 {
-    [Range(0f, 1f)] public float TestPosition;
+    [Range(0f, 1f)] public float TestPosition = 1f;
 
     public T FromValue;
     public T ToValue;
