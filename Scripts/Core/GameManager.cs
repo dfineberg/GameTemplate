@@ -22,6 +22,8 @@ public class GameManager : MonoBehaviour
     public static Camera MainCamera { get; private set; }
     
     public static PlanetDefinition[] PlanetDefinitions { get; private set; }
+    
+    public static ClothingDefinition ClothingLibrary { get; private set; }
 
     private void Awake()
     {
@@ -55,7 +57,9 @@ public class GameManager : MonoBehaviour
         _stateMachine = gameObject.AddComponent<StateMachine>();
         
         return PlanetDefinition.LoadAllDefinitions()
-            .ThenDo<object[]>(defs => PlanetDefinitions = defs.Cast<PlanetDefinition>().ToArray());
+            .ThenDo<object[]>(defs => PlanetDefinitions = defs.Cast<PlanetDefinition>().ToArray())
+            .Then(() => ResourceExtensions.LoadAsync("Definitions/ClothingLibrary"))
+            .ThenDo<ClothingDefinition>(lib => ClothingLibrary = lib);
     }
 
     private void RunStateMachine()
