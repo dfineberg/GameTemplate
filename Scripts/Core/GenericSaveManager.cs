@@ -33,7 +33,7 @@ public class GenericSaveManager<T> : MonoBehaviour where T : new()
         _directoryPath = Application.persistentDataPath + "/" + TypeString;
     }
 
-    public void CreateNewSaveFile()
+    public virtual void CreateNewSaveFile()
     {
         LoadSaveFile(SaveFileCount);
     }
