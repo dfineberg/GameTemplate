@@ -6,22 +6,26 @@ namespace System.Linq
     {
         public static IEnumerable<T> Each<T>(this IEnumerable<T> enumerable, Action<T, int> action)
         {
-            var i = 0;
-
             var each = enumerable as T[] ?? enumerable.ToArray();
 
-            foreach (var e in each)
+            for (var i = 0; i < each.Length; i++)
             {
-                action(e, i);
-                i++;
+                action(each[i], i);
             }
-
+            
             return each;
         }
 
         public static IEnumerable<T> Each<T>(this IEnumerable<T> enumerable, Action<T> action)
         {
-            return enumerable.Each((t, i) => action(t));
+            var each = enumerable as T[] ?? enumerable.ToArray();
+            
+            foreach (var e in each)
+            {
+                action(e);
+            }
+
+            return each;
         }
 
         public static IEnumerable<TU> SelectEach<T, TU>(this IEnumerable<T> enumerable, Func<T, int, TU> func)

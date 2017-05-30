@@ -17,8 +17,6 @@ public class GameManager : MonoBehaviour
 
     public static EventSystem EventSystem { get; private set; }
 
-    public static TouchInput TouchInput { get; private set; }
-
     public static Camera MainCamera { get; private set; }
     
     public static PlanetDefinition[] PlanetDefinitions { get; private set; }
@@ -49,8 +47,6 @@ public class GameManager : MonoBehaviour
         Canvas = GetComponentInChildren<Canvas>();
 
         EventSystem = FindObjectOfType<EventSystem>();
-
-        TouchInput = gameObject.AddComponent<TouchInput>();
 
         MainCamera = Camera.main;
 
