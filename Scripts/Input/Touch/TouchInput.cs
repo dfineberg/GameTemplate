@@ -20,10 +20,10 @@ public class TouchInput : MonoBehaviour
 
     private IDragInputHandler _dragHandler;
 
-    private const float ClickTime = 0.1f;
+    private const float ClickTime = 0.3f;
 
     private void Update()
-    {        
+    {
         if (Input.GetMouseButtonDown(0))
         {
             _lastMouseDownTime = Time.time;
