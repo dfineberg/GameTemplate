@@ -52,6 +52,7 @@ public class StateMachine : MonoBehaviour
 
             _currentState.ForceNextStateEvent -= HandleForceNextState;
             _currentState.OnExit();
+            _currentState.Recycle();
 
             _currentState = _nextState;
             _nextState = null;
