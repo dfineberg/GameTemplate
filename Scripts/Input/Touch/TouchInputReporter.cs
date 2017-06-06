@@ -23,9 +23,18 @@ public class TouchInputReporter : MonoBehaviour, ITouchInputHandler
     public UnityTouchUpdateEvent OnTouchUpdateUnityEvent;
     public UnityTouchEvent OnTouchUpUnityEvent;
     public UnityTouchEvent OnTouchTapUnityEvent;
+    
+    // ReSharper disable once Unity.RedundantEventFunction
+    private void Start()
+    {
+        // allows component to be enabled/disabled in the inspector
+    }
 
     public void HandleTouchDown(Vector2 touchPosition)
     {
+        if (!enabled)
+            return;
+        
         if (OnTouchDown != null)
             OnTouchDown(touchPosition);
         
@@ -34,6 +43,9 @@ public class TouchInputReporter : MonoBehaviour, ITouchInputHandler
 
     public void HandleTouchUpdate(Vector2 touchPosition, Vector2 touchPositionDelta)
     {
+        if (!enabled)
+            return;
+        
         if (OnTouchUpdate != null)
             OnTouchUpdate(touchPosition, touchPositionDelta);
         
@@ -42,6 +54,9 @@ public class TouchInputReporter : MonoBehaviour, ITouchInputHandler
 
     public void HandleTouchUp(Vector2 touchPosition)
     {
+        if (!enabled)
+            return;
+        
         if (OnTouchUp != null)
             OnTouchUp(touchPosition);
         
@@ -50,6 +65,9 @@ public class TouchInputReporter : MonoBehaviour, ITouchInputHandler
 
     public void HandleTouchTap(Vector2 touchPosition)
     {
+        if (!enabled)
+            return;
+        
         if (OnTouchTap != null)
             OnTouchTap(touchPosition);
         
