@@ -41,5 +41,21 @@ namespace System.Linq
         {
             return enumerable.SelectEach((t, i) => func(t));
         }
+
+        public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> enumerable)
+        {
+            var list = enumerable.ToList();
+
+            var returnList = new List<T>();
+
+            while (list.Count > 0)
+            {
+                var element = list[UnityEngine.Random.Range(0, list.Count)];
+                list.Remove(element);
+                returnList.Add(element);
+            }
+
+            return returnList;
+        }
     }
 }

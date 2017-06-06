@@ -23,6 +23,11 @@ public abstract class AbstractState
         gameObject = o;
     }
 
+    public virtual void Recycle()
+    {
+        NextState = null;
+    }
+
     protected void ForceNextState(AbstractState state)
     {
         if (ForceNextStateEvent != null)
