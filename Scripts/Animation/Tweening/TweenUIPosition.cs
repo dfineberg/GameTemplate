@@ -9,13 +9,8 @@ public class TweenUIPosition : AbstractTween<Vector2>
         _rt = transform as RectTransform;
     }
 
-    public virtual Vector2 GetValue(float normalisedPoint)
-    {
-        return Vector2.Lerp(FromValue, ToValue, normalisedPoint);
-    }
-
     protected override void SetValue(float normalisedPoint)
     {
-        _rt.anchoredPosition = GetValue(normalisedPoint);
+        _rt.anchoredPosition = Vector2.LerpUnclamped(FromValue, ToValue, Easing.Interpolate(normalisedPoint, EaseType));
     }
 }
