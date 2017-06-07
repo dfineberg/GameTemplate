@@ -97,6 +97,11 @@ public abstract class AbstractTween<T> : MonoBehaviour, IAnimateOnOff
         _currentState = EAnimateOnOffState.Off;
     }
 
+    private void Awake()
+    {
+        SetOff();
+    }
+
     protected void Update()
     {
         InitCheck();
