@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using UnityEngine;
 
 [Serializable]
@@ -13,6 +16,13 @@ public struct SaveFile
     // planets progress
     public int[] PlanetProgress;
     
+    // puzzle progress
+    public int CurrentPuzzle;
+    public bool[][] PuzzleProgress;
+    public string LastDate;
+    public bool MorningPuzzleComplete;
+    public bool EveningPuzzleComplete;
+    
     // unlocks
     public bool[] HelmetUnlocks;
     public bool[] SuitUnlocks;
@@ -21,20 +31,46 @@ public struct SaveFile
     {
         if (PlanetProgress == null)
             PlanetProgress = new int[GameManager.PlanetDefinitions.Length];
-        else if(PlanetProgress.Length < GameManager.PlanetDefinitions.Length)
+        else if (PlanetProgress.Length < GameManager.PlanetDefinitions.Length)
             Array.Resize(ref PlanetProgress, GameManager.PlanetDefinitions.Length);
 
-        if(HelmetUnlocks == null)
+        if (HelmetUnlocks == null)
             HelmetUnlocks = new bool[GameManager.ClothingLibrary.Helmets.Length];
-        else if(HelmetUnlocks.Length < GameManager.ClothingLibrary.Helmets.Length)
+        else if (HelmetUnlocks.Length < GameManager.ClothingLibrary.Helmets.Length)
             Array.Resize(ref HelmetUnlocks, GameManager.ClothingLibrary.Helmets.Length);
-        
-        if(SuitUnlocks == null)
+
+        if (SuitUnlocks == null)
             SuitUnlocks = new bool[GameManager.ClothingLibrary.Suits.Length];
-        else if(SuitUnlocks.Length < GameManager.ClothingLibrary.Suits.Length)
+        else if (SuitUnlocks.Length < GameManager.ClothingLibrary.Suits.Length)
             Array.Resize(ref SuitUnlocks, GameManager.ClothingLibrary.Suits.Length);
 
         SuitUnlocks[0] = true;
+
+        if (PuzzleProgress == null)
+        {
+            PuzzleProgress = new bool[GameManager.PuzzleLibrary.Strings.Length][];
+
+            for (var i = 0; i < PuzzleProgress.Length; i++)
+                PuzzleProgress[i] = new bool[12];
+        }
+        else if (PuzzleProgress.Length < GameManager.PuzzleLibrary.Strings.Length)
+        {
+            var oldLength = PuzzleProgress.Length;
+
+            Array.Resize(ref PuzzleProgress, GameManager.PuzzleLibrary.Strings.Length);
+
+            for (var i = oldLength; i < PuzzleProgress.Length; i++)
+                PuzzleProgress[i] = new bool[12];
+        }
+        
+        var todayString = DateTime.Today.ToString(CultureInfo.InvariantCulture);
+
+        if (todayString != LastDate)
+        {
+            LastDate = todayString;
+            MorningPuzzleComplete = false;
+            EveningPuzzleComplete = false;
+        }
     }
 
     public void PlanetVisited(int planetNo)
@@ -131,5 +167,57 @@ public struct SaveFile
             unlocks[i] = IsPlanetUnlocked(i);
 
         return unlocks;
+    }
+
+    public bool[] GetCurrentPuzzleUnlocks()
+    {
+        CheckArrays();
+        
+        return PuzzleProgress[CurrentPuzzle];
+    }
+
+    public List<int> GetCurrentLockedPuzzlePieces()
+    {
+        CheckArrays();
+        
+        var pieces = new List<int>();
+
+        for (var i = 0; i < PuzzleProgress[CurrentPuzzle].Length; i++)
+            if (!PuzzleProgress[CurrentPuzzle][i])
+                pieces.Add(i);
+
+        return pieces;
+    }
+
+    public void UnlockCurrentPuzzlePiece(int pieceNo)
+    {
+        CheckArrays();
+        
+        PuzzleProgress[CurrentPuzzle][pieceNo] = true;
+    }
+
+    public bool GetPuzzleComplete(int puzzleNo)
+    {
+        CheckArrays();
+        
+        return PuzzleProgress[puzzleNo].All(b => b);
+    }
+
+    public bool GetAllPuzzlesComplete()
+    {
+        CheckArrays();
+
+        for (var i = 0; i < PuzzleProgress.Length; i++)
+            if (!GetPuzzleComplete(i))
+                return false;
+
+        return true;
+    }
+
+    public void IncrementPuzzle()
+    {
+        CheckArrays();
+
+        CurrentPuzzle = Mathf.Min(CurrentPuzzle + 1, GameManager.PuzzleLibrary.Strings.Length - 1);
     }
 }

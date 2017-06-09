@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Promises;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -22,6 +23,8 @@ public class GameManager : MonoBehaviour
     public static PlanetDefinition[] PlanetDefinitions { get; private set; }
     
     public static ClothingDefinition ClothingLibrary { get; private set; }
+    
+    public static StringLibrary PuzzleLibrary { get; private set; }
 
     private void Awake()
     {
@@ -31,6 +34,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         InitialLoadSequence()
+            .ThenDo(() => Debug.Log(PlanetDefinitions == null ? "planet defs are null" : "found planet defs"))
             .ThenDo(RunStateMachine);
     }
 
@@ -51,11 +55,17 @@ public class GameManager : MonoBehaviour
         MainCamera = Camera.main;
 
         _stateMachine = gameObject.AddComponent<StateMachine>();
+
+        var loadPlanetDefs = PlanetDefinition.LoadAllDefinitions()
+            .ThenDo<PlanetDefinition[]>(defs => PlanetDefinitions = defs);
         
-        return PlanetDefinition.LoadAllDefinitions()
-            .ThenDo<object[]>(defs => PlanetDefinitions = defs.Cast<PlanetDefinition>().ToArray())
-            .Then(() => ResourceExtensions.LoadAsync("Definitions/ClothingLibrary"))
+        var loadClothingDefs = ResourceExtensions.LoadAsync("Definitions/ClothingLibrary")
             .ThenDo<ClothingDefinition>(lib => ClothingLibrary = lib);
+
+        var loadPuzzleLib = ResourceExtensions.LoadAsync("Definitions/PuzzleLibrary")
+            .ThenDo<StringLibrary>(lib => PuzzleLibrary = lib);
+        
+        return Promise.All(loadPlanetDefs, loadClothingDefs, loadPuzzleLib);
     }
 
     private void RunStateMachine()
