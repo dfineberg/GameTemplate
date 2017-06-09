@@ -26,4 +26,12 @@ public static class TransformExtensions
     {
         transform.LerpRotation(Quaternion.Euler(from), Quaternion.Euler(to), f);
     }
+
+    public static void FillParent(this RectTransform rt)
+    {
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.one;
+
+        rt.offsetMin = rt.offsetMax = Vector2.zero;
+    }
 }
