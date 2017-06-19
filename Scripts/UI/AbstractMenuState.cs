@@ -24,7 +24,7 @@ public abstract class AbstractMenuState : AbstractState
     {
         return ResourceExtensions.LoadAsync(ResourcePath) // load the UI screen prefab from the Resources folder
             .ThenDo<GameObject>(HandleResourceLoaded) // then instantiate the prefab with HandleResourceLoaded
-            .Then(GameManager.LoadingScreen.AnimateOff) // then animate the loading screen off
+            .Then(() => GameManager.LoadingScreen.AnimateOff()) // then animate the loading screen off
             .Then(() => Screen.Animator.AnimateOn()) // then animate the UI screen on
             .ThenDo(() => // finally register callbacks for button presses on the UI screen
             {

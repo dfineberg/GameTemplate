@@ -10,9 +10,9 @@ public enum EAnimateOnOffState
 
 public interface IAnimateOnOff
 {
-    IPromise AnimateOn();
+    IPromise AnimateOn(bool unscaled = false);
 
-    IPromise AnimateOff();
+    IPromise AnimateOff(bool unscaled = false);
 
     void SetOn();
 

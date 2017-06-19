@@ -33,20 +33,20 @@ namespace Promises
 
         IPromise ThenAll(params Func<IPromise>[] promises);
 
-        IPromise ThenWaitForSeconds(float time);
+        IPromise ThenWaitForSeconds(float time, bool unscaled = false);
 
         IPromise ThenWaitUntil(Func<bool> evaluator);
 
         IPromise ThenWaitUntil(YieldInstruction yieldInstruction);
 
-        IPromise ThenTween(float time, Easing.Functions easing, Action<float> onUpdate);
+        IPromise ThenTween(float time, Easing.Functions easing, Action<float> onUpdate, bool unscaled = false);
 
-        IPromise ThenTween(float time, Action<float> onUpdate);
+        IPromise ThenTween(float time, Action<float> onUpdate, bool unscaled = false);
 
         IPromise ThenTween<TU>(float time, Easing.Functions easing, TU fromValue, TU toValue,
-            Action<TU, TU, float> onUpdate);
+            Action<TU, TU, float> onUpdate, bool unscaled = false);
 
-        IPromise ThenTween<TU>(float time, TU fromValue, TU toValue, Action<TU, TU, float> onUpdate);
+        IPromise ThenTween<TU>(float time, TU fromValue, TU toValue, Action<TU, TU, float> onUpdate, bool unscaled = false);
 
         IPromise ThenLog(string message);
 
@@ -149,13 +149,13 @@ namespace Promises
             return ThenAll(() => promises.SelectEach(p => p()));
         }
 
-        public IPromise ThenWaitForSeconds(float time)
+        public IPromise ThenWaitForSeconds(float time, bool unscaled = false)
         {
             var p = new Promise();
 
             Action resolution = () =>
             {
-                CoroutineExtensions.WaitForSeconds(time)
+                CoroutineExtensions.WaitForSeconds(time, unscaled)
                     .ThenDo(() => p.Resolve(PromisedObject));
             };
 
@@ -204,13 +204,13 @@ namespace Promises
             return p;
         }
 
-        public IPromise ThenTween(float time, Easing.Functions easing, Action<float> onUpdate)
+        public IPromise ThenTween(float time, Easing.Functions easing, Action<float> onUpdate, bool unscaled = false)
         {
             var p = new Promise();
 
             Action resolution = () =>
             {
-                CoroutineExtensions.Tween(time, easing, onUpdate)
+                CoroutineExtensions.Tween(time, easing, onUpdate, unscaled)
                     .ThenDo(() => p.Resolve(PromisedObject));
             };
 
@@ -222,13 +222,12 @@ namespace Promises
             return p;
         }
 
-        public IPromise ThenTween(float time, Action<float> onUpdate)
+        public IPromise ThenTween(float time, Action<float> onUpdate, bool unscaled = false)
         {
-            return ThenTween(time, Easing.Functions.Linear, onUpdate);
+            return ThenTween(time, Easing.Functions.Linear, onUpdate, unscaled);
         }
 
-        public IPromise ThenTween<TU>(float time, Easing.Functions easing, TU fromValue, TU toValue,
-            Action<TU, TU, float> onUpdate)
+        public IPromise ThenTween<TU>(float time, Easing.Functions easing, TU fromValue, TU toValue, Action<TU, TU, float> onUpdate, bool unscaled = false)
         {
             var p = new Promise();
 
@@ -239,7 +238,8 @@ namespace Promises
                         easing,
                         fromValue,
                         toValue,
-                        onUpdate
+                        onUpdate,
+                        unscaled
                     )
                     .ThenDo(() => p.Resolve(PromisedObject));
             };
@@ -252,14 +252,15 @@ namespace Promises
             return p;
         }
 
-        public IPromise ThenTween<TU>(float time, TU fromValue, TU toValue, Action<TU, TU, float> onUpdate)
+        public IPromise ThenTween<TU>(float time, TU fromValue, TU toValue, Action<TU, TU, float> onUpdate, bool unscaled = false)
         {
             return ThenTween(
                 time,
                 Easing.Functions.Linear,
                 fromValue,
                 toValue,
-                onUpdate
+                onUpdate,
+                unscaled
             );
         }
 
