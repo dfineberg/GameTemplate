@@ -15,7 +15,7 @@ public abstract class AbstractTween<T> : MonoBehaviour, IAnimateOnOff
     public Easing.Functions EaseType;
     
     [SerializeField] private bool _ignoreAnimationGroup;
-    
+
     private bool _initComplete;
 
     private EAnimateOnOffState _currentState = EAnimateOnOffState.Off;
@@ -49,22 +49,23 @@ public abstract class AbstractTween<T> : MonoBehaviour, IAnimateOnOff
     {
     }
 
-    public IPromise AnimateOn()
+    public IPromise AnimateOn(bool unscaled = false)
     {
         InitCheck();
 
         _currentState = EAnimateOnOffState.AnimatingOn;
 
-        return CoroutineExtensions.WaitForSeconds(Delay)
+        return CoroutineExtensions.WaitForSeconds(Delay, unscaled)
             .ThenTween(
                 Duration,
                 EaseType,
-                SetValue
+                SetValue,
+                unscaled
             )
             .ThenDo(() => _currentState = EAnimateOnOffState.On);
     }
 
-    public IPromise AnimateOff()
+    public IPromise AnimateOff(bool unscaled = false)
     {
         InitCheck();
 
@@ -73,9 +74,10 @@ public abstract class AbstractTween<T> : MonoBehaviour, IAnimateOnOff
         return CoroutineExtensions.Tween(
                 Duration,
                 Easing.Reverse(EaseType),
-                f => SetValue(1f - f)
+                f => SetValue(1f - f),
+                unscaled
             )
-            .ThenWaitForSeconds(Delay)
+            .ThenWaitForSeconds(Delay, unscaled)
             .ThenDo(() => _currentState = EAnimateOnOffState.Off);
     }
 

@@ -6,6 +6,7 @@ using UnityEngine;
 public class CoroutineExtensions : MonoBehaviour
 {
     private static CoroutineExtensions _instance;
+    private static Coroutine _lastRoutineCache;
 
     private static void Init()
     {
@@ -24,9 +25,9 @@ public class CoroutineExtensions : MonoBehaviour
         return p;
     }
 
-    public static IPromise WaitForSeconds(float time)
+    public static IPromise WaitForSeconds(float time, bool unscaled = false)
     {
-        return WaitForCoroutine(WaitForSecondsRoutine(time));
+        return WaitForCoroutine(unscaled ? WaitForSecondsRealtimeRoutine(time) : WaitForSecondsRoutine(time));
     }
 
     public static IPromise WaitUntil(Func<bool> evaluator)
@@ -44,46 +45,62 @@ public class CoroutineExtensions : MonoBehaviour
         return WaitForCoroutine(WaitForEndOfFrameRoutine());
     }
 
-    public static IPromise Tween(float time, Easing.Functions easing, Action<float> onUpdate)
+    public static IPromise Tween(float time, Easing.Functions easing, Action<float> onUpdate, bool unscaled = false)
     {
-        return WaitForCoroutine(TweenRoutine(time, easing, onUpdate));
+        return WaitForCoroutine(TweenRoutine(time, easing, onUpdate, unscaled));
     }
 
-    public static IPromise Tween(float time, Action<float> onUpdate)
+    public static IPromise Tween(float time, Action<float> onUpdate, bool unscaled = false)
     {
-        return Tween(time, Easing.Functions.Linear, onUpdate);
+        return Tween(time, Easing.Functions.Linear, onUpdate, unscaled);
     }
 
     public static IPromise Tween<T>(float time, Easing.Functions easing, T fromValue, T toValue,
-        Action<T, T, float> onUpdate)
+        Action<T, T, float> onUpdate, bool unscaled = false)
     {
         return Tween(
             time,
             easing,
-            t => onUpdate(fromValue, toValue, t)
+            t => onUpdate(fromValue, toValue, t),
+            unscaled
         );
     }
 
-    public static IPromise Tween<T>(float time, T fromValue, T toValue, Action<T, T, float> onUpdate)
+    public static IPromise Tween<T>(float time, T fromValue, T toValue, Action<T, T, float> onUpdate, bool unscaled = false)
     {
         return Tween(
             time,
             Easing.Functions.Linear,
             fromValue,
             toValue,
-            onUpdate
+            onUpdate,
+            unscaled
         );
+    }
+
+    public static void StopAll()
+    {
+        if (!_instance)
+            return;
+        
+        _instance.StopAllCoroutines();
     }
 
     private IEnumerator WaitForCoroutine(IEnumerator coroutine, Promise promise)
     {
-        yield return StartCoroutine(coroutine);
+        _lastRoutineCache = StartCoroutine(coroutine);
+        yield return _lastRoutineCache;
         promise.Resolve();
     }
 
     private static IEnumerator WaitForSecondsRoutine(float time)
     {
         yield return new WaitForSeconds(time);
+    }
+
+    private static IEnumerator WaitForSecondsRealtimeRoutine(float time)
+    {
+        yield return new WaitForSecondsRealtime(time);
     }
 
     private static IEnumerator WaitUntilRoutine(Func<bool> evaluator)
@@ -101,14 +118,15 @@ public class CoroutineExtensions : MonoBehaviour
         yield return new WaitForEndOfFrame();
     }
 
-    private static IEnumerator TweenRoutine(float time, Easing.Functions easing, Action<float> onUpdate)
+    private static IEnumerator TweenRoutine(float time, Easing.Functions easing, Action<float> onUpdate, bool unscaled = false)
     {
         var f = 0f;
 
         while (f <= time)
         {
             onUpdate(Easing.Interpolate(f / time, easing));
-            f += Time.deltaTime;
+            var deltaTime = unscaled ? Time.unscaledDeltaTime : Time.deltaTime;
+            f += deltaTime;
             yield return null;
         }
 

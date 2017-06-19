@@ -93,7 +93,7 @@ public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff
         }
     }
 
-    public IPromise AnimateOn()
+    public IPromise AnimateOn(bool unscaled = false)
     {
         if (CheckIfAnimating())
             return Promise.Resolved();
@@ -105,12 +105,12 @@ public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff
 
         gameObject.SetActive(true);
 
-        return CoroutineExtensions.WaitForSeconds(OnDelay)
-            .ThenAll(() => GetAnimateOnPromises())
+        return CoroutineExtensions.WaitForSeconds(OnDelay, unscaled)
+            .ThenAll(() => GetAnimateOnPromises(unscaled))
             .ThenDo(() => CurrentState = EAnimateOnOffState.On);
     }
 
-    public IPromise AnimateOff()
+    public IPromise AnimateOff(bool unscaled = false)
     {
         if (CheckIfAnimating())
             return Promise.Resolved();
@@ -120,8 +120,8 @@ public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff
 
         CurrentState = EAnimateOnOffState.AnimatingOff;
 
-        return CoroutineExtensions.WaitForSeconds(OffDelay)
-            .ThenAll(() => GetAnimateOffPromises())
+        return CoroutineExtensions.WaitForSeconds(OffDelay, unscaled)
+            .ThenAll(() => GetAnimateOffPromises(unscaled))
             .ThenDo(() =>
             {
                 gameObject.SetActive(false);
@@ -147,18 +147,18 @@ public class AnimateOnOffGroup : MonoBehaviour, IAnimateOnOff
             a.SetOff();
     }
 
-    private IEnumerable<IPromise> GetAnimateOnPromises()
+    private IEnumerable<IPromise> GetAnimateOnPromises(bool unscaled)
     {
         return _animations.SelectEach(
-            a => a.AnimateOn()
+            a => a.AnimateOn(unscaled)
         );
     }
 
-    private IEnumerable<IPromise> GetAnimateOffPromises()
+    private IEnumerable<IPromise> GetAnimateOffPromises(bool unscaled)
     {
         return _animations.SelectEach(
-            a => CoroutineExtensions.WaitForSeconds(_longestOff - a.OffDuration)
-                .Then(a.AnimateOff)
+            a => CoroutineExtensions.WaitForSeconds(_longestOff - a.OffDuration, unscaled)
+                .Then(() =>a.AnimateOff(unscaled))
         );
     }
 
