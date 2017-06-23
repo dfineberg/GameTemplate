@@ -39,10 +39,16 @@ public struct SaveFile
         else if (HelmetUnlocks.Length < GameManager.ClothingLibrary.Helmets.Length)
             Array.Resize(ref HelmetUnlocks, GameManager.ClothingLibrary.Helmets.Length);
 
+        for (var i = 0; i < HelmetUnlocks.Length; i++)
+            HelmetUnlocks[i] = true;
+
         if (SuitUnlocks == null)
             SuitUnlocks = new bool[GameManager.ClothingLibrary.Suits.Length];
         else if (SuitUnlocks.Length < GameManager.ClothingLibrary.Suits.Length)
             Array.Resize(ref SuitUnlocks, GameManager.ClothingLibrary.Suits.Length);
+
+        for (var i = 0; i < SuitUnlocks.Length; i++)
+            SuitUnlocks[i] = true;
 
         SuitUnlocks[0] = true;
 
