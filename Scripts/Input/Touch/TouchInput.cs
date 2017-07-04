@@ -27,6 +27,11 @@ public class TouchInput : MonoBehaviour
 
     private IDragInputHandler _dragHandler;
 
+    private static Vector2 ScreenToWorldPoint
+    {
+        get { return Camera.main.ScreenToWorldPoint(Input.mousePosition); }
+    }
+
     private const float ClickTime = 0.3f;
 
     private void Update()
@@ -137,7 +142,11 @@ public class TouchInput : MonoBehaviour
 
     public Collider2D OverlapTouchPosition2D()
     {
-        var pos = (Vector2) Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        return Physics2D.OverlapPoint(pos);
+        return Physics2D.OverlapPoint(ScreenToWorldPoint);
+    }
+
+    public Collider2D[] OverlapAllTouchPosition2D()
+    {
+        return Physics2D.OverlapPointAll(ScreenToWorldPoint);
     }
 }
