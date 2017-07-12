@@ -27,7 +27,7 @@ public struct SaveFile
     public bool[] HelmetUnlocks;
     public bool[] SuitUnlocks;
 
-    private void CheckArrays()
+    public void CheckArrays()
     {
         if (PlanetProgress == null)
             PlanetProgress = new int[GameManager.PlanetDefinitions.Length];
