@@ -36,6 +36,8 @@ public class MenuScreen : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDr
     {
         if (!CanFireEvents)
             return;
+        
+        GameManager.AudioManager.PlayButton();
 
         if (ButtonPressedEvent != null)
             ButtonPressedEvent(i);
@@ -46,6 +48,8 @@ public class MenuScreen : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDr
         if (!CanFireEvents)
             return;
 
+        GameManager.AudioManager.PlayButton();
+        
         if (BackButtonPressedEvent != null)
             BackButtonPressedEvent();
     }

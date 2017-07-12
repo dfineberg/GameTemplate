@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using Promises;
+﻿using Promises;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -25,6 +23,10 @@ public class GameManager : MonoBehaviour
     public static ClothingDefinition ClothingLibrary { get; private set; }
     
     public static StringLibrary PuzzleLibrary { get; private set; }
+    
+    public static MusicLibrary MusicLibrary { get; private set; }
+    
+    public static AudioManager AudioManager { get; private set; }
 
     private void Awake()
     {
@@ -55,6 +57,8 @@ public class GameManager : MonoBehaviour
         MainCamera = Camera.main;
 
         _stateMachine = gameObject.AddComponent<StateMachine>();
+        
+        AudioManager = gameObject.AddComponent<AudioManager>();
 
         var loadPlanetDefs = PlanetDefinition.LoadAllDefinitions()
             .ThenDo<PlanetDefinition[]>(defs => PlanetDefinitions = defs);
@@ -64,8 +68,12 @@ public class GameManager : MonoBehaviour
 
         var loadPuzzleLib = ResourceExtensions.LoadAsync("Definitions/PuzzleLibrary")
             .ThenDo<StringLibrary>(lib => PuzzleLibrary = lib);
+
+        var loadMusicLib = ResourceExtensions.LoadAsync("Definitions/MusicLibrary")
+            .ThenDo<MusicLibrary>(lib => MusicLibrary = lib)
+            .Then(() => AudioManager.LoadButton(MusicLibrary.Button));
         
-        return Promise.All(loadPlanetDefs, loadClothingDefs, loadPuzzleLib);
+        return Promise.All(loadPlanetDefs, loadClothingDefs, loadPuzzleLib, loadMusicLib);
     }
 
     private void RunStateMachine()
