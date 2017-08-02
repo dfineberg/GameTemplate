@@ -31,8 +31,11 @@ public struct SaveFile
     public bool[] HelmetUnlocks;
     public bool[] SuitUnlocks;
 
-    public int lastPuzzleCount;
-    public int lastClothingCount;
+    public int LastPuzzleCount;
+    public int LastClothingCount;
+
+    public bool PuzzleNotification;
+    public bool ClothingNotification;
 
     public void CheckArrays()
     {
