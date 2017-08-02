@@ -35,6 +35,8 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
+        
         InitialLoadSequence()
             .ThenDo(() => Debug.Log(PlanetDefinitions == null ? "planet defs are null" : "found planet defs"))
             .ThenDo(RunStateMachine);
