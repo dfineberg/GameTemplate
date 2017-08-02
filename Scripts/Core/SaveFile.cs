@@ -16,6 +16,7 @@ public struct SaveFile
     // tutorial
     public bool MainMenuTutorial;
     public bool PlanetTutorial;
+    public bool MinigameTutorial;
 
     // planets progress
     public int[] PlanetProgress;
