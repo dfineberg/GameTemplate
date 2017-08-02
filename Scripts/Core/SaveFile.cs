@@ -12,6 +12,10 @@ public struct SaveFile
     public string Name;
     public int Helmet; // -1 means default helmet
     public int Suit;
+    
+    // tutorial
+    public bool MainMenuTutorial;
+    public bool PlanetTutorial;
 
     // planets progress
     public int[] PlanetProgress;
@@ -26,6 +30,9 @@ public struct SaveFile
     // unlocks
     public bool[] HelmetUnlocks;
     public bool[] SuitUnlocks;
+
+    public int lastPuzzleCount;
+    public int lastClothingCount;
 
     public void CheckArrays()
     {
