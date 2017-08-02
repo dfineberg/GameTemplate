@@ -167,7 +167,7 @@ public struct SaveFile
         if (planetNo == 0)
             return true;
 
-        return GetPlanetProgress(planetNo - 1) >= 0.5f;
+        return GetPlanetProgress(planetNo - 1) >= 0.3f;
     }
 
     public bool[] GetPlanetUnlocks()
