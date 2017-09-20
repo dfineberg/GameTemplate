@@ -1,9 +1,11 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
+using Debug = System.Diagnostics.Debug;
 
 public class StateMachine : MonoBehaviour
 {
+    public string CurrentState;
+    
     private AbstractState _currentState;
 
     private AbstractState _nextState;
@@ -11,15 +13,9 @@ public class StateMachine : MonoBehaviour
     private bool _isRunning;
 
 
-    public string CurrentStateName
-    {
-        get { return _currentState == null ? string.Empty : _currentState.GetType().ToString(); }
-    }
+    public string CurrentStateName => _currentState?.GetType().ToString();
 
-    public string NextStateName
-    {
-        get { return _nextState == null ? string.Empty : _nextState.GetType().ToString(); }
-    }
+    public string NextStateName => _nextState?.GetType().ToString();
 
     public void Run(AbstractState firstState)
     {
@@ -37,6 +33,7 @@ public class StateMachine : MonoBehaviour
     {
         while (_isRunning)
         {
+            Debug.Assert(_currentState != null, "Please provide a state");
             _currentState.ForceNextStateEvent += HandleForceNextState;
             _currentState.SetGameObject(gameObject);
             _currentState.OnEnter();
@@ -73,19 +70,18 @@ public class StateMachine : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(_currentState is IFixedUpdate)
-            (_currentState as IFixedUpdate).FixedUpdate();
+        (_currentState as IFixedUpdate)?.FixedUpdate();
     }
 
     private void LateUpdate()
     {
-        if (_currentState is ILateUpdate)
-            (_currentState as ILateUpdate).LateUpdate();
+        (_currentState as ILateUpdate)?.LateUpdate();
     }
 
     private void Update()
     {
-        if (_currentState is IUpdate)
-            (_currentState as IUpdate).Update();
+        CurrentState = CurrentStateName;
+        
+        (_currentState as IUpdate)?.Update();
     }
 }

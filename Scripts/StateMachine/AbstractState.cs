@@ -9,10 +9,7 @@ public abstract class AbstractState
 
     protected GameObject gameObject { get; private set; }
 
-    protected Transform transform
-    {
-        get { return gameObject != null ? gameObject.transform : null; }
-    }
+    protected Transform transform => gameObject != null ? gameObject.transform : null;
 
     public abstract void OnEnter();
 
@@ -30,7 +27,8 @@ public abstract class AbstractState
 
     protected void ForceNextState(AbstractState state)
     {
-        if (ForceNextStateEvent != null)
-            ForceNextStateEvent(state);
+        NextState = state;
+
+        ForceNextStateEvent?.Invoke(state);
     }
 }
