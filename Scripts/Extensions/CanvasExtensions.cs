@@ -6,9 +6,19 @@ public static class CanvasExtensions
 {
     private static Transform _loadingScreenTransform;
 
+    private static Canvas _instance;
+
     public static void SetLoadingScreenTransform(Transform t)
     {
         _loadingScreenTransform = t;
+    }
+
+    public static Canvas GetInstance()
+    {
+        if (!_instance)
+            _instance = Object.FindObjectOfType<Canvas>();
+
+        return _instance;
     }
 
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
@@ -18,9 +28,6 @@ public static class CanvasExtensions
 
         if (_loadingScreenTransform)
             newScreenObject.transform.SetSiblingIndex(_loadingScreenTransform.GetSiblingIndex());
-        else
-            Debug.LogError("No loading screen set in CanvasExtensions!");
-
 
         var prefabRt = prefab.transform as RectTransform;
         var rt = newScreenObject.transform as RectTransform;
