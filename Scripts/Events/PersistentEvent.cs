@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Events/PersistentEvent")]
+[CreateAssetMenu(menuName = "Events/Basic Event")]
 public class PersistentEvent : ScriptableObject
 {
     private event Action Action;
