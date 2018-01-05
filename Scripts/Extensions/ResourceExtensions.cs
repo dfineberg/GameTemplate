@@ -38,4 +38,9 @@ public static class ResourceExtensions
         var prefixedPaths = paths.SelectEach(p => string.Concat(prefix, p));
         return LoadAllAsync(prefixedPaths);
     }
+
+    public static IPromise LoadAllFromStringLibrary(StringLibrary lib)
+    {
+        return LoadAllAsync(lib.StringsWithResourcesDirectory);
+    }
 }

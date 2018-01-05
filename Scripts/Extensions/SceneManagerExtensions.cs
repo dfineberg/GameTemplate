@@ -23,6 +23,15 @@ public static class SceneManagerExtensions
             .ThenDo(() => SceneManager.SetActiveScene(scene));
     }
 
+    public static IPromise LoadWithoutActivating(string sceneName, LoadSceneMode mode = LoadSceneMode.Additive)
+    {
+        var asyncOp = SceneManager.LoadSceneAsync(sceneName, mode);
+        asyncOp.allowSceneActivation = false;
+
+        return CoroutineExtensions.WaitUntil(() => asyncOp.progress >= 0.9f)
+            .Then(() => Promise.Resolved(asyncOp));
+    }
+
     public static IPromise UnloadSceneAsync(int sceneBuildIndex)
     {
         return CoroutineExtensions.WaitUntil(SceneManager.UnloadSceneAsync(sceneBuildIndex));
