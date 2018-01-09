@@ -7,7 +7,7 @@ public class BoolEventListener : MonoBehaviour
     [Serializable]
     public class UnityBoolEvent : UnityEvent<bool>{}
     
-    public BoolPersistentEvent BoolEvent;
+    public BoolEvent BoolEvent;
     public UnityBoolEvent Callback;
 
     private void OnEnable()

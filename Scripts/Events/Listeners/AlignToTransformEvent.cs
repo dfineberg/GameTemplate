@@ -2,7 +2,7 @@
 
 public class AlignToTransformEvent : MonoBehaviour
 {
-    public TransformPersistentEvent TransformEvent;
+    public TransformEvent TransformEvent;
 
     private void OnEnable()
     {

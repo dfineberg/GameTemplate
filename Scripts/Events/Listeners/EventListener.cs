@@ -2,7 +2,7 @@
 
 public abstract class EventListener : MonoBehaviour
 {
-    public PersistentEvent Event;
+    public BasicEvent Event;
     
     protected virtual void OnEnable()
     {

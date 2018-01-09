@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(BoolPersistentEvent))]
+[CustomEditor(typeof(BoolEvent))]
 public class BoolPersistentEventEditor : Editor
 {
     private bool _testValue;
@@ -12,7 +12,7 @@ public class BoolPersistentEventEditor : Editor
 
         if (GUILayout.Button("Invoke"))
         {
-            var e = (BoolPersistentEvent) target;
+            var e = (BoolEvent) target;
             e.Invoke(_testValue);
         }
     }

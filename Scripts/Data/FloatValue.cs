@@ -1,10 +1,8 @@
 ﻿using UnityEngine;
 
 [CreateAssetMenu(menuName = "Data/FloatValue")]
-public class FloatValue : ScriptableObject
+public class FloatValue : GenericValue<float>
 {
-    public float Value;
-
     public void Add(float f)
     {
         Value += f;
@@ -13,10 +11,5 @@ public class FloatValue : ScriptableObject
     public void Subtract(float f)
     {
         Value -= f;
-    }
-
-    public void Set(float f)
-    {
-        Value = f;
     }
 }

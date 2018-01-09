@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(TransformPersistentEvent))]
+[CustomEditor(typeof(TransformEvent))]
 public class TransformPersistentEventEditor : Editor
 {
     private Transform _testTransform;
@@ -12,7 +12,7 @@ public class TransformPersistentEventEditor : Editor
 
         if (GUILayout.Button("Invoke"))
         {
-            var e = (TransformPersistentEvent) target;
+            var e = (TransformEvent) target;
             e.Invoke(_testTransform);
         }
     }

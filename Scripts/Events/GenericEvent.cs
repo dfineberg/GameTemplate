@@ -1,9 +1,12 @@
 ﻿using System;
 using UnityEngine;
 
-public class GenericPersistentEvent<T> : ScriptableObject
+public class GenericEvent<T> : ScriptableObject
 {
-    public T DefaultValue;
+    // ReSharper disable once InconsistentNaming
+    [SerializeField] protected T _defaultValue;
+    public T DefaultValue => _defaultValue;
+    
     private event Action<T> Action;
 
     public void Subscribe(Action<T> a)
@@ -23,6 +26,6 @@ public class GenericPersistentEvent<T> : ScriptableObject
 
     public void InvokeWithDefault()
     {
-        Invoke(DefaultValue);
+        Invoke(_defaultValue);
     }
 }

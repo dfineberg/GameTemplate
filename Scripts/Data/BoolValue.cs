@@ -1,12 +1,7 @@
 ﻿using UnityEngine;
 
 [CreateAssetMenu(menuName = "Data/BoolValue")]
-public class BoolValue : ScriptableObject
+public class BoolValue : GenericValue<bool>
 {
-    public bool Value;
-
-    public void Set(bool b)
-    {
-        Value = b;
-    }
+    
 }

@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Events/Basic Event")]
-public class PersistentEvent : ScriptableObject
+public class BasicEvent : ScriptableObject
 {
     private event Action Action;
 
