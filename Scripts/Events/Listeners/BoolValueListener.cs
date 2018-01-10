@@ -1,18 +1,19 @@
 ﻿using UnityEngine;
 
-public class BoolEventListener : MonoBehaviour
+public class BoolValueListener : MonoBehaviour
 {
-    public BoolEvent BoolEvent;
+    public BoolValue BoolValue;
     public UnityEventBool Callback;
 
     private void OnEnable()
     {
-        BoolEvent?.Subscribe(Listener);
+        Callback.Invoke(BoolValue.Value);
+        BoolValue.Subscribe(Listener);
     }
 
     private void OnDisable()
     {
-        BoolEvent?.Unsubscribe(Listener);
+        BoolValue.Unsubscribe(Listener);
     }
 
     private void Listener(bool b)
