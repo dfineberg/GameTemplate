@@ -1,11 +1,14 @@
 ﻿using UnityEngine.Events;
 
-public class BasicEventListener : EventListener
+namespace GameTemplate
 {
-    public UnityEvent CallbackEvent;
-    
-    protected override void Callback()
+    public class BasicEventListener : EventListener
     {
-        CallbackEvent.Invoke();
+        public UnityEvent CallbackEvent;
+    
+        protected override void Callback()
+        {
+            CallbackEvent.Invoke();
+        }
     }
 }

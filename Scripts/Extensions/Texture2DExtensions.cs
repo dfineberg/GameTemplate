@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 
-public static class Texture2DExtensions
+namespace GameTemplate
 {
-    public static Sprite ToSprite(this Texture2D tex)
+    public static class Texture2DExtensions
     {
-        return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+        public static Sprite ToSprite(this Texture2D tex)
+        {
+            return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+        }
     }
 }

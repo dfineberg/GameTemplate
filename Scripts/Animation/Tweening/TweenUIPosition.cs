@@ -1,16 +1,19 @@
 ﻿using UnityEngine;
 
-public class TweenUIPosition : AbstractTween<Vector2>
+namespace GameTemplate
 {
-    private RectTransform _rt;
-
-    protected override void Init()
+    public class TweenUIPosition : AbstractTween<Vector2>
     {
-        _rt = transform as RectTransform;
-    }
+        private RectTransform _rt;
 
-    protected override void SetValue(float normalisedPoint)
-    {
-        _rt.anchoredPosition = Vector2.LerpUnclamped(FromValue, ToValue, Easing.Interpolate(normalisedPoint, EaseType));
+        protected override void Init()
+        {
+            _rt = transform as RectTransform;
+        }
+
+        protected override void SetValue(float normalisedPoint)
+        {
+            _rt.anchoredPosition = Vector2.LerpUnclamped(FromValue, ToValue, Easing.Interpolate(normalisedPoint, EaseType));
+        }
     }
 }

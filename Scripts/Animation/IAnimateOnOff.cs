@@ -1,29 +1,32 @@
-﻿using Promises;
+﻿using GameTemplate.Promises;
 
-public enum EAnimateOnOffState
+namespace GameTemplate
 {
-    On,
-    Off,
-    AnimatingOn,
-    AnimatingOff
-}
+    public enum EAnimateOnOffState
+    {
+        On,
+        Off,
+        AnimatingOn,
+        AnimatingOff
+    }
 
-public interface IAnimateOnOff
-{
-    IPromise AnimateOn(bool unscaled = false);
+    public interface IAnimateOnOff
+    {
+        IPromise AnimateOn(bool unscaled = false);
 
-    IPromise AnimateOff(bool unscaled = false);
+        IPromise AnimateOff(bool unscaled = false);
 
-    void SetOn();
+        void SetOn();
 
-    void SetOff();
+        void SetOff();
 
-    float OnDuration { get; }
-    float OffDuration { get; }
+        float OnDuration { get; }
+        float OffDuration { get; }
     
-    AnimateOnOffGroup Group { get; set; }
+        AnimateOnOffGroup Group { get; set; }
     
-    bool IgnoreAnimationGroup { get; }
+        bool IgnoreAnimationGroup { get; }
 
-    EAnimateOnOffState CurrentState { get; }
+        EAnimateOnOffState CurrentState { get; }
+    }
 }

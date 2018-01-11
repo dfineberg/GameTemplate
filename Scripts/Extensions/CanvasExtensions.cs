@@ -2,56 +2,59 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public static class CanvasExtensions
+namespace GameTemplate
 {
-    private static Transform _loadingScreenTransform;
-
-    private static Canvas _instance;
-
-    public static void SetLoadingScreenTransform(Transform t)
+    public static class CanvasExtensions
     {
-        _loadingScreenTransform = t;
-    }
+        private static Transform _loadingScreenTransform;
 
-    public static Canvas GetInstance()
-    {
-        if (!_instance)
-            _instance = Object.FindObjectOfType<Canvas>();
+        private static Canvas _instance;
 
-        return _instance;
-    }
+        public static void SetLoadingScreenTransform(Transform t)
+        {
+            _loadingScreenTransform = t;
+        }
 
-    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-    public static GameObject InstantiateBehindLoadingScreen(this Canvas canvas, GameObject prefab)
-    {
-        var newScreenObject = Object.Instantiate(prefab, canvas.transform);
+        public static Canvas GetInstance()
+        {
+            if (!_instance)
+                _instance = Object.FindObjectOfType<Canvas>();
 
-        if (_loadingScreenTransform)
-            newScreenObject.transform.SetSiblingIndex(_loadingScreenTransform.GetSiblingIndex());
+            return _instance;
+        }
 
-        var prefabRt = prefab.transform as RectTransform;
-        var rt = newScreenObject.transform as RectTransform;
+        [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+        public static GameObject InstantiateBehindLoadingScreen(this Canvas canvas, GameObject prefab)
+        {
+            var newScreenObject = Object.Instantiate(prefab, canvas.transform);
 
-        if (rt == null) return newScreenObject;
+            if (_loadingScreenTransform)
+                newScreenObject.transform.SetSiblingIndex(_loadingScreenTransform.GetSiblingIndex());
 
-        rt.anchorMin = prefabRt.anchorMin;
-        rt.anchorMax = prefabRt.anchorMax;
+            var prefabRt = prefab.transform as RectTransform;
+            var rt = newScreenObject.transform as RectTransform;
 
-        rt.sizeDelta = prefabRt.sizeDelta;
-        rt.anchoredPosition = prefabRt.anchoredPosition;
+            if (rt == null) return newScreenObject;
 
-        rt.localScale = Vector3.one;
+            rt.anchorMin = prefabRt.anchorMin;
+            rt.anchorMax = prefabRt.anchorMax;
 
-        return newScreenObject;
-    }
+            rt.sizeDelta = prefabRt.sizeDelta;
+            rt.anchoredPosition = prefabRt.anchoredPosition;
 
-    public static bool GetRaycasterEnabled(this Canvas canvas)
-    {
-        return canvas.GetComponent<GraphicRaycaster>().enabled;
-    }
+            rt.localScale = Vector3.one;
 
-    public static void SetRaycasterEnabled(this Canvas canvas, bool enabled)
-    {
-        canvas.GetComponent<GraphicRaycaster>().enabled = enabled;
+            return newScreenObject;
+        }
+
+        public static bool GetRaycasterEnabled(this Canvas canvas)
+        {
+            return canvas.GetComponent<GraphicRaycaster>().enabled;
+        }
+
+        public static void SetRaycasterEnabled(this Canvas canvas, bool enabled)
+        {
+            canvas.GetComponent<GraphicRaycaster>().enabled = enabled;
+        }
     }
 }

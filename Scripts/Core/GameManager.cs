@@ -1,56 +1,59 @@
-﻿using Promises;
+﻿using GameTemplate.Promises;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class GameManager : MonoBehaviour
+namespace GameTemplate
 {
-    private StateMachine _stateMachine;
-
-    [SerializeField] private AnimateOnOffGroup _loadingScreen;
-
-    public static AnimateOnOffGroup LoadingScreen { get; private set; }
-
-    public static SaveManager SaveManager { get; private set; }
-
-    public static Canvas Canvas { get; private set; }
-
-    public static EventSystem EventSystem { get; private set; }
-
-    public static Camera MainCamera { get; private set; }
-
-    private void Awake()
+    public class GameManager : MonoBehaviour
     {
-        LoadingScreen = _loadingScreen;
-    }
+        private StateMachine _stateMachine;
 
-    private void Start()
-    {
-        InitialLoadSequence()
-            .ThenDo(RunStateMachine);
-    }
+        [SerializeField] private AnimateOnOffGroup _loadingScreen;
 
-    private IPromise InitialLoadSequence()
-    {
-        SaveManager = GetComponentInChildren<SaveManager>();
+        public static AnimateOnOffGroup LoadingScreen { get; private set; }
 
-        if (!SaveManager)
-            SaveManager = gameObject.AddComponent<SaveManager>();
+        public static SaveManager SaveManager { get; private set; }
 
-        SaveManager.LoadSaveFile();
+        public static Canvas Canvas { get; private set; }
 
-        CanvasExtensions.SetLoadingScreenTransform(LoadingScreen.transform);
-        Canvas = GetComponentInChildren<Canvas>();
+        public static EventSystem EventSystem { get; private set; }
 
-        EventSystem = FindObjectOfType<EventSystem>();
+        public static Camera MainCamera { get; private set; }
 
-        MainCamera = Camera.main;
+        private void Awake()
+        {
+            LoadingScreen = _loadingScreen;
+        }
 
-        _stateMachine = gameObject.AddComponent<StateMachine>();
-        return CoroutineExtensions.WaitForSeconds(1f);
-    }
+        private void Start()
+        {
+            InitialLoadSequence()
+                .ThenDo(RunStateMachine);
+        }
 
-    private void RunStateMachine()
-    {
-        // _stateMachine.Run( FIRST STATE GOES HERE );
+        private IPromise InitialLoadSequence()
+        {
+            SaveManager = GetComponentInChildren<SaveManager>();
+
+            if (!SaveManager)
+                SaveManager = gameObject.AddComponent<SaveManager>();
+
+            SaveManager.LoadSaveFile();
+
+            CanvasExtensions.SetLoadingScreenTransform(LoadingScreen.transform);
+            Canvas = GetComponentInChildren<Canvas>();
+
+            EventSystem = FindObjectOfType<EventSystem>();
+
+            MainCamera = Camera.main;
+
+            _stateMachine = gameObject.AddComponent<StateMachine>();
+            return CoroutineExtensions.WaitForSeconds(1f);
+        }
+
+        private void RunStateMachine()
+        {
+            // _stateMachine.Run( FIRST STATE GOES HERE );
+        }
     }
 }

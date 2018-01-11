@@ -1,25 +1,28 @@
 ﻿using UnityEngine;
 
-public class AlignToTransformEvent : MonoBehaviour
+namespace GameTemplate
 {
-    public TransformEvent TransformEvent;
-
-    private void OnEnable()
+    public class AlignToTransformEvent : MonoBehaviour
     {
-        TransformEvent?.Subscribe(Align);
-    }
+        public TransformEvent TransformEvent;
 
-    private void OnDisable()
-    {
-        TransformEvent?.Unsubscribe(Align);
-    }
+        private void OnEnable()
+        {
+            TransformEvent?.Subscribe(Align);
+        }
 
-    private void Align(Transform t)
-    {
-        if (t == null)
-            return;
+        private void OnDisable()
+        {
+            TransformEvent?.Unsubscribe(Align);
+        }
+
+        private void Align(Transform t)
+        {
+            if (t == null)
+                return;
         
-        transform.position = t.position;
-        transform.rotation = t.rotation;
+            transform.position = t.position;
+            transform.rotation = t.rotation;
+        }
     }
 }

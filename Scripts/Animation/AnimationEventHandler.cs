@@ -1,13 +1,16 @@
 ﻿using System;
 using UnityEngine;
 
-public class AnimationEventHandler : MonoBehaviour
+namespace GameTemplate
 {
-    public event Action<string> AnimationEvent;
-
-    public void FireEvent(string id)
+    public class AnimationEventHandler : MonoBehaviour
     {
-        if (AnimationEvent != null)
-            AnimationEvent(id);
+        public event Action<string> AnimationEvent;
+
+        public void FireEvent(string id)
+        {
+            if (AnimationEvent != null)
+                AnimationEvent(id);
+        }
     }
 }

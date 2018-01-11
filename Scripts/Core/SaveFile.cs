@@ -1,10 +1,13 @@
 ﻿using System;
 
-[Serializable]
-public struct SaveFile
+namespace GameTemplate
 {
-    public bool TestBool;
-    public int TestInt;
-    public string TestString;
+    [Serializable]
+    public struct SaveFile
+    {
+        public bool TestBool;
+        public int TestInt;
+        public string TestString;
 
+    }
 }

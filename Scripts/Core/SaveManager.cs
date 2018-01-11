@@ -1,3 +1,6 @@
-﻿public class SaveManager : GenericSaveManager<SaveFile>
+﻿namespace GameTemplate
 {
+    public class SaveManager : GenericSaveManager<SaveFile>
+    {
+    }
 }

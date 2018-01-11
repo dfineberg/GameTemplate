@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 
-public interface ITouchInputHandler
+namespace GameTemplate
 {
-    void HandleTouchDown(Vector2 touchPosition);
-    void HandleTouchUpdate(Vector2 touchPosition, Vector2 touchPositionDelta);
-    void HandleTouchUp(Vector2 touchPosition);
-    void HandleTouchTap(Vector2 touchPosition);
+    public interface ITouchInputHandler
+    {
+        void HandleTouchDown(Vector2 touchPosition);
+        void HandleTouchUpdate(Vector2 touchPosition, Vector2 touchPositionDelta);
+        void HandleTouchUp(Vector2 touchPosition);
+        void HandleTouchTap(Vector2 touchPosition);
+    }
 }

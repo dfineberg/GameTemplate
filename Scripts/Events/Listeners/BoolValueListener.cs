@@ -1,23 +1,26 @@
 ﻿using UnityEngine;
 
-public class BoolValueListener : MonoBehaviour
+namespace GameTemplate
 {
-    public BoolValue BoolValue;
-    public UnityEventBool Callback;
-
-    private void OnEnable()
+    public class BoolValueListener : MonoBehaviour
     {
-        Callback.Invoke(BoolValue.Value);
-        BoolValue.Subscribe(Listener);
-    }
+        public BoolValue BoolValue;
+        public UnityEventBool Callback;
 
-    private void OnDisable()
-    {
-        BoolValue.Unsubscribe(Listener);
-    }
+        private void OnEnable()
+        {
+            Callback.Invoke(BoolValue.Value);
+            BoolValue.Subscribe(Listener);
+        }
 
-    private void Listener(bool b)
-    {
-        Callback.Invoke(b);
+        private void OnDisable()
+        {
+            BoolValue.Unsubscribe(Listener);
+        }
+
+        private void Listener(bool b)
+        {
+            Callback.Invoke(b);
+        }
     }
 }

@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(menuName = "Data/BoolValue")]
-public class BoolValue : GenericValue<bool>
+namespace GameTemplate
 {
-    public void Switch()
+    [CreateAssetMenu(menuName = "Data/BoolValue")]
+    public class BoolValue : GenericValue<bool>
     {
-        Set(!Value);
+        public void Switch()
+        {
+            Set(!Value);
+        }
     }
 }

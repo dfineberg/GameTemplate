@@ -1,100 +1,103 @@
 ﻿using System.IO;
 using UnityEngine;
 
-public class GenericSaveManager<T> : MonoBehaviour where T : new()
+namespace GameTemplate
 {
-    private string _directoryPath;
-
-    public T SaveFile;
-
-    public bool UseDebugSaveFile;
-
-    public int LoadedSaveFileNo { get; private set; }
-
-    public string TypeString
+    public class GenericSaveManager<T> : MonoBehaviour where T : new()
     {
-        get { return typeof(T).ToString(); }
-    }
+        private string _directoryPath;
 
-    public int SaveFileCount
-    {
-        get { return Directory.Exists(_directoryPath) ? Directory.GetFiles(_directoryPath).Length : 0; }
-    }
+        public T SaveFile;
 
-    public string[] SaveFilePaths
-    {
-        get { return Directory.Exists(_directoryPath) ? Directory.GetFiles(_directoryPath) : new string[0]; }
-    }
+        public bool UseDebugSaveFile;
 
-    protected virtual void Awake()
-    {
-        LoadedSaveFileNo = -1;
+        public int LoadedSaveFileNo { get; private set; }
 
-        _directoryPath = Application.persistentDataPath + "/" + TypeString;
-    }
-
-    public virtual void CreateNewSaveFile()
-    {
-        LoadSaveFile(SaveFileCount);
-    }
-
-    public virtual T LoadSaveFile(int fileNo = 0)
-    {
-        LoadedSaveFileNo = fileNo;
-        var filePath = _directoryPath + "/"+ TypeString + fileNo;
-
-        if (UseDebugSaveFile)
-            return default(T);
-
-        if (!File.Exists(filePath))
+        public string TypeString
         {
-            SaveFile = new T();
-            return default(T);
+            get { return typeof(T).ToString(); }
         }
 
-        SaveFile = ObjectSerialiser.LoadObjectAt<T>(filePath);
-        return SaveFile;
-    }
+        public int SaveFileCount
+        {
+            get { return Directory.Exists(_directoryPath) ? Directory.GetFiles(_directoryPath).Length : 0; }
+        }
 
-    public virtual void Save(int fileNo = 0)
-    {
-        if (!Directory.Exists(_directoryPath))
-            Directory.CreateDirectory(_directoryPath);
+        public string[] SaveFilePaths
+        {
+            get { return Directory.Exists(_directoryPath) ? Directory.GetFiles(_directoryPath) : new string[0]; }
+        }
 
-        var filePath = _directoryPath + "/" + TypeString + LoadedSaveFileNo;
+        protected virtual void Awake()
+        {
+            LoadedSaveFileNo = -1;
 
-        ObjectSerialiser.SaveObjectAt(SaveFile, filePath);
-    }
+            _directoryPath = Application.persistentDataPath + "/" + TypeString;
+        }
 
-    public void SaveCurrentFile()
-    {
-        Save(LoadedSaveFileNo);
-    }
+        public virtual void CreateNewSaveFile()
+        {
+            LoadSaveFile(SaveFileCount);
+        }
 
-    public virtual void DeleteSaveFile(int fileNo = 0)
-    {
-        var filePath = _directoryPath + "/" + TypeString + LoadedSaveFileNo;
+        public virtual T LoadSaveFile(int fileNo = 0)
+        {
+            LoadedSaveFileNo = fileNo;
+            var filePath = _directoryPath + "/"+ TypeString + fileNo;
 
-        if (!File.Exists(filePath))
-            return;
+            if (UseDebugSaveFile)
+                return default(T);
+
+            if (!File.Exists(filePath))
+            {
+                SaveFile = new T();
+                return default(T);
+            }
+
+            SaveFile = ObjectSerialiser.LoadObjectAt<T>(filePath);
+            return SaveFile;
+        }
+
+        public virtual void Save(int fileNo = 0)
+        {
+            if (!Directory.Exists(_directoryPath))
+                Directory.CreateDirectory(_directoryPath);
+
+            var filePath = _directoryPath + "/" + TypeString + LoadedSaveFileNo;
+
+            ObjectSerialiser.SaveObjectAt(SaveFile, filePath);
+        }
+
+        public void SaveCurrentFile()
+        {
+            Save(LoadedSaveFileNo);
+        }
+
+        public virtual void DeleteSaveFile(int fileNo = 0)
+        {
+            var filePath = _directoryPath + "/" + TypeString + LoadedSaveFileNo;
+
+            if (!File.Exists(filePath))
+                return;
 
 
-        File.Delete(filePath);
+            File.Delete(filePath);
 
-        var files = Directory.GetFiles(_directoryPath);
+            var files = Directory.GetFiles(_directoryPath);
 
-        if (fileNo == files.Length) return;
+            if (fileNo == files.Length) return;
 
-        for(var i = fileNo; i < files.Length; i++)
-            File.Move(files[i], _directoryPath + "/" + TypeString + i);
-    }
+            for(var i = fileNo; i < files.Length; i++)
+                File.Move(files[i], _directoryPath + "/" + TypeString + i);
+        }
 
-    public virtual void DeleteAllSaveFiles()
-    {
-        if (!Directory.Exists(_directoryPath))
-            return;
+        public virtual void DeleteAllSaveFiles()
+        {
+            if (!Directory.Exists(_directoryPath))
+                return;
 
-        foreach (var file in Directory.GetFiles(_directoryPath))
-            File.Delete(file);
+            foreach (var file in Directory.GetFiles(_directoryPath))
+                File.Delete(file);
+        }
     }
 }

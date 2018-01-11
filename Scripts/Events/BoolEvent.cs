@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(menuName = "Events/Bool Event")]
-public class BoolEvent : GenericEvent<bool> {
+namespace GameTemplate
+{
+    [CreateAssetMenu(menuName = "Events/Bool Event")]
+    public class BoolEvent : GenericEvent<bool> {
 
+    }
 }

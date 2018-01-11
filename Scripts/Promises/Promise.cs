@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Promises
+namespace GameTemplate.Promises
 {
     public enum EPromiseState
     {

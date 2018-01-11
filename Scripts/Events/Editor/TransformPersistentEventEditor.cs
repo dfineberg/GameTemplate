@@ -1,19 +1,22 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(TransformEvent))]
-public class TransformPersistentEventEditor : Editor
+namespace GameTemplate
 {
-    private Transform _testTransform;
-    
-    public override void OnInspectorGUI()
+    [CustomEditor(typeof(TransformEvent))]
+    public class TransformPersistentEventEditor : Editor
     {
-        _testTransform = (Transform) EditorGUILayout.ObjectField("Test Transform", _testTransform,  typeof(Transform), true);
-
-        if (GUILayout.Button("Invoke"))
+        private Transform _testTransform;
+    
+        public override void OnInspectorGUI()
         {
-            var e = (TransformEvent) target;
-            e.Invoke(_testTransform);
+            _testTransform = (Transform) EditorGUILayout.ObjectField("Test Transform", _testTransform,  typeof(Transform), true);
+
+            if (GUILayout.Button("Invoke"))
+            {
+                var e = (TransformEvent) target;
+                e.Invoke(_testTransform);
+            }
         }
     }
 }

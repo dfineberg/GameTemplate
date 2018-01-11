@@ -1,11 +1,14 @@
 ﻿using System.Linq;
 using UnityEngine;
 
-[CreateAssetMenu]
-public class StringLibrary : ScriptableObject
+namespace GameTemplate
 {
-    public string ResourcesDirectory;
-    public string[] Strings;
+    [CreateAssetMenu]
+    public class StringLibrary : ScriptableObject
+    {
+        public string ResourcesDirectory;
+        public string[] Strings;
 
-    public string[] StringsWithResourcesDirectory => Strings.Select(s => $"{ResourcesDirectory}/{s}").ToArray();
+        public string[] StringsWithResourcesDirectory => Strings.Select(s => $"{ResourcesDirectory}/{s}").ToArray();
+    }
 }

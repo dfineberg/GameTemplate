@@ -1,20 +1,23 @@
 ﻿using UnityEngine;
 
-[AddComponentMenu("Animation/Position Tween")]
-public class TweenPosition : AbstractTween<Vector3>
+namespace GameTemplate
 {
-    public bool AnimateInWorldPosition;
-
-    public virtual Vector3 GetValue(float normalisedPoint)
+    [AddComponentMenu("Animation/Position Tween")]
+    public class TweenPosition : AbstractTween<Vector3>
     {
-        return Vector3.Lerp(FromValue, ToValue, normalisedPoint);
-    }
+        public bool AnimateInWorldPosition;
 
-    protected override void SetValue(float normalisedPoint)
-    {
-        if (AnimateInWorldPosition)
-            transform.position = GetValue(normalisedPoint);
-        else
-            transform.localPosition = GetValue(normalisedPoint);
+        public virtual Vector3 GetValue(float normalisedPoint)
+        {
+            return Vector3.Lerp(FromValue, ToValue, normalisedPoint);
+        }
+
+        protected override void SetValue(float normalisedPoint)
+        {
+            if (AnimateInWorldPosition)
+                transform.position = GetValue(normalisedPoint);
+            else
+                transform.localPosition = GetValue(normalisedPoint);
+        }
     }
 }

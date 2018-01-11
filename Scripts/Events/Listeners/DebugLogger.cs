@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 
-public class DebugLogger : MonoBehaviour
+namespace GameTemplate
 {
-    public void Print(string message)
+    public class DebugLogger : MonoBehaviour
     {
-        Debug.Log(message);
+        public void Print(string message)
+        {
+            Debug.Log(message);
+        }
     }
 }

@@ -1,22 +1,25 @@
 ﻿using UnityEngine;
 
-public class DestroyOnEnter : MonoBehaviour
+namespace GameTemplate
 {
-    public LayerMask DestroyLayers;
-
-    private void OnTriggerEnter(Collider other)
+    public class DestroyOnEnter : MonoBehaviour
     {
-        if (!DestroyLayers.ContainsLayer(other.gameObject.layer))
-            return;
+        public LayerMask DestroyLayers;
 
-        Destroy(other.gameObject);
-    }
+        private void OnTriggerEnter(Collider other)
+        {
+            if (!DestroyLayers.ContainsLayer(other.gameObject.layer))
+                return;
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (!DestroyLayers.ContainsLayer(other.gameObject.layer))
-            return;
+            Destroy(other.gameObject);
+        }
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (!DestroyLayers.ContainsLayer(other.gameObject.layer))
+                return;
         
-        Destroy(other.gameObject);
+            Destroy(other.gameObject);
+        }
     }
 }

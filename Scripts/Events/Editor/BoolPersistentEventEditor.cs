@@ -1,19 +1,22 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(BoolEvent))]
-public class BoolPersistentEventEditor : Editor
+namespace GameTemplate
 {
-    private bool _testValue;
-
-    public override void OnInspectorGUI()
+    [CustomEditor(typeof(BoolEvent))]
+    public class BoolPersistentEventEditor : Editor
     {
-        _testValue = EditorGUILayout.Toggle("Test Value", _testValue);
+        private bool _testValue;
 
-        if (GUILayout.Button("Invoke"))
+        public override void OnInspectorGUI()
         {
-            var e = (BoolEvent) target;
-            e.Invoke(_testValue);
+            _testValue = EditorGUILayout.Toggle("Test Value", _testValue);
+
+            if (GUILayout.Button("Invoke"))
+            {
+                var e = (BoolEvent) target;
+                e.Invoke(_testValue);
+            }
         }
     }
 }

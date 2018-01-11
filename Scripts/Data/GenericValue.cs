@@ -3,54 +3,57 @@ using UnityEditor;
 #endif
 using UnityEngine;
 
-public class GenericValue<T> : GenericEvent<T>
+namespace GameTemplate
 {
-    [SerializeField] private T _value;
-    public T Value
+    public class GenericValue<T> : GenericEvent<T>
     {
-        get { return _value; }
-        set
+        [SerializeField] private T _value;
+        public T Value
         {
-            _value = value;
-            Invoke(_value);
+            get { return _value; }
+            set
+            {
+                _value = value;
+                Invoke(_value);
+            }
         }
-    }
 
-    protected void OnEnable()
-    {
-        ResetToDefault();
+        protected void OnEnable()
+        {
+            ResetToDefault();
 #if UNITY_EDITOR
-        EditorApplication.playModeStateChanged += HandlePlayModeStateChanged;
+            EditorApplication.playModeStateChanged += HandlePlayModeStateChanged;
 #endif
-    }
+        }
 
 #if UNITY_EDITOR
-    private void OnDisable()
-    {
-        EditorApplication.playModeStateChanged -= HandlePlayModeStateChanged;
-    }
+        private void OnDisable()
+        {
+            EditorApplication.playModeStateChanged -= HandlePlayModeStateChanged;
+        }
 
-    private void HandlePlayModeStateChanged(PlayModeStateChange change)
-    {
-        if(change == PlayModeStateChange.ExitingPlayMode) ResetToDefault();
-    }
+        private void HandlePlayModeStateChanged(PlayModeStateChange change)
+        {
+            if(change == PlayModeStateChange.ExitingPlayMode) ResetToDefault();
+        }
 
-    private void OnValidate()
-    {
-        if (Application.isPlaying) // if value is changed at runtime in the inspector, invoke the event
-            Invoke(_value);
-        else
-            _value = _defaultValue; // don't allow value to be changed in the inspector while the game isn't running
-    }
+        private void OnValidate()
+        {
+            if (Application.isPlaying) // if value is changed at runtime in the inspector, invoke the event
+                Invoke(_value);
+            else
+                _value = _defaultValue; // don't allow value to be changed in the inspector while the game isn't running
+        }
 #endif
 
-    public void ResetToDefault()
-    {
-        Value = _defaultValue;
-    }
+        public void ResetToDefault()
+        {
+            Value = _defaultValue;
+        }
 
-    public void Set(T newValue)
-    {
-        Value = newValue;
+        public void Set(T newValue)
+        {
+            Value = newValue;
+        }
     }
 }

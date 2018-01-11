@@ -1,34 +1,38 @@
 ﻿using UnityEngine;
+
 // ReSharper disable InconsistentNaming
 
-public abstract class AbstractState
+namespace GameTemplate
 {
-    public event System.Action<AbstractState> ForceNextStateEvent;
-
-    public AbstractState NextState { get; protected set; }
-
-    protected GameObject gameObject { get; private set; }
-
-    protected Transform transform => gameObject != null ? gameObject.transform : null;
-
-    public abstract void OnEnter();
-
-    public abstract void OnExit();
-
-    public void SetGameObject(GameObject o)
+    public abstract class AbstractState
     {
-        gameObject = o;
-    }
+        public event System.Action<AbstractState> ForceNextStateEvent;
 
-    public virtual void Recycle()
-    {
-        NextState = null;
-    }
+        public AbstractState NextState { get; protected set; }
 
-    protected void ForceNextState(AbstractState state)
-    {
-        NextState = state;
+        protected GameObject gameObject { get; private set; }
 
-        ForceNextStateEvent?.Invoke(state);
+        protected Transform transform => gameObject != null ? gameObject.transform : null;
+
+        public abstract void OnEnter();
+
+        public abstract void OnExit();
+
+        public void SetGameObject(GameObject o)
+        {
+            gameObject = o;
+        }
+
+        public virtual void Recycle()
+        {
+            NextState = null;
+        }
+
+        protected void ForceNextState(AbstractState state)
+        {
+            NextState = state;
+
+            ForceNextStateEvent?.Invoke(state);
+        }
     }
 }

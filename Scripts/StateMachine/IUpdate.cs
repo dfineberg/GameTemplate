@@ -1,16 +1,19 @@
 ﻿// Interfaces for making AbstractStates update
 
-public interface IUpdate
+namespace GameTemplate
 {
-    void Update();
-}
+    public interface IUpdate
+    {
+        void Update();
+    }
 
-public interface IFixedUpdate
-{
-    void FixedUpdate();
-}
+    public interface IFixedUpdate
+    {
+        void FixedUpdate();
+    }
 
-public interface ILateUpdate
-{
-    void LateUpdate();
+    public interface ILateUpdate
+    {
+        void LateUpdate();
+    }
 }

@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
 
-public interface IDragInputHandler
+namespace GameTemplate
 {
-    bool CanDrag { get; }
-    void HandleBeginDrag(Vector2 touchPos);
-    void HandleUpdateDrag(Vector2 touchPos, Vector2 touchPosDelta);
-    void HandleEndDrag(Vector2 touchPos);
-    bool ForceDrop();
+    public interface IDragInputHandler
+    {
+        bool CanDrag { get; }
+        void HandleBeginDrag(Vector2 touchPos);
+        void HandleUpdateDrag(Vector2 touchPos, Vector2 touchPosDelta);
+        void HandleEndDrag(Vector2 touchPos);
+        bool ForceDrop();
+    }
 }

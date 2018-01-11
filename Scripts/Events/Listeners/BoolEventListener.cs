@@ -1,22 +1,25 @@
 ﻿using UnityEngine;
 
-public class BoolEventListener : MonoBehaviour
+namespace GameTemplate
 {
-    public BoolEvent BoolEvent;
-    public UnityEventBool Callback;
-
-    private void OnEnable()
+    public class BoolEventListener : MonoBehaviour
     {
-        BoolEvent?.Subscribe(Listener);
-    }
+        public BoolEvent BoolEvent;
+        public UnityEventBool Callback;
 
-    private void OnDisable()
-    {
-        BoolEvent?.Unsubscribe(Listener);
-    }
+        private void OnEnable()
+        {
+            BoolEvent?.Subscribe(Listener);
+        }
 
-    private void Listener(bool b)
-    {
-        Callback.Invoke(b);
+        private void OnDisable()
+        {
+            BoolEvent?.Unsubscribe(Listener);
+        }
+
+        private void Listener(bool b)
+        {
+            Callback.Invoke(b);
+        }
     }
 }

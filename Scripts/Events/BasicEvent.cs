@@ -1,24 +1,27 @@
 ﻿using System;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Events/Basic Event")]
-public class BasicEvent : ScriptableObject
+namespace GameTemplate
 {
-    private event Action Action;
-
-    public void Subscribe(Action a)
+    [CreateAssetMenu(menuName = "Events/Basic Event")]
+    public class BasicEvent : ScriptableObject
     {
-        Action += a;
-    }
+        private event Action Action;
 
-    public void Unsubscribe(Action a)
-    {
-        Action -= a;
-    }
+        public void Subscribe(Action a)
+        {
+            Action += a;
+        }
 
-    public void Invoke()
-    {
-        Action?.Invoke();
+        public void Unsubscribe(Action a)
+        {
+            Action -= a;
+        }
+
+        public void Invoke()
+        {
+            Action?.Invoke();
+        }
     }
 }
 
