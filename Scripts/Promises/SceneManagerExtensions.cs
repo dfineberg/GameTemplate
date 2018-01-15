@@ -6,22 +6,20 @@ namespace GameTemplate.Promises
     {
         public static IPromise LoadSceneAsync(string sceneName, LoadSceneMode mode = LoadSceneMode.Additive)
         {
-            var scene = default(Scene);
-
             return CoroutineExtensions.WaitUntil(SceneManager.LoadSceneAsync(sceneName, mode))
-                .ThenDo(() => scene = SceneManager.GetSceneByName(sceneName))
-                .ThenWaitUntil(() => scene.isLoaded)
-                .ThenDo(() => SceneManager.SetActiveScene(scene));
+                .Then(() => WaitUntilSceneIsLoaded(SceneManager.GetSceneByName(sceneName)));
         }
 
         public static IPromise LoadSceneAsync(int sceneBuildIndex, LoadSceneMode mode = LoadSceneMode.Additive)
         {
-            var scene = default(Scene);
-
             return CoroutineExtensions.WaitUntil(SceneManager.LoadSceneAsync(sceneBuildIndex, mode))
-                .ThenDo(() => scene = SceneManager.GetSceneByBuildIndex(sceneBuildIndex))
-                .ThenWaitUntil(() => scene.isLoaded)
-                .ThenDo(() => SceneManager.SetActiveScene(scene));
+                .Then(() => WaitUntilSceneIsLoaded(SceneManager.GetSceneByBuildIndex(sceneBuildIndex)));
+        }
+
+        private static IPromise WaitUntilSceneIsLoaded(Scene scene)
+        {
+            return CoroutineExtensions.WaitUntil(() => scene.isLoaded)
+                .Then(() => Promise.Resolved(scene));
         }
 
         public static IPromise LoadWithoutActivating(string sceneName, LoadSceneMode mode = LoadSceneMode.Additive)
