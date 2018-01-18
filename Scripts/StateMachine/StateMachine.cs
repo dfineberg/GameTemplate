@@ -9,9 +9,10 @@ namespace GameTemplate
         public string CurrentState;
     
         private AbstractState _currentState;
-
         private AbstractState _nextState;
-
+        private IFixedUpdate _fixedUpdate;
+        private ILateUpdate _lateUpdate;
+        private IUpdate _update;
         private bool _isRunning;
 
 
@@ -21,7 +22,7 @@ namespace GameTemplate
 
         public void Run(AbstractState firstState)
         {
-            _currentState = firstState;
+            SetCurrentState(firstState);
             _isRunning = true;
             StartCoroutine(StateMachineRoutine());
         }
@@ -29,6 +30,14 @@ namespace GameTemplate
         public void Stop()
         {
             _isRunning = false;
+        }
+
+        private void SetCurrentState(AbstractState newState)
+        {
+            _currentState = newState;
+            _fixedUpdate = _currentState as IFixedUpdate;
+            _lateUpdate = _currentState as ILateUpdate;
+            _update = _currentState as IUpdate;
         }
 
         private IEnumerator StateMachineRoutine()
@@ -53,7 +62,7 @@ namespace GameTemplate
                 _currentState.OnExit();
                 _currentState.Recycle();
 
-                _currentState = _nextState;
+                SetCurrentState(_nextState);
                 _nextState = null;
             }
         }
@@ -63,7 +72,7 @@ namespace GameTemplate
             _currentState.ForceNextStateEvent -= HandleForceNextState;
             _currentState.OnExit();
 
-            _currentState = forceState;
+            SetCurrentState(forceState);
 
             _currentState.SetGameObject(gameObject);
             _currentState.ForceNextStateEvent += HandleForceNextState;
@@ -72,19 +81,18 @@ namespace GameTemplate
 
         private void FixedUpdate()
         {
-            (_currentState as IFixedUpdate)?.FixedUpdate();
+            _fixedUpdate?.FixedUpdate();
         }
 
         private void LateUpdate()
         {
-            (_currentState as ILateUpdate)?.LateUpdate();
+            _lateUpdate?.LateUpdate();
         }
 
         private void Update()
         {
             CurrentState = CurrentStateName;
-        
-            (_currentState as IUpdate)?.Update();
+            _update?.Update();
         }
     }
 }
