@@ -1,5 +1,9 @@
 ﻿using System.IO;
+using System.Linq;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace GameTemplate.Promises
 {
@@ -20,8 +24,14 @@ namespace GameTemplate.Promises
 
         public static IPromise LoadFromFileAndUnpack(string streamingAssetsPath)
         {
+#if UNITY_EDITOR
+            var paths = AssetDatabase.GetAssetPathsFromAssetBundle(streamingAssetsPath);
+            var assets = paths.Select(AssetDatabase.LoadAssetAtPath<Object>).ToArray();
+            return Promise.Resolved(assets);
+#else
             return LoadFromFileAsync(streamingAssetsPath)
                 .Then<AssetBundle>(b => b.LoadAllAssetsPromise());
+#endif
         }
 
         public static IPromise LoadAllAssetsPromise(this AssetBundle bundle)
