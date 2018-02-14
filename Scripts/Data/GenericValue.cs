@@ -42,7 +42,7 @@ namespace GameTemplate
             if (Application.isPlaying) // if value is changed at runtime in the inspector, invoke the event
                 Invoke(_value);
             else
-                _value = _defaultValue; // don't allow value to be changed in the inspector while the game isn't running
+                _defaultValue = _value; // don't allow value to be changed in the inspector while the game isn't running
         }
 #endif
 

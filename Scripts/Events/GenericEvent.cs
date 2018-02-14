@@ -6,7 +6,7 @@ namespace GameTemplate
     public class GenericEvent<T> : ScriptableObject
     {
         // ReSharper disable once InconsistentNaming
-        [SerializeField] protected T _defaultValue;
+        [SerializeField, HideInInspector] protected T _defaultValue;
         public T DefaultValue => _defaultValue;
     
         private event Action<T> Action;
