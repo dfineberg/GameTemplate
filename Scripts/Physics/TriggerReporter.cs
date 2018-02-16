@@ -19,6 +19,12 @@ namespace GameTemplate
         public ColliderEvent OnTriggerExitEvent;
 
         private readonly List<Collider> _list = new List<Collider>();
+        private bool _applicationQuitting;
+
+        private void OnApplicationQuit()
+        {
+            _applicationQuitting = true;
+        }
 
         private void OnTriggerEnter(Collider other)
         {
@@ -44,7 +50,7 @@ namespace GameTemplate
 
         private void OnDisable()
         {
-            if (_list.Count == 0)
+            if (_list.Count == 0 || _applicationQuitting)
                 return;
 
             var col = _list[0];
