@@ -4,56 +4,51 @@ using UnityEngine.EventSystems;
 
 namespace GameTemplate
 {
-    public class GameManager : MonoBehaviour
+    public abstract class GameManager<T, TU> : GameManagerCore where T : AbstractState, new() where TU : new()
     {
         private StateMachine _stateMachine;
 
-        [SerializeField] private AnimateOnOffGroup _loadingScreen;
-
-        public static AnimateOnOffGroup LoadingScreen { get; private set; }
-
-        public static SaveManager SaveManager { get; private set; }
-
-        public static Canvas Canvas { get; private set; }
-
-        public static EventSystem EventSystem { get; private set; }
-
-        public static Camera MainCamera { get; private set; }
-
-        private void Awake()
-        {
-            LoadingScreen = _loadingScreen;
-        }
+        public TU SaveFile;
+        
+        protected abstract string SaveFileLocation { get; }
 
         private void Start()
         {
-            InitialLoadSequence()
+            Init();
+            
+            InitialLoadRoutine()
                 .ThenDo(RunStateMachine);
         }
 
-        private IPromise InitialLoadSequence()
+        protected virtual void Init()
         {
-            SaveManager = GetComponentInChildren<SaveManager>();
-
-            if (!SaveManager)
-                SaveManager = gameObject.AddComponent<SaveManager>();
-
-            SaveManager.LoadSaveFile();
-
+            LoadingScreen = GetComponentInChildren<AnimateOnOffGroup>();
             CanvasExtensions.SetLoadingScreenTransform(LoadingScreen.transform);
+            
             Canvas = GetComponentInChildren<Canvas>();
-
             EventSystem = FindObjectOfType<EventSystem>();
-
-            MainCamera = Camera.main;
-
+            
             _stateMachine = gameObject.AddComponent<StateMachine>();
-            return CoroutineExtensions.WaitForSeconds(1f);
         }
+
+        protected abstract IPromise InitialLoadRoutine();
 
         private void RunStateMachine()
         {
-            // _stateMachine.Run( FIRST STATE GOES HERE );
+             _stateMachine.Run(new T());
+        }
+
+        public void LoadSaveFile()
+        {
+            SaveFile = ObjectSerialiser.LoadObjectAt<TU>(SaveFileLocation);
+
+            if (SaveFile == null)
+                SaveFile = new TU();
+        }
+
+        public void Save()
+        {
+            ObjectSerialiser.SaveObjectAt(SaveFile, SaveFileLocation);
         }
     }
 }

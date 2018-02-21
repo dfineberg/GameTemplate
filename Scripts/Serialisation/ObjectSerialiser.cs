@@ -17,10 +17,13 @@ namespace GameTemplate
 
         public static T LoadObjectAt<T>(string filePath)
         {
+            if (!File.Exists(filePath))
+                return default(T);
+            
             var binaryFormatter = new BinaryFormatter();
             var fileStream = new FileStream(filePath, FileMode.OpenOrCreate);
 
-            T obj = (T)binaryFormatter.Deserialize(fileStream);
+            var obj = (T)binaryFormatter.Deserialize(fileStream);
 
             fileStream.Close();
 

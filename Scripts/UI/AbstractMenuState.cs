@@ -5,26 +5,29 @@ namespace GameTemplate
 {
     public abstract class AbstractMenuState : AbstractState
     {
-        protected readonly string ResourcePath;
-
+        protected readonly string AssetBundlePath;
+        protected readonly string ScreenAssetName;
         protected MenuScreen Screen;
+        protected GameManagerCore GameManager;
 
         // give the AbstractMenuState a reference to a prefab in the resources folder
-        protected AbstractMenuState(string uiScreenResourcePath)
+        protected AbstractMenuState(string uiScreenAssetBundlePath, string screenAssetName)
         {
-            ResourcePath = uiScreenResourcePath;
+            AssetBundlePath = uiScreenAssetBundlePath;
+            ScreenAssetName = screenAssetName;
         }
 
         public override void OnEnter()
         {
             // disable the EventSystem until the screen has fully animated on to prevent the user from pressing buttons before the sequence has finished
+            GameManager = gameObject.GetComponent<GameManagerCore>();
             GameManager.EventSystem.enabled = false;
             EnterRoutine();
         }
 
         protected virtual IPromise EnterRoutine()
         {
-            return ResourceExtensions.LoadAsync(ResourcePath) // load the UI screen prefab from the Resources folder
+            return AssetBundleExtensions.LoadAsset(AssetBundlePath, ScreenAssetName) // load the UI screen prefab from the asset bundle
                 .ThenDo<GameObject>(HandleResourceLoaded) // then instantiate the prefab with HandleResourceLoaded
                 .Then(() => GameManager.LoadingScreen.AnimateOff()) // then animate the loading screen off
                 .Then(() => Screen.Animator.AnimateOn()) // then animate the UI screen on
