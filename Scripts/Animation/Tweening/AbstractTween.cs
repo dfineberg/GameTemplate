@@ -103,7 +103,8 @@ namespace GameTemplate
 
         private void Awake()
         {
-            SetOff();
+            if(_ignoreAnimationGroup)
+                SetOff();
         }
 
         protected void Update()
