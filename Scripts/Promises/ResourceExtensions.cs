@@ -7,7 +7,7 @@ namespace GameTemplate.Promises
     {
         public static IPromise LoadAsync(string path)
         {
-            var p = new Promise();
+            var p = Promise.Create();
             var resourceRequest = Resources.LoadAsync(path);
 
             CoroutineExtensions.WaitUntil(resourceRequest)
@@ -19,7 +19,7 @@ namespace GameTemplate.Promises
 
         public static IPromise LoadAllAsync(IEnumerable<string> paths)
         {
-            var p = new Promise();
+            var p = Promise.Create();
             var promises = paths.SelectEach(LoadAsync);
 
             Promise.All(promises)

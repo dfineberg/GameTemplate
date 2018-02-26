@@ -12,12 +12,13 @@ namespace GameTemplate.Promises
     {
         private static readonly Dictionary<string, AssetBundle> LoadedBundles = new Dictionary<string, AssetBundle>();
         
+        // ReSharper disable once UnusedMember.Local
         private static IPromise LoadFromFileAsync(string bundlePath)
         {
             if (LoadedBundles.ContainsKey(bundlePath))
                 return Promise.Resolved(LoadedBundles[bundlePath]);
             
-            var p = new Promise();
+            var p = Promise.Create();
             var path = Path.Combine(Application.streamingAssetsPath, bundlePath).Replace("\\", "/");
             var request = AssetBundle.LoadFromFileAsync(path);
             
@@ -93,7 +94,7 @@ namespace GameTemplate.Promises
         
         public static IPromise LoadAllAssetsPromise(this AssetBundle bundle)
         {
-            var p = new Promise();
+            var p = Promise.Create();
             var request = bundle.LoadAllAssetsAsync();
 
             CoroutineExtensions.WaitUntil(request)
@@ -104,7 +105,7 @@ namespace GameTemplate.Promises
 
         public static IPromise LoadAssetPromise(this AssetBundle bundle, string assetName)
         {
-            var p = new Promise();
+            var p = Promise.Create();
             var request = bundle.LoadAssetAsync(assetName);
 
             CoroutineExtensions.WaitUntil(request)

@@ -8,6 +8,7 @@ namespace GameTemplate.Promises
 {
     public enum EPromiseState
     {
+        Pooled,
         Pending,
         Resolved,
         Rejected
@@ -24,6 +25,8 @@ namespace GameTemplate.Promises
         IPromise Then(Func<IPromise> callback);
 
         IPromise Then<T>(Func<T, IPromise> callback);
+
+        IPromise ThenResolvePromise(Promise promise);
 
         IPromise ThenDo(Action callback);
 
@@ -53,57 +56,84 @@ namespace GameTemplate.Promises
         IPromise Catch(Action<Exception> exceptionHandler);
     }
 
-    public class Promise : IPromise
+    public partial class Promise : IPromise, IDisposable
     {
         public EPromiseState CurrentState { get; private set; }
 
         public Exception RejectedException { get; private set; }
+
         public object PromisedObject { get; private set; }
 
-        private readonly List<Action> _resolveCallbacks;
-        private readonly List<Action<Exception>> _rejectCallbacks;
+        private readonly List<PromiseResolution> _resolutions = new List<PromiseResolution>();
 
-        public Promise()
+        private readonly List<Action<Exception>> _rejectCallbacks = new List<Action<Exception>>();
+
+        ~Promise()
         {
-            CurrentState = EPromiseState.Pending;
-            _resolveCallbacks = new List<Action>();
-            _rejectCallbacks = new List<Action<Exception>>();
+            Dispose();
+        }
+
+        public static Promise Create()
+        {
+            var promise = ObjectPool.Pop<Promise>();
+            promise.CurrentState = EPromiseState.Pending;
+            return promise;
+        }
+
+        public void Dispose()
+        {
+            _rejectCallbacks.Clear();
+            CurrentState = EPromiseState.Pooled;
+            ObjectPool.Push(this);
+        }
+
+        private T PromisedObjectAs<T>()
+        {
+            return PromisedObject is T ? (T) PromisedObject : default(T);
+        }
+
+        private void AddActionResolution(Action action)
+        {
+            _resolutions.Add(ActionResolution.Create(action));
+        }
+
+        private void AddResolvePromiseResolution(Promise promise)
+        {
+            _resolutions.Add(ResolvePromiseResolution.Create(promise));
         }
 
         public IPromise Then(Func<IPromise> callback)
         {
-            var p = new Promise();
-
-            Action resolution = () =>
-            {
-                callback()
-                    .ThenDo<object>(o => p.Resolve(o));
-            };
+            var p = Create();
 
             if (CurrentState == EPromiseState.Resolved)
-                resolution();
+                callback().ThenResolvePromise(p);
             else
-                _resolveCallbacks.Add(resolution);
+                _resolutions.Add(FuncResolution.Create(callback, p));
 
             return p;
         }
 
         public IPromise Then<T>(Func<T, IPromise> callback)
         {
-            var p = new Promise();
-
-            Action resolution = () =>
-            {
-                callback(PromisedObject is T ? (T) PromisedObject : default(T))
-                    .ThenDo<object>(o => p.Resolve(o));
-            };
+            var p = Create();
 
             if (CurrentState == EPromiseState.Resolved)
-                resolution();
+                callback(PromisedObjectAs<T>()).ThenResolvePromise(p);
             else
-                _resolveCallbacks.Add(resolution);
+                _resolutions.Add(GenericFuncResolution<T>.Create(callback, p));
 
             return p;
+        }
+
+        public IPromise ThenResolvePromise(Promise promise)
+        {
+            if (CurrentState == EPromiseState.Resolved)
+                promise.Resolve(PromisedObject);
+            else
+                AddResolvePromiseResolution(promise);
+
+            return this;
         }
 
         public IPromise ThenDo(Action callback)
@@ -111,7 +141,7 @@ namespace GameTemplate.Promises
             if (CurrentState == EPromiseState.Resolved)
                 callback();
             else
-                _resolveCallbacks.Add(callback);
+                AddActionResolution(callback);
 
             return this;
         }
@@ -119,27 +149,21 @@ namespace GameTemplate.Promises
         public IPromise ThenDo<T>(Action<T> callback)
         {
             if (CurrentState == EPromiseState.Resolved)
-                callback(PromisedObject is T ? (T) PromisedObject : default(T));
+                callback(PromisedObjectAs<T>());
             else
-                _resolveCallbacks.Add(() => callback(PromisedObject is T ? (T) PromisedObject : default(T)));
+                _resolutions.Add(GenericActionResolution<T>.Create(callback));
 
             return this;
         }
 
         public IPromise ThenAll(Func<IEnumerable<IPromise>> promises)
         {
-            var p = new Promise();
-
-            Action resolution = () =>
-            {
-                All(promises())
-                    .ThenDo<object>(o => p.Resolve(o));
-            };
+            var p = Create();
 
             if (CurrentState == EPromiseState.Resolved)
-                resolution();
+                All(promises()).ThenResolvePromise(p);
             else
-                _resolveCallbacks.Add(resolution);
+                _resolutions.Add(FuncToEnumerableResolution.Create(promises, p));
 
             return p;
         }
@@ -151,73 +175,72 @@ namespace GameTemplate.Promises
 
         public IPromise ThenWaitForSeconds(float time, bool unscaled = false)
         {
-            var p = new Promise();
+            var p = Create();
 
-            Action resolution = () =>
+            Action action = () =>
             {
                 CoroutineExtensions.WaitForSeconds(time, unscaled)
                     .ThenDo(() => p.Resolve(PromisedObject));
             };
 
             if (CurrentState == EPromiseState.Resolved)
-                resolution();
+                action();
             else
-                _resolveCallbacks.Add(resolution);
+                AddActionResolution(action);
 
             return p;
         }
 
-
         public IPromise ThenWaitUntil(Func<bool> evaluator)
-        {
-            var p = new Promise();
+        {            
+            var p = Create();
 
-            Action resolution = () =>
+            Action action = () =>
             {
                 CoroutineExtensions.WaitUntil(evaluator)
                     .ThenDo(() => p.Resolve(PromisedObject));
             };
 
             if (CurrentState == EPromiseState.Resolved)
-                resolution();
+                action();
             else
-                _resolveCallbacks.Add(resolution);
+                AddActionResolution(action);
 
             return p;
         }
 
         public IPromise ThenWaitUntil(YieldInstruction yieldInstruction)
-        {
-            var p = new Promise();
+        {            
+            var p = Create();
 
-            Action resolution = () =>
+            Action action = () =>
             {
                 CoroutineExtensions.WaitUntil(yieldInstruction)
                     .ThenDo(() => p.Resolve(PromisedObject));
             };
 
             if (CurrentState == EPromiseState.Resolved)
-                resolution();
+                action();
             else
-                _resolveCallbacks.Add(resolution);
+                AddActionResolution(action);
 
             return p;
         }
 
         public IPromise ThenTween(float time, Easing.Functions easing, Action<float> onUpdate, bool unscaled = false)
-        {
-            var p = new Promise();
+        {            
+            var p = Create();
 
-            Action resolution = () =>
+            Action action = () =>
             {
                 CoroutineExtensions.Tween(time, easing, onUpdate, unscaled)
                     .ThenDo(() => p.Resolve(PromisedObject));
             };
 
             if (CurrentState == EPromiseState.Resolved)
-                resolution();
+                action();
             else
-                _resolveCallbacks.Add(resolution);
+                AddActionResolution(action);
 
             return p;
         }
@@ -229,9 +252,9 @@ namespace GameTemplate.Promises
 
         public IPromise ThenTween<TU>(float time, Easing.Functions easing, TU fromValue, TU toValue, Action<TU, TU, float> onUpdate, bool unscaled = false)
         {
-            var p = new Promise();
+            var p = Create();
 
-            Action resolution = () =>
+            Action action = () =>
             {
                 CoroutineExtensions.Tween(
                         time,
@@ -245,9 +268,9 @@ namespace GameTemplate.Promises
             };
 
             if (CurrentState == EPromiseState.Resolved)
-                resolution();
+                action();
             else
-                _resolveCallbacks.Add(resolution);
+                AddActionResolution(action);
 
             return p;
         }
@@ -269,7 +292,7 @@ namespace GameTemplate.Promises
             if (CurrentState == EPromiseState.Resolved)
                 Debug.Log(message);
             else
-                _resolveCallbacks.Add(() => Debug.Log(message));
+                _resolutions.Add(DebugLogResolution.Create(message));
 
             return this;
         }
@@ -277,13 +300,12 @@ namespace GameTemplate.Promises
         public IPromise Catch(Action<Exception> exceptionHandler)
         {
             _rejectCallbacks.Add(exceptionHandler);
-
             return this;
         }
 
         public static IPromise All(IEnumerable<IPromise> promises)
         {
-            var returnPromise = new Promise();
+            var returnPromise = Create();
 
             var promisesArray = promises as IPromise[] ?? promises.ToArray();
             var promisedObjects = new object[promisesArray.Length];
@@ -319,7 +341,7 @@ namespace GameTemplate.Promises
 
         public static IPromise Resolved(object promisedObject = null)
         {
-            var p = new Promise();
+            var p = Create();
             p.Resolve(promisedObject);
             return p;
         }
@@ -332,10 +354,8 @@ namespace GameTemplate.Promises
             PromisedObject = promisedObject;
             CurrentState = EPromiseState.Resolved;
 
-            foreach (var callback in _resolveCallbacks)
-                callback();
-
-            _resolveCallbacks.Clear();
+            foreach (var resolution in _resolutions)
+                resolution.Resolve(PromisedObject);
         }
 
         public void Reject(Exception ex)
@@ -348,16 +368,11 @@ namespace GameTemplate.Promises
 
             foreach (var rejectCallback in _rejectCallbacks)
                 rejectCallback(ex);
-
-            _rejectCallbacks.Clear();
         }
 
         #region IEnumerator // Allows Promises to work as yield instructions in Coroutines
 
-        object IEnumerator.Current
-        {
-            get { return null; }
-        }
+        object IEnumerator.Current => null;
 
         bool IEnumerator.MoveNext()
         {
@@ -369,5 +384,7 @@ namespace GameTemplate.Promises
         }
 
         #endregion
-    } // Promise
+    }
+
+    // Promise
 }

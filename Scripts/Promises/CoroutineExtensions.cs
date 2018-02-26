@@ -8,6 +8,7 @@ namespace GameTemplate.Promises
     {
         private static CoroutineExtensions _instance;
         private static Coroutine _lastRoutineCache;
+        public static readonly WaitForEndOfFrame EndOfFrame = new WaitForEndOfFrame();
 
         private static void Init()
         {
@@ -21,7 +22,7 @@ namespace GameTemplate.Promises
             if (!_instance)
                 Init();
 
-            var p = new Promise();
+            var p = Promise.Create();
             _instance.StartCoroutine(_instance.WaitForCoroutine(coroutine, p));
             return p;
         }
@@ -96,17 +97,24 @@ namespace GameTemplate.Promises
 
         private static IEnumerator WaitForSecondsRoutine(float time)
         {
-            yield return new WaitForSeconds(time);
+            var targetTime = Time.time + time;
+
+            while (Time.time < targetTime)
+                yield return null;
         }
 
         private static IEnumerator WaitForSecondsRealtimeRoutine(float time)
         {
-            yield return new WaitForSecondsRealtime(time);
+            var targetTime = Time.realtimeSinceStartup + time;
+
+            while (Time.realtimeSinceStartup < targetTime)
+                yield return null;            
         }
 
         private static IEnumerator WaitUntilRoutine(Func<bool> evaluator)
         {
-            yield return new WaitUntil(evaluator);
+            while (!evaluator())
+                yield return null;
         }
 
         private static IEnumerator WaitUntilRoutine(YieldInstruction yieldInstruction)
@@ -116,7 +124,7 @@ namespace GameTemplate.Promises
 
         private static IEnumerator WaitForEndOfFrameRoutine()
         {
-            yield return new WaitForEndOfFrame();
+            yield return EndOfFrame;
         }
 
         private static IEnumerator TweenRoutine(float time, Easing.Functions easing, Action<float> onUpdate, bool unscaled = false)
