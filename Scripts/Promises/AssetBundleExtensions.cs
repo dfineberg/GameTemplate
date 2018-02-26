@@ -48,7 +48,7 @@ namespace GameTemplate.Promises
             var assets = paths.Select(AssetDatabase.LoadAssetAtPath<Object>).ToArray();
             return Promise.Resolved(assets);
 #else
-            return LoadFromFileAsync(streamingAssetsPath)
+            return LoadFromFileAsync(bundlePath)
                 .Then<AssetBundle>(b => b.LoadAllAssetsPromise());
 #endif
         }
@@ -58,7 +58,7 @@ namespace GameTemplate.Promises
 #if UNITY_EDITOR
             return Promise.Resolved(AssetDatabase.GetAssetPathsFromAssetBundle(bundlePath));
 #else
-            return LoadFromFileAsync(streamingAssetsPath)
+            return LoadFromFileAsync(bundlePath)
                 .Then<AssetBundle>(b => Promise.Resolved(b.GetAllAssetNames()));
 #endif
         }
