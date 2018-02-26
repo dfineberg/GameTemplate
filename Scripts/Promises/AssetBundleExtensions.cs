@@ -32,6 +32,15 @@ namespace GameTemplate.Promises
             return p;
         }
 
+        public static IPromise Load(string bundlePath)
+        {
+#if UNITY_EDITOR
+            return Promise.Resolved();
+#else
+            return LoadFromFileAsync(bundlePath);
+#endif
+        }
+
         public static IPromise LoadAllAssets(string bundlePath)
         {
 #if UNITY_EDITOR
