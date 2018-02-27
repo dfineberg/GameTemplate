@@ -89,10 +89,11 @@ namespace GameTemplate.Promises
         private class ResolvePromiseResolution : PromiseResolution
         {
             private Promise _promise;
+            private object _promisedObject;
             
             public override void Resolve(object o)
             {
-                _promise.Resolve(o);
+                _promise.Resolve(o ?? _promisedObject);
             }
 
             public override void Dispose()
@@ -101,10 +102,11 @@ namespace GameTemplate.Promises
                 ObjectPool.Push(this);
             }
 
-            public static ResolvePromiseResolution Create(Promise promise)
+            public static ResolvePromiseResolution Create(Promise promise, object promisedObject)
             {
                 var r = ObjectPool.Pop<ResolvePromiseResolution>();
                 r._promise = promise;
+                r._promisedObject = promisedObject;
                 return r;
             }
         }
@@ -182,6 +184,105 @@ namespace GameTemplate.Promises
             {
                 var r = ObjectPool.Pop<FuncToEnumerableResolution>();
                 r._func = func;
+                r._promise = promise;
+                return r;
+            }
+        }
+        
+        private class WaitForSecondsResolution : PromiseResolution
+        {
+            private float _time;
+            private bool _unscaled;
+            private Promise _promise;
+            
+            public override void Resolve(object o)
+            {
+                CoroutineExtensions.WaitForSeconds(_time, _unscaled).ThenResolvePromise(_promise, o);
+            }
+
+            public override void Dispose()
+            {
+                _promise = null;
+                ObjectPool.Push(this);
+            }
+
+            public static WaitForSecondsResolution Create(float time, bool unscaled, Promise promise)
+            {
+                var r = ObjectPool.Pop<WaitForSecondsResolution>();
+                r._time = time;
+                r._unscaled = unscaled;
+                r._promise = promise;
+                return r;
+            }
+        }
+        
+        private class WaitUntilResolution : PromiseResolution
+        {
+            private Func<bool> _func;
+            private YieldInstruction _yieldInstruction;
+            private Promise _promise;
+            
+            public override void Resolve(object o)
+            {
+                var p = _func == null
+                    ? CoroutineExtensions.WaitUntil(_yieldInstruction)
+                    : CoroutineExtensions.WaitUntil(_func);
+
+                p.ThenResolvePromise(_promise, o);
+            }
+
+            public override void Dispose()
+            {
+                _func = null;
+                _yieldInstruction = null;
+                ObjectPool.Push(this);
+            }
+
+            public static WaitUntilResolution Create(Func<bool> func, Promise promise)
+            {
+                var r = ObjectPool.Pop<WaitUntilResolution>();
+                r._func = func;
+                r._promise = promise;
+                return r;
+            }
+
+            public static WaitUntilResolution Create(YieldInstruction yieldInstruction, Promise promise)
+            {
+                var r = ObjectPool.Pop<WaitUntilResolution>();
+                r._yieldInstruction = yieldInstruction;
+                r._promise = promise;
+                return r;
+            }
+        }
+        
+        private class TweenResolution : PromiseResolution
+        {
+            private float _time;
+            private Action<float> _onUpdate;
+            private Easing.Functions _easing;
+            private bool _unscaled;
+            private Promise _promise;
+            
+            public override void Resolve(object o)
+            {
+                CoroutineExtensions.Tween(_time, _onUpdate, _easing, _unscaled).ThenResolvePromise(_promise, o);
+            }
+
+            public override void Dispose()
+            {
+                _onUpdate = null;
+                _promise = null;
+                ObjectPool.Push(this);
+            }
+
+            public static TweenResolution Create(float time, Action<float> onUpdate, Easing.Functions easing,
+                bool unscaled, Promise promise)
+            {
+                var r = ObjectPool.Pop<TweenResolution>();
+                r._time = time;
+                r._onUpdate = onUpdate;
+                r._easing = easing;
+                r._unscaled = unscaled;
                 r._promise = promise;
                 return r;
             }

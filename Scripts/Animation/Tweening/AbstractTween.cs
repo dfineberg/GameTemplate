@@ -60,10 +60,8 @@ namespace GameTemplate
             return CoroutineExtensions.WaitForSeconds(Delay, unscaled)
                 .ThenTween(
                     Duration,
-                    EaseType,
                     SetValue,
-                    unscaled
-                )
+                    EaseType, unscaled)
                 .ThenDo(() => _currentState = EAnimateOnOffState.On);
         }
 
@@ -75,10 +73,8 @@ namespace GameTemplate
 
             return CoroutineExtensions.Tween(
                     Duration,
-                    Easing.Reverse(EaseType),
                     f => SetValue(1f - f),
-                    unscaled
-                )
+                    Easing.Reverse(EaseType), unscaled)
                 .ThenWaitForSeconds(Delay, unscaled)
                 .ThenDo(() => _currentState = EAnimateOnOffState.Off);
         }

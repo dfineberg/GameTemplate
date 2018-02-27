@@ -26,7 +26,7 @@ namespace GameTemplate.Promises
 
         IPromise Then<T>(Func<T, IPromise> callback);
 
-        IPromise ThenResolvePromise(Promise promise);
+        IPromise ThenResolvePromise(Promise promise, object promisedObject = null);
 
         IPromise ThenDo(Action callback);
 
@@ -42,14 +42,7 @@ namespace GameTemplate.Promises
 
         IPromise ThenWaitUntil(YieldInstruction yieldInstruction);
 
-        IPromise ThenTween(float time, Easing.Functions easing, Action<float> onUpdate, bool unscaled = false);
-
-        IPromise ThenTween(float time, Action<float> onUpdate, bool unscaled = false);
-
-        IPromise ThenTween<TU>(float time, Easing.Functions easing, TU fromValue, TU toValue,
-            Action<TU, TU, float> onUpdate, bool unscaled = false);
-
-        IPromise ThenTween<TU>(float time, TU fromValue, TU toValue, Action<TU, TU, float> onUpdate, bool unscaled = false);
+        IPromise ThenTween(float time, Action<float> onUpdate, Easing.Functions easing = Easing.Functions.Linear, bool unscaled = false);
 
         IPromise ThenLog(string message);
 
@@ -65,7 +58,6 @@ namespace GameTemplate.Promises
         public object PromisedObject { get; private set; }
 
         private readonly List<PromiseResolution> _resolutions = new List<PromiseResolution>();
-
         private readonly List<Action<Exception>> _rejectCallbacks = new List<Action<Exception>>();
 
         ~Promise()
@@ -82,6 +74,7 @@ namespace GameTemplate.Promises
 
         public void Dispose()
         {
+            _resolutions.Clear();
             _rejectCallbacks.Clear();
             CurrentState = EPromiseState.Pooled;
             ObjectPool.Push(this);
@@ -90,16 +83,6 @@ namespace GameTemplate.Promises
         private T PromisedObjectAs<T>()
         {
             return PromisedObject is T ? (T) PromisedObject : default(T);
-        }
-
-        private void AddActionResolution(Action action)
-        {
-            _resolutions.Add(ActionResolution.Create(action));
-        }
-
-        private void AddResolvePromiseResolution(Promise promise)
-        {
-            _resolutions.Add(ResolvePromiseResolution.Create(promise));
         }
 
         public IPromise Then(Func<IPromise> callback)
@@ -126,12 +109,12 @@ namespace GameTemplate.Promises
             return p;
         }
 
-        public IPromise ThenResolvePromise(Promise promise)
+        public IPromise ThenResolvePromise(Promise promise, object promisedObject = null)
         {
             if (CurrentState == EPromiseState.Resolved)
                 promise.Resolve(PromisedObject);
             else
-                AddResolvePromiseResolution(promise);
+                _resolutions.Add(ResolvePromiseResolution.Create(promise, promisedObject));
 
             return this;
         }
@@ -141,7 +124,7 @@ namespace GameTemplate.Promises
             if (CurrentState == EPromiseState.Resolved)
                 callback();
             else
-                AddActionResolution(callback);
+                _resolutions.Add(ActionResolution.Create(callback));
 
             return this;
         }
@@ -177,16 +160,10 @@ namespace GameTemplate.Promises
         {
             var p = Create();
 
-            Action action = () =>
-            {
-                CoroutineExtensions.WaitForSeconds(time, unscaled)
-                    .ThenDo(() => p.Resolve(PromisedObject));
-            };
-
             if (CurrentState == EPromiseState.Resolved)
-                action();
+                CoroutineExtensions.WaitForSeconds(time, unscaled).ThenResolvePromise(p, PromisedObject);
             else
-                AddActionResolution(action);
+                _resolutions.Add(WaitForSecondsResolution.Create(time, unscaled, p));
 
             return p;
         }
@@ -195,16 +172,10 @@ namespace GameTemplate.Promises
         {            
             var p = Create();
 
-            Action action = () =>
-            {
-                CoroutineExtensions.WaitUntil(evaluator)
-                    .ThenDo(() => p.Resolve(PromisedObject));
-            };
-
             if (CurrentState == EPromiseState.Resolved)
-                action();
+                CoroutineExtensions.WaitUntil(evaluator).ThenResolvePromise(p, PromisedObject);
             else
-                AddActionResolution(action);
+                _resolutions.Add(WaitUntilResolution.Create(evaluator, p));
 
             return p;
         }
@@ -213,78 +184,24 @@ namespace GameTemplate.Promises
         {            
             var p = Create();
 
-            Action action = () =>
-            {
-                CoroutineExtensions.WaitUntil(yieldInstruction)
-                    .ThenDo(() => p.Resolve(PromisedObject));
-            };
-
             if (CurrentState == EPromiseState.Resolved)
-                action();
+                CoroutineExtensions.WaitUntil(yieldInstruction).ThenResolvePromise(p, PromisedObject);
             else
-                AddActionResolution(action);
+                _resolutions.Add(WaitUntilResolution.Create(yieldInstruction, p));
 
             return p;
         }
 
-        public IPromise ThenTween(float time, Easing.Functions easing, Action<float> onUpdate, bool unscaled = false)
+        public IPromise ThenTween(float time, Action<float> onUpdate, Easing.Functions easing = Easing.Functions.Linear, bool unscaled = false)
         {            
             var p = Create();
 
-            Action action = () =>
-            {
-                CoroutineExtensions.Tween(time, easing, onUpdate, unscaled)
-                    .ThenDo(() => p.Resolve(PromisedObject));
-            };
-
             if (CurrentState == EPromiseState.Resolved)
-                action();
+                CoroutineExtensions.Tween(time, onUpdate, easing, unscaled).ThenResolvePromise(p, PromisedObject);
             else
-                AddActionResolution(action);
+                _resolutions.Add(TweenResolution.Create(time, onUpdate, easing, unscaled, p));
 
             return p;
-        }
-
-        public IPromise ThenTween(float time, Action<float> onUpdate, bool unscaled = false)
-        {
-            return ThenTween(time, Easing.Functions.Linear, onUpdate, unscaled);
-        }
-
-        public IPromise ThenTween<TU>(float time, Easing.Functions easing, TU fromValue, TU toValue, Action<TU, TU, float> onUpdate, bool unscaled = false)
-        {
-            var p = Create();
-
-            Action action = () =>
-            {
-                CoroutineExtensions.Tween(
-                        time,
-                        easing,
-                        fromValue,
-                        toValue,
-                        onUpdate,
-                        unscaled
-                    )
-                    .ThenDo(() => p.Resolve(PromisedObject));
-            };
-
-            if (CurrentState == EPromiseState.Resolved)
-                action();
-            else
-                AddActionResolution(action);
-
-            return p;
-        }
-
-        public IPromise ThenTween<TU>(float time, TU fromValue, TU toValue, Action<TU, TU, float> onUpdate, bool unscaled = false)
-        {
-            return ThenTween(
-                time,
-                Easing.Functions.Linear,
-                fromValue,
-                toValue,
-                onUpdate,
-                unscaled
-            );
         }
 
         public IPromise ThenLog(string message)
@@ -384,7 +301,5 @@ namespace GameTemplate.Promises
         }
 
         #endregion
-    }
-
-    // Promise
+    } // Promise
 }

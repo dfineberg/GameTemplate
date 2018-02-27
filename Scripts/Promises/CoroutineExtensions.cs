@@ -47,37 +47,9 @@ namespace GameTemplate.Promises
             return WaitForCoroutine(WaitForEndOfFrameRoutine());
         }
 
-        public static IPromise Tween(float time, Easing.Functions easing, Action<float> onUpdate, bool unscaled = false)
+        public static IPromise Tween(float time, Action<float> onUpdate, Easing.Functions easing = Easing.Functions.Linear, bool unscaled = false)
         {
             return WaitForCoroutine(TweenRoutine(time, easing, onUpdate, unscaled));
-        }
-
-        public static IPromise Tween(float time, Action<float> onUpdate, bool unscaled = false)
-        {
-            return Tween(time, Easing.Functions.Linear, onUpdate, unscaled);
-        }
-
-        public static IPromise Tween<T>(float time, Easing.Functions easing, T fromValue, T toValue,
-            Action<T, T, float> onUpdate, bool unscaled = false)
-        {
-            return Tween(
-                time,
-                easing,
-                t => onUpdate(fromValue, toValue, t),
-                unscaled
-            );
-        }
-
-        public static IPromise Tween<T>(float time, T fromValue, T toValue, Action<T, T, float> onUpdate, bool unscaled = false)
-        {
-            return Tween(
-                time,
-                Easing.Functions.Linear,
-                fromValue,
-                toValue,
-                onUpdate,
-                unscaled
-            );
         }
 
         public static void StopAll()
