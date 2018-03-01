@@ -8,6 +8,12 @@ namespace GameTemplate
     public class GenericValue<T> : GenericEvent<T>
     {
         [SerializeField] private T _value;
+
+        [Header("Debug Command Options")]
+        public bool IsDebugCommand;
+        public string DebugCommandName;
+        [TextArea] public string DebugCommandDescription;
+
         public T Value
         {
             get { return _value; }
