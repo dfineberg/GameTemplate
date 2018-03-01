@@ -23,7 +23,7 @@ namespace GameTemplate.Promises
             var promises = paths.SelectEach(LoadAsync);
 
             Promise.All(promises)
-                .ThenDo<object>(o => p.Resolve(o));
+                .ThenResolvePromise(p);
 
             return p;
         }
@@ -42,6 +42,12 @@ namespace GameTemplate.Promises
         public static IPromise LoadAllFromStringLibrary(StringLibrary lib)
         {
             return LoadAllAsync(lib.StringsWithResourcesDirectory);
+        }
+
+        public static IPromise LoadAllFromStringLibrary(string path)
+        {
+            return LoadAsync(path)
+                .Then<StringLibrary>(LoadAllFromStringLibrary);
         }
     }
 }
