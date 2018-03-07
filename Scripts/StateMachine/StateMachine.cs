@@ -55,9 +55,6 @@ namespace GameTemplate
                     yield return null;
                 }
 
-                if (!_isRunning)
-                    break;
-
                 _currentState.ForceNextStateEvent -= HandleForceNextState;
                 _currentState.OnExit();
                 _currentState.Recycle();
