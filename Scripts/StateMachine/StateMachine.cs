@@ -1,13 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using Debug = System.Diagnostics.Debug;
 
 namespace GameTemplate
 {
     public class StateMachine : MonoBehaviour
-    {
-        public string CurrentState;
-    
+    {    
         private AbstractState _currentState;
         private AbstractState _nextState;
         private IFixedUpdate _fixedUpdate;
@@ -15,6 +14,7 @@ namespace GameTemplate
         private IUpdate _update;
         private bool _isRunning;
 
+        public Action<string> OnNewState;
 
         public string CurrentStateName => _currentState?.GetType().ToString();
 
@@ -47,6 +47,7 @@ namespace GameTemplate
                 Debug.Assert(_currentState != null, "Please provide a state");
                 _currentState.ForceNextStateEvent += HandleForceNextState;
                 _currentState.SetGameObject(gameObject);
+                OnNewState?.Invoke(CurrentStateName);
                 _currentState.OnEnter();
 
                 while (_nextState == null && _isRunning)
@@ -73,6 +74,7 @@ namespace GameTemplate
 
             _currentState.SetGameObject(gameObject);
             _currentState.ForceNextStateEvent += HandleForceNextState;
+            OnNewState?.Invoke(CurrentStateName);
             _currentState.OnEnter();
         }
 
@@ -88,7 +90,6 @@ namespace GameTemplate
 
         private void Update()
         {
-            CurrentState = CurrentStateName;
             _update?.Update();
         }
     }
