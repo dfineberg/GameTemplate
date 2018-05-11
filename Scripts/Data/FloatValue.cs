@@ -14,5 +14,10 @@ namespace GameTemplate
         {
             Value -= f;
         }
+
+        protected override bool Equals(float other)
+        {
+            return Value == other;
+        }
     }
 }

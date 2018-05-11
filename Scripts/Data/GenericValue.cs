@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace GameTemplate
 {
-    public class GenericValue<T> : GenericEvent<T>
+    public abstract class GenericValue<T> : GenericEvent<T>
     {
         [SerializeField] private T _value;
 
@@ -19,6 +19,7 @@ namespace GameTemplate
             get { return _value; }
             set
             {
+                if (Equals(value)) return;
                 _value = value;
                 Invoke(_value);
             }
@@ -57,9 +58,6 @@ namespace GameTemplate
             Value = _defaultValue;
         }
 
-        public void Set(T newValue)
-        {
-            Value = newValue;
-        }
+        protected abstract bool Equals(T other);
     }
 }

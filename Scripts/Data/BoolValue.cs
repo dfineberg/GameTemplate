@@ -7,7 +7,12 @@ namespace GameTemplate
     {
         public void Switch()
         {
-            Set(!Value);
+            Value = !Value;
+        }
+
+        protected override bool Equals(bool other)
+        {
+            return Value == other;
         }
     }
 }

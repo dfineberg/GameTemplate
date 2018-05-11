@@ -19,5 +19,10 @@ namespace GameTemplate
         {
             Value--;
         }
+
+        protected override bool Equals(int other)
+        {
+            return Value == other;
+        }
     }
 }
