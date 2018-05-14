@@ -28,7 +28,7 @@ namespace GameTemplate
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!TriggerLayers.ContainsLayer(other.gameObject.layer)) 
+            if (other.isTrigger || !TriggerLayers.ContainsLayer(other.gameObject.layer)) 
                 return;
         
             _list.Add(other);
@@ -39,7 +39,7 @@ namespace GameTemplate
 
         private void OnTriggerExit(Collider other)
         {
-            if (!TriggerLayers.ContainsLayer(other.gameObject.layer)) 
+            if (other.isTrigger || !TriggerLayers.ContainsLayer(other.gameObject.layer)) 
                 return;
         
             _list.Remove(other);
