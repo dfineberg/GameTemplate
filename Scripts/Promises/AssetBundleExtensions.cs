@@ -10,27 +10,26 @@ namespace GameTemplate.Promises
 {
     public static class AssetBundleExtensions
     {
-        private static readonly Dictionary<string, AssetBundle> LoadedBundles = new Dictionary<string, AssetBundle>();
+        private static readonly Dictionary<string, Promise> LoadedBundles = new Dictionary<string, Promise>();
         
         // ReSharper disable once UnusedMember.Local
         private static IPromise LoadFromFileAsync(string bundlePath)
         {
-            if (LoadedBundles.ContainsKey(bundlePath))
-                return Promise.Resolved(LoadedBundles[bundlePath]);
-            
-            var p = Promise.Create();
-            var path = Path.Combine(Application.streamingAssetsPath, bundlePath).Replace("\\", "/");
-            var request = AssetBundle.LoadFromFileAsync(path);
-            
-            CoroutineExtensions.WaitUntil(request)
-                .ThenDo(() =>
-                {
-                    Debug.Log($"Loaded AssetBundle at: {path}");
-                    LoadedBundles.Add(bundlePath, request.assetBundle);
-                    p.Resolve(request.assetBundle);
-                });
-            
-            return p;
+            if (!LoadedBundles.ContainsKey(bundlePath))
+            {
+                LoadedBundles.Add(bundlePath, Promise.Create());
+                var path = Path.Combine(Application.streamingAssetsPath, bundlePath).Replace("\\", "/");
+                var request = AssetBundle.LoadFromFileAsync(path);
+
+                CoroutineExtensions.WaitUntil(request)
+                    .ThenDo(() =>
+                    {
+                        Debug.Log($"Loaded AssetBundle at: {path}");
+                        LoadedBundles[bundlePath].Resolve(request.assetBundle);
+                    });
+            }
+
+            return LoadedBundles[bundlePath];
         }
 
         public static IPromise Load(string bundlePath)
@@ -75,12 +74,16 @@ namespace GameTemplate.Promises
 #endif
         }
 
-        public static void Unload(string bundlePath, bool unloadAllLoadedObjects)
+        public static IPromise Unload(string bundlePath, bool unloadAllLoadedObjects)
         {
             if (!LoadedBundles.ContainsKey(bundlePath))
-                return;
-            
-            LoadedBundles[bundlePath].Unload(unloadAllLoadedObjects);
+                return Promise.Resolved();
+
+            return LoadedBundles[bundlePath].ThenDo<AssetBundle>(bundle =>
+            {
+                bundle.Unload(unloadAllLoadedObjects);
+                LoadedBundles.Remove(bundlePath);
+            });
         }
 
         public static void UnloadAll(bool unloadAllObjects)
