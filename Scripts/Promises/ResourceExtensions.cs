@@ -19,13 +19,9 @@ namespace GameTemplate.Promises
 
         public static IPromise LoadAllAsync(IEnumerable<string> paths)
         {
-            var p = Promise.Create();
             var promises = paths.SelectEach(LoadAsync);
 
-            Promise.All(promises)
-                .ThenResolvePromise(p);
-
-            return p;
+            return Promise.All(promises);
         }
 
         public static IPromise LoadAllAsync(params string[] paths)
@@ -33,7 +29,7 @@ namespace GameTemplate.Promises
             return LoadAllAsync(paths as IEnumerable<string>);
         }
 
-        public static IPromise LoadAllAsync(string prefix, params string[] paths)
+        public static IPromise LoadAllWithPrefixAsync(string prefix, params string[] paths)
         {
             var prefixedPaths = paths.SelectEach(p => string.Concat(prefix, p));
             return LoadAllAsync(prefixedPaths);
