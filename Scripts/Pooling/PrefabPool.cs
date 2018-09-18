@@ -36,6 +36,16 @@ public class PrefabPool<T> where T : Component
         _pool.Push(obj);
     }
 
+    public void PushAllAndClear(List<T> objList)
+    {
+        while (objList.Count > 0)
+        {
+            var o = objList[0];
+            Push(o);
+            objList.RemoveAt(0);
+        }
+    }
+
     public void Clear()
     {
         while (_pool.Count > 0)
