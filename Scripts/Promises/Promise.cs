@@ -228,7 +228,7 @@ namespace GameTemplate.Promises
             var promisedObjects = new object[promisesArray.Length];
 
             if (promisesArray.Length == 0)
-                return Resolved();
+                return Resolved(promisedObjects);
 
             foreach (var promise in promisesArray)
             {
