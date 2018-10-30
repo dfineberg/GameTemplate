@@ -9,6 +9,7 @@ namespace GameTemplate.Promises
         private static CoroutineExtensions _instance;
         private static Coroutine _lastRoutineCache;
         public static readonly WaitForEndOfFrame EndOfFrame = new WaitForEndOfFrame();
+        public static readonly WaitForFixedUpdate WaitForFixedUpdate = new WaitForFixedUpdate();
 
         private static void Init()
         {
