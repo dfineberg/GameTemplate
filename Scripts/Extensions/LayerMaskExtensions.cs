@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 namespace GameTemplate
 {
@@ -6,22 +7,12 @@ namespace GameTemplate
 
         public static int BuildMask(params int[] layers)
         {
-            var mask = 0;
-
-            foreach (var layer in layers)
-                mask = mask | (1 << layer);
-
-            return mask;
+            return layers.Aggregate(0, (current, layer) => current | (1 << layer));
         }
 
         public static int BuildInverseMask(params int[] layers)
         {
-            var mask = ~0;
-
-            foreach (var layer in layers)
-                mask = mask & (~(1 << layer));
-
-            return mask;
+            return layers.Aggregate(~0, (current, layer) => current & ~(1 << layer));
         }
 
         public static bool ContainsLayer(int mask, int layer)
@@ -32,6 +23,26 @@ namespace GameTemplate
         public static bool ContainsLayer(this LayerMask mask, int layer)
         {
             return ContainsLayer(mask.value, layer);
+        }
+
+        public static bool ContainsLayer(this LayerMask mask, string layerName)
+        {
+            return ContainsLayer(mask.value, LayerMask.NameToLayer(layerName));
+        }
+
+        public static int GetFirstLayer(this LayerMask mask)
+        {
+            for (var i = 0; i < 32; i++)
+                if (mask.ContainsLayer(i))
+                    return i;
+
+            return -1;
+        }
+
+        public static string GetFirstLayerName(this LayerMask mask)
+        {
+            var firstLayer = mask.GetFirstLayer();
+            return firstLayer == -1 ? null : LayerMask.LayerToName(firstLayer);
         }
     }
 }
