@@ -41,7 +41,7 @@ namespace GameTemplate
                 return TriggerLayers.ContainsLayer(obj.layer);
 
             var t = obj.GetComponent<TriggerReporterTag>();
-            return t && t.Tag == TriggerTag;
+            return t && t.TagString == TriggerTag;
         }
     }
 }

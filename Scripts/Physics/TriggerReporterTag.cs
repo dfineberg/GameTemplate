@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public class TriggerReporterTag : MonoBehaviour
+namespace GameTemplate
 {
-    public string Tag;
+    public class TriggerReporterTag : MonoBehaviour
+    {
+        public string TagString;
+    }
 }
