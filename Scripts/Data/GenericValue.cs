@@ -46,10 +46,12 @@ namespace GameTemplate
 
         private void OnValidate()
         {
-            if (Application.isPlaying) // if value is changed at runtime in the inspector, invoke the event
-                Invoke(_value);
-            else
-                _defaultValue = _value; // don't allow value to be changed in the inspector while the game isn't running
+            if (Equals(_defaultValue)) return;
+            
+            if (!Application.isPlaying)
+                _defaultValue = _value; // _defaultValue can only be set in edit mode
+            
+            Invoke(_value);
         }
 #endif
 
