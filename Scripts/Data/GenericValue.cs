@@ -46,8 +46,6 @@ namespace GameTemplate
 
         private void OnValidate()
         {
-            if (Equals(_defaultValue)) return;
-            
             if (!Application.isPlaying)
                 _defaultValue = _value; // _defaultValue can only be set in edit mode
             
@@ -58,6 +56,11 @@ namespace GameTemplate
         public void ResetToDefault()
         {
             Value = _defaultValue;
+        }
+
+        public void UpdateDefaultValue()
+        {
+            _defaultValue = _value;
         }
 
         protected abstract bool Equals(T other);
