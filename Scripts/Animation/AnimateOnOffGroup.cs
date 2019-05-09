@@ -165,13 +165,7 @@ namespace GameTemplate
 
         private bool CheckIfAnimating()
         {
-            if (CurrentState == EAnimateOnOffState.AnimatingOn || CurrentState == EAnimateOnOffState.AnimatingOff)
-            {
-                Debug.LogError("Animating while we're animating: " + gameObject.name);
-                return true;
-            }
-
-            return false;
+            return CurrentState == EAnimateOnOffState.AnimatingOn || CurrentState == EAnimateOnOffState.AnimatingOff;
         }
     }
 }
