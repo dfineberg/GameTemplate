@@ -21,7 +21,7 @@ namespace GameTemplate
         {
             // disable the EventSystem until the screen has fully animated on to prevent the user from pressing buttons before the sequence has finished
             GameManager = gameObject.GetComponent<GameManagerCore>();
-            GameManager.EventSystem.enabled = false;
+            GameManagerCore.EventSystem.enabled = false;
             EnterRoutine();
         }
 
@@ -29,13 +29,13 @@ namespace GameTemplate
         {
             return AssetBundleExtensions.LoadAsset(AssetBundlePath, ScreenAssetName) // load the UI screen prefab from the asset bundle
                 .ThenDo<GameObject>(HandleResourceLoaded) // then instantiate the prefab with HandleResourceLoaded
-                .Then(() => GameManager.LoadingScreen.AnimateOff()) // then animate the loading screen off
+                .Then(() => GameManagerCore.LoadingScreen.AnimateOff()) // then animate the loading screen off
                 .Then(() => Screen.Animator.AnimateOn()) // then animate the UI screen on
                 .ThenDo(() => // finally register callbacks for button presses on the UI screen
                 {
                     Screen.ButtonPressedEvent += HandleButtonPressed;
                     Screen.BackButtonPressedEvent += HandleBackButtonPressed;
-                    GameManager.EventSystem.enabled = true;
+                    GameManagerCore.EventSystem.enabled = true;
                 });
         }
 
@@ -43,13 +43,13 @@ namespace GameTemplate
         protected virtual IPromise ExitRoutine(AbstractState nextState, bool showLoadingScreen = false)
         {
             // unregisters callbacks and disables the EventSystem
-            GameManager.EventSystem.enabled = false;
+            GameManagerCore.EventSystem.enabled = false;
             Screen.CanFireEvents = false;
             Screen.ButtonPressedEvent -= HandleButtonPressed;
             Screen.BackButtonPressedEvent -= HandleBackButtonPressed;
 
             return Screen.Animator.AnimateOff() // animate the current screen off
-                .Then(() => showLoadingScreen ? GameManager.LoadingScreen.AnimateOn() : Promise.Resolved())
+                .Then(() => showLoadingScreen ? GameManagerCore.LoadingScreen.AnimateOn() : Promise.Resolved())
                 .ThenDo(() => NextState = nextState); // then go to the next state
         }
 
@@ -58,13 +58,13 @@ namespace GameTemplate
             Object.Destroy(Screen.gameObject);
 
             if (!(NextState is AbstractMenuState)) // in case the next state doesn't enable the EventSystem itself
-                GameManager.EventSystem.enabled = true;
+                GameManagerCore.EventSystem.enabled = true;
         }
 
         // override this if the screen prefab has scripts on it that need initialising
         protected virtual void HandleResourceLoaded(GameObject loadedObject)
         {
-            Screen = GameManager.Canvas.InstantiateBehindLoadingScreen(loadedObject).GetComponent<MenuScreen>();
+            Screen = GameManagerCore.Canvas.InstantiateBehindLoadingScreen(loadedObject).GetComponent<MenuScreen>();
         }
 
         protected virtual void HandleBackButtonPressed()
