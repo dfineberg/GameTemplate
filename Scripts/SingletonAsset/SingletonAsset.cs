@@ -41,7 +41,7 @@ public abstract class SingletonAsset : ScriptableObject
     {
         return AppDomain.CurrentDomain.GetAssemblies() // in all the currently loaded assemblies,
             .SelectMany(s => s.GetTypes()) // get all the types
-            .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(SingletonAsset))) // that inherit from SingletonAsset
+            .Where(t => t.IsClass && !t.IsGenericTypeDefinition && !t.IsAbstract && t.IsSubclassOf(typeof(SingletonAsset))) // that inherit from SingletonAsset
             .ToArray();
     }
 
