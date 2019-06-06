@@ -12,8 +12,10 @@ using UnityEngine;
 public abstract class SingletonAsset : ScriptableObject
 {
     private static readonly Dictionary<Type, SingletonAsset> AssetDictionary = new Dictionary<Type, SingletonAsset>();
+    private static readonly Promise LoadedPromise = Promise.Create();
 
-    public static bool Loaded { get; private set; }
+    public static bool Loaded => LoadedPromise.CurrentState == EPromiseState.Resolved;
+    public static IPromise WaitUntilLoaded => LoadedPromise;
 
     public static IPromise LoadAll()
     {
@@ -34,7 +36,7 @@ public abstract class SingletonAsset : ScriptableObject
                 }
             })
             .ThenAll(() => AssetDictionary.Values.Select(asset => asset.OnAssetsLoaded()))
-            .ThenDo(() => Loaded = true);
+            .ThenDo(() => LoadedPromise.Resolve());
     }
 
     public static Type[] GetTypes()
@@ -53,7 +55,7 @@ public abstract class SingletonAsset : ScriptableObject
         
         return (T) AssetDictionary[typeof(T)];
     }
-
+    
     /// <summary>
     /// Called after all SingletonAssets have been loaded.
     /// The order in which the assets are initialised cannot be guaranteed,
