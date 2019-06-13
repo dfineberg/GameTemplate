@@ -50,7 +50,12 @@ namespace GameTemplate.Promises
 
         public static IPromise Tween(float time, Action<float> onUpdate, Easing.Functions easing = Easing.Functions.Linear, bool unscaled = false)
         {
-            return WaitForCoroutine(TweenRoutine(time, easing, onUpdate, unscaled));
+            return WaitForCoroutine(TweenRoutine<float>(time, 0f, 0f, easing, ((from, to, t) => onUpdate(t)), unscaled));
+        }
+        
+        public static IPromise Tween<T>(float time, T from, T to, Action<T,T,float> onUpdate, Easing.Functions easing = Easing.Functions.Linear, bool unscaled = false)
+        {
+            return WaitForCoroutine(TweenRoutine<T>(time, from, to, easing, onUpdate, unscaled));
         }
 
         public static void StopAll()
@@ -100,19 +105,19 @@ namespace GameTemplate.Promises
             yield return EndOfFrame;
         }
 
-        private static IEnumerator TweenRoutine(float time, Easing.Functions easing, Action<float> onUpdate, bool unscaled = false)
+        private static IEnumerator TweenRoutine<T>(float time, T from, T to, Easing.Functions easing, Action<T,T,float> onUpdate, bool unscaled = false)
         {
             var f = 0f;
 
             while (f <= time)
             {
-                onUpdate(Easing.Interpolate(f / time, easing));
+                onUpdate(from, to, Easing.Interpolate(f / time, easing));
                 var deltaTime = unscaled ? Time.unscaledDeltaTime : Time.deltaTime;
                 f += deltaTime;
                 yield return null;
             }
 
-            onUpdate(1f);
+            onUpdate(from, to, 1f);
         }
     }
 }
