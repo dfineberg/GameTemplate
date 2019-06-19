@@ -35,8 +35,8 @@ public abstract class SingletonAsset : ScriptableObject
                     AssetDictionary.Add(types[i], singletonAsset);
                 }
             })
-            .ThenAll(() => AssetDictionary.Values.Select(asset => asset.OnAssetsLoaded()))
-            .ThenDo(() => LoadedPromise.Resolve());
+            .ThenDo(() => LoadedPromise.Resolve())
+            .ThenAll(() => AssetDictionary.Values.Select(asset => asset.OnAssetsLoaded()));
     }
 
     public static Type[] GetTypes()
