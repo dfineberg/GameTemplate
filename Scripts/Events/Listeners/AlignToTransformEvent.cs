@@ -8,21 +8,18 @@ namespace GameTemplate
 
         private void OnEnable()
         {
-            TransformEvent?.Subscribe(Align);
+            if(TransformEvent) TransformEvent.Subscribe(Align);
         }
 
         private void OnDisable()
         {
-            TransformEvent?.Unsubscribe(Align);
+            if(TransformEvent) TransformEvent.Unsubscribe(Align);
         }
 
         private void Align(Transform t)
         {
-            if (t == null)
-                return;
-        
-            transform.position = t.position;
-            transform.rotation = t.rotation;
+            if (t == null) return;
+            transform.SetPositionAndRotation(t.position, t.rotation);
         }
     }
 }
