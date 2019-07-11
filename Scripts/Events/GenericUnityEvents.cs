@@ -11,4 +11,7 @@ namespace GameTemplate
 
     [Serializable]
     public class UnityEventInt : UnityEvent<int> {}
+
+    [Serializable]
+    public class UnityEventString : UnityEvent<string> {}
 }
