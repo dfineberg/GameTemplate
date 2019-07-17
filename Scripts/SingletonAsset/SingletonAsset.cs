@@ -35,8 +35,8 @@ public abstract class SingletonAsset : ScriptableObject
                     AssetDictionary.Add(types[i], singletonAsset);
                 }
             })
-            .ThenDo(() => LoadedPromise.Resolve())
-            .ThenAll(() => AssetDictionary.Values.Select(asset => asset.OnAssetsLoaded()));
+            .ThenAll(() => AssetDictionary.Values.Select(asset => asset.OnAssetsLoaded()))
+            .ThenDo(() => LoadedPromise.Resolve());
     }
 
     public static Type[] GetTypes()
@@ -49,7 +49,6 @@ public abstract class SingletonAsset : ScriptableObject
 
     public static T Instance<T>() where T : SingletonAsset
     {
-        Debug.Assert(Loaded, "SingletonAssets haven't been loaded yet.");
         Debug.Assert(AssetDictionary.ContainsKey(typeof(T)),
             $"Something went wrong loading the SingletonAsset {nameof(T)}");
         
