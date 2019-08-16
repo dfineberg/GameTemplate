@@ -14,11 +14,11 @@ namespace GameTemplate
         private IUpdate _update;
         private bool _isRunning;
 
+        private AbstractState _basePushState;
+
         public Action<string> OnNewState;
 
         public string CurrentStateName => _currentState?.GetType().ToString();
-
-        public string NextStateName => _nextState?.GetType().ToString();
 
         public void Run(AbstractState firstState)
         {
@@ -35,9 +35,14 @@ namespace GameTemplate
         private void SetCurrentState(AbstractState newState)
         {
             _currentState = newState;
-            _fixedUpdate = _currentState as IFixedUpdate;
-            _lateUpdate = _currentState as ILateUpdate;
-            _update = _currentState as IUpdate;
+            SetUpdates(_currentState);
+        }
+
+        private void SetUpdates(AbstractStateBase abstractState)
+        {
+            _fixedUpdate = abstractState as IFixedUpdate;
+            _lateUpdate = abstractState as ILateUpdate;
+            _update = abstractState as IUpdate;
         }
 
         private IEnumerator StateMachineRoutine()
@@ -52,13 +57,13 @@ namespace GameTemplate
 
                 while (_nextState == null && _isRunning)
                 {
+                    if (_currentState.PushState != null) yield return StartCoroutine(PushStateTransitionRoutine(_currentState));
                     _nextState = _currentState.NextState;
                     yield return null;
                 }
 
                 _currentState.ForceNextStateEvent -= HandleForceNextState;
                 _currentState.OnExit();
-                _currentState.Recycle();
 
                 SetCurrentState(_nextState);
                 _nextState = null;
@@ -76,6 +81,29 @@ namespace GameTemplate
             _currentState.ForceNextStateEvent += HandleForceNextState;
             OnNewState?.Invoke(CurrentStateName);
             _currentState.OnEnter();
+        }
+
+        private IEnumerator PushStateRoutine(AbstractPushState pushState)
+        {
+            SetUpdates(pushState);
+            pushState.OnEnter();
+            
+            while (!pushState.Popped)
+            {
+                if (pushState.PushState != null) yield return PushStateTransitionRoutine(pushState);
+                yield return null;
+            }
+            
+            pushState.OnExit();
+        }
+
+        private IEnumerator PushStateTransitionRoutine(AbstractStateBase currentState)
+        {
+            currentState.OnPushExit();
+            yield return StartCoroutine(PushStateRoutine(currentState.PushState));
+            currentState.ClearPushState();
+            SetUpdates(currentState);
+            currentState.OnPopEnter();
         }
 
         private void FixedUpdate()
