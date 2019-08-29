@@ -86,6 +86,7 @@ namespace GameTemplate
         private IEnumerator PushStateRoutine(AbstractPushState pushState)
         {
             SetUpdates(pushState);
+            pushState.SetGameObject(gameObject);
             pushState.OnEnter();
             
             while (!pushState.Popped)
