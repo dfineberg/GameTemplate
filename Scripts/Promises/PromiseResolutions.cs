@@ -287,5 +287,44 @@ namespace GameTemplate.Promises
                 return r;
             }
         }
+
+        private class GenericTweenResolution<T> : PromiseResolution
+        {
+            private float _time;
+            private T _from;
+            private T _to;
+            private Action<T, T, float> _onUpdate;
+            private Easing.Functions _easing;
+            private bool _unscaled;
+            private Promise _promise;
+            
+            public override void Resolve(object o)
+            {
+                CoroutineExtensions.Tween(_time, _from, _to, _onUpdate, _easing, _unscaled).ThenResolvePromise(_promise, o);
+            }
+
+            public override void Dispose()
+            {
+                _from = default;
+                _to = default;
+                _onUpdate = null;
+                _promise = null;
+                ObjectPool.Push(this);
+            }
+
+            public static GenericTweenResolution<T> Create(float time, T from, T to, Action<T, T, float> onUpdate,
+                Easing.Functions easing, bool unscaled, Promise promise)
+            {
+                var r = ObjectPool.Pop<GenericTweenResolution<T>>();
+                r._time = time;
+                r._from = from;
+                r._to = to;
+                r._onUpdate = onUpdate;
+                r._easing = easing;
+                r._unscaled = unscaled;
+                r._promise = promise;
+                return r;
+            }
+        }
     }
 }

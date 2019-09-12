@@ -44,6 +44,9 @@ namespace GameTemplate.Promises
 
         IPromise ThenTween(float time, Action<float> onUpdate, Easing.Functions easing = Easing.Functions.Linear, bool unscaled = false);
 
+        IPromise ThenTween<T>(float time, T from, T to, Action<T, T, float> onUpdate,
+            Easing.Functions easing = Easing.Functions.Linear, bool unscaled = false);
+
         IPromise ThenLog(string message);
 
         IPromise Catch(Action<Exception> exceptionHandler);
@@ -200,6 +203,20 @@ namespace GameTemplate.Promises
                 CoroutineExtensions.Tween(time, onUpdate, easing, unscaled).ThenResolvePromise(p, PromisedObject);
             else
                 _resolutions.Add(TweenResolution.Create(time, onUpdate, easing, unscaled, p));
+
+            return p;
+        }
+
+        public IPromise ThenTween<T>(float time, T from, T to, Action<T, T, float> onUpdate,
+            Easing.Functions easing = Easing.Functions.Linear, bool unscaled = false)
+        {
+            var p = Create();
+
+            if (CurrentState == EPromiseState.Resolved)
+                CoroutineExtensions.Tween(time, from, to, onUpdate, easing, unscaled)
+                    .ThenResolvePromise(p, PromisedObject);
+            else
+                _resolutions.Add(GenericTweenResolution<T>.Create(time, from, to, onUpdate, easing, unscaled, p));
 
             return p;
         }
