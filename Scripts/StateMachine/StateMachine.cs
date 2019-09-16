@@ -31,7 +31,7 @@ namespace GameTemplate
         {
             _isRunning = false;
         }
-
+        
         private void SetCurrentState(AbstractState newState)
         {
             _currentState = newState;
@@ -50,7 +50,7 @@ namespace GameTemplate
             while (_isRunning)
             {
                 Debug.Assert(_currentState != null, "Please provide a state");
-                _currentState.ForceNextStateEvent += HandleForceNextState;
+                _currentState.ForceNextStateEvent += ForceNextState;
                 _currentState.SetGameObject(gameObject);
                 OnNewState?.Invoke(CurrentStateName);
                 _currentState.OnEnter();
@@ -62,7 +62,7 @@ namespace GameTemplate
                     yield return null;
                 }
 
-                _currentState.ForceNextStateEvent -= HandleForceNextState;
+                _currentState.ForceNextStateEvent -= ForceNextState;
                 _currentState.OnExit();
 
                 SetCurrentState(_nextState);
@@ -70,15 +70,15 @@ namespace GameTemplate
             }
         }
 
-        private void HandleForceNextState(AbstractState forceState)
+        public void ForceNextState(AbstractState forceState)
         {
-            _currentState.ForceNextStateEvent -= HandleForceNextState;
+            _currentState.ForceNextStateEvent -= ForceNextState;
             _currentState.OnExit();
 
             SetCurrentState(forceState);
 
             _currentState.SetGameObject(gameObject);
-            _currentState.ForceNextStateEvent += HandleForceNextState;
+            _currentState.ForceNextStateEvent += ForceNextState;
             OnNewState?.Invoke(CurrentStateName);
             _currentState.OnEnter();
         }
