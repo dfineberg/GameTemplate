@@ -20,7 +20,11 @@ namespace GameTemplate
             set
             {
                 if (Equals(value)) return;
+                if (!Application.isPlaying) _defaultValue = value;
                 _value = value;
+#if UNITY_EDITOR
+                if (EditorApplication.isPlayingOrWillChangePlaymode) // don't invoke if we're leaving play mode
+#endif
                 Invoke(_value);
             }
         }
