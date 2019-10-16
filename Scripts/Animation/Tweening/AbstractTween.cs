@@ -79,6 +79,16 @@ namespace GameTemplate
                 .ThenDo(() => _currentState = EAnimateOnOffState.Off);
         }
 
+        public void AnimateOn()
+        {
+            AnimateOn(false);
+        }
+
+        public void AnimateOff()
+        {
+            AnimateOff(false);
+        }
+
         public void SetOn()
         {
             InitCheck();
