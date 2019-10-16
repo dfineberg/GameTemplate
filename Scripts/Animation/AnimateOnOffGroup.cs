@@ -94,7 +94,7 @@ namespace GameTemplate
             }
         }
 
-        public IPromise AnimateOn(bool unscaled = false)
+        public virtual IPromise AnimateOn(bool unscaled = false)
         {
             if (CheckIfAnimating())
                 return Promise.Resolved();
@@ -111,7 +111,7 @@ namespace GameTemplate
                 .ThenDo(() => CurrentState = EAnimateOnOffState.On);
         }
 
-        public IPromise AnimateOff(bool unscaled = false)
+        public virtual IPromise AnimateOff(bool unscaled = false)
         {
             if (CheckIfAnimating())
                 return Promise.Resolved();

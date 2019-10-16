@@ -1,4 +1,5 @@
-﻿using GameTemplate.Promises;
+﻿using System;
+using GameTemplate.Promises;
 using UnityEngine;
 
 namespace GameTemplate
