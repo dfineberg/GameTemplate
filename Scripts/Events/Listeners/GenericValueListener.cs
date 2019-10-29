@@ -6,10 +6,11 @@ public enum ValueListenerType { LessThan, LessThanOrEquals, GreaterThan, Greater
 public abstract class GenericValueListener<T, TU> : MonoBehaviour where T : GenericValue<TU>
 {
     public T Value;
+    public bool FireOnEnable = true;
 
     private void OnEnable()
     {
-        Listener(Value.Value);
+        if (FireOnEnable) Listener(Value.Value);
         Value.Subscribe(Listener);
     }
 

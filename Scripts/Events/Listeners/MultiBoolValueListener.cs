@@ -7,12 +7,13 @@ namespace GameTemplate
     public class MultiBoolValueListener : MonoBehaviour
     {
         public BoolValue[] Values;
+        public bool FireOnEnable = true;
         public UnityEvent AllValuesTrue;
         public UnityEvent NotAllValuesTrue;
 
         private void OnEnable()
         {
-            CheckCondition(false);
+            if (FireOnEnable) CheckCondition(false);
             foreach (var value in Values) value.Subscribe(CheckCondition);
         }
 
