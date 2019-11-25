@@ -5,7 +5,7 @@ public class BoolValueBetweenListener : MonoBehaviour
 {
     public BoolValue FirstValue;
     public BoolValue SecondValue;
-    public bool FireOnEnable;
+    public bool FireOnEnable = true;
     public UnityEventBool Callback;
 
     private void OnEnable()
