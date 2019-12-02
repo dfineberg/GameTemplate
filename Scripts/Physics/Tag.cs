@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,18 +9,13 @@ namespace GameTemplate
         public List<string> Tags;
 
         private static readonly Dictionary<string, List<GameObject>> ObjectLists = new Dictionary<string, List<GameObject>>();
-
+        private static readonly Dictionary<string, Action<string>> Callbacks = new Dictionary<string, Action<string>>();
+        
         private void OnEnable()
         {
             foreach (var t in Tags)
             {
-                if (!ObjectLists.ContainsKey(t))
-                {
-                    var newList = ObjectPool.Pop<List<GameObject>>();
-                    ObjectLists.Add(t, newList);
-                }
-
-                ObjectLists[t].Add(gameObject);
+                RegisterGameObject(t, gameObject);
             }
         }
 
@@ -27,15 +23,34 @@ namespace GameTemplate
         {
             foreach (var t in Tags)
             {
-                var objectList = ObjectLists[t];
-                objectList.Remove(gameObject);
-
-                if (objectList.Count == 0)
-                {
-                    ObjectLists.Remove(t);
-                    ObjectPool.Push(objectList);
-                }
+                UnregisterGameObject(t, gameObject);
             }
+        }
+
+        private static void RegisterGameObject(string tag, GameObject gameObject)
+        {
+            if (!ObjectLists.ContainsKey(tag))
+            {
+                var newList = ObjectPool.Pop<List<GameObject>>();
+                ObjectLists.Add(tag, newList);
+            }
+
+            ObjectLists[tag].Add(gameObject);
+            if (Callbacks.ContainsKey(tag)) Callbacks[tag]?.Invoke(tag);
+        }
+
+        private static void UnregisterGameObject(string tag, GameObject gameObject)
+        {
+            var objectList = ObjectLists[tag];
+            objectList.Remove(gameObject);
+
+            if (objectList.Count == 0)
+            {
+                ObjectLists.Remove(tag);
+                ObjectPool.Push(objectList);
+            }
+
+            if (Callbacks.ContainsKey(tag)) Callbacks[tag]?.Invoke(tag);
         }
 
         public bool HasTag(string compareTag)
@@ -49,12 +64,12 @@ namespace GameTemplate
 
         public void AddTag(string newTag)
         {
-            if(!HasTag(newTag)) Tags.Add(newTag);
+            if(!HasTag(newTag)) RegisterGameObject(newTag, gameObject);
         }
 
         public void RemoveTag(string removeTag)
         {
-            if (HasTag(removeTag)) Tags.Remove(removeTag);
+            if (HasTag(removeTag)) UnregisterGameObject(removeTag, gameObject);
         }
 
         public static GameObject FindGameObject(string tag)
@@ -71,6 +86,27 @@ namespace GameTemplate
                 return ObjectLists[tag].ToArray();
 
             return GameObject.FindGameObjectsWithTag(tag);
+        }
+
+        public static int FindGameObjectsNonAlloc(string tag, GameObject[] container)
+        {
+            if (!ObjectLists.ContainsKey(tag))
+                return 0;
+
+            var objectList = ObjectLists[tag];
+            for (var i = 0; i < objectList.Count && i < container.Length; i++) container[i] = objectList[i];
+            return objectList.Count;
+        }
+
+        public static void RegisterTagUpdatedCallback(string tag, Action<string> callback)
+        {
+            if (Callbacks.ContainsKey(tag)) Callbacks[tag] += callback;
+            else Callbacks.Add(tag, callback);
+        }
+
+        public static void UnregisterTagUpdatedCallback(string tag, Action<string> callback)
+        {
+            if (Callbacks.ContainsKey(tag)) Callbacks[tag] -= callback;
         }
     }
 
