@@ -12,24 +12,28 @@ namespace GameTemplate
         private IFixedUpdate _fixedUpdate;
         private ILateUpdate _lateUpdate;
         private IUpdate _update;
-        private bool _isRunning;
 
         private AbstractState _basePushState;
 
         public Action<string> OnNewState;
 
+        public bool IsRunning { get; private set; }
         public string CurrentStateName => _currentState?.GetType().ToString();
 
         public void Run(AbstractState firstState)
         {
             SetCurrentState(firstState);
-            _isRunning = true;
+            IsRunning = true;
             StartCoroutine(StateMachineRoutine());
         }
 
         public void Stop()
         {
-            _isRunning = false;
+            IsRunning = false;
+
+            _currentState.ForceNextStateEvent -= ForceNextState;
+            _currentState.OnExit();
+            SetCurrentState(null);
         }
         
         private void SetCurrentState(AbstractState newState)
@@ -47,7 +51,7 @@ namespace GameTemplate
 
         private IEnumerator StateMachineRoutine()
         {
-            while (_isRunning)
+            while (IsRunning)
             {
                 Debug.Assert(_currentState != null, "Please provide a state");
                 _currentState.ForceNextStateEvent += ForceNextState;
@@ -55,12 +59,14 @@ namespace GameTemplate
                 OnNewState?.Invoke(CurrentStateName);
                 _currentState.OnEnter();
 
-                while (_nextState == null && _isRunning)
+                while (_nextState == null && IsRunning)
                 {
                     if (_currentState.PushState != null) yield return StartCoroutine(PushStateTransitionRoutine(_currentState));
                     _nextState = _currentState.NextState;
                     yield return null;
                 }
+
+                if (!IsRunning) yield break;
 
                 _currentState.ForceNextStateEvent -= ForceNextState;
                 _currentState.OnExit();
