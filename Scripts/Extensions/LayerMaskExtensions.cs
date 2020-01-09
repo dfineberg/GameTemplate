@@ -10,9 +10,19 @@ namespace GameTemplate
             return layers.Aggregate(0, (current, layer) => current | (1 << layer));
         }
 
+        public static int BuildMask(params string[] layerNames)
+        {
+            return BuildMask(layerNames.Select(LayerMask.NameToLayer).ToArray());
+        }
+
         public static int BuildInverseMask(params int[] layers)
         {
             return layers.Aggregate(~0, (current, layer) => current & ~(1 << layer));
+        }
+
+        public static int BuildInverseMask(params string[] layerNames)
+        {
+            return BuildInverseMask(layerNames.Select(LayerMask.NameToLayer).ToArray());
         }
 
         public static bool ContainsLayer(int mask, int layer)

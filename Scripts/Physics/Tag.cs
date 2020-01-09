@@ -10,6 +10,7 @@ namespace GameTemplate
 
         private static readonly Dictionary<string, List<GameObject>> ObjectLists = new Dictionary<string, List<GameObject>>();
         private static readonly Dictionary<string, Action<string>> Callbacks = new Dictionary<string, Action<string>>();
+        private static readonly GameObject[] EmptyArray = new GameObject[0];
         
         private void OnEnable()
         {
@@ -41,6 +42,8 @@ namespace GameTemplate
 
         private static void UnregisterGameObject(string tag, GameObject gameObject)
         {
+            if (!ObjectLists.ContainsKey(tag)) return;
+            
             var objectList = ObjectLists[tag];
             objectList.Remove(gameObject);
 
@@ -64,20 +67,24 @@ namespace GameTemplate
 
         public void AddTag(string newTag)
         {
-            if(!HasTag(newTag)) RegisterGameObject(newTag, gameObject);
+            if (HasTag(newTag)) return;
+            Tags.Add(newTag);
+            RegisterGameObject(newTag, gameObject);
         }
 
         public void RemoveTag(string removeTag)
         {
-            if (HasTag(removeTag)) UnregisterGameObject(removeTag, gameObject);
+            if (!HasTag(removeTag)) return;
+            Tags.Remove(removeTag);
+            UnregisterGameObject(removeTag, gameObject);
         }
 
         public static GameObject FindGameObject(string tag)
         {
             if (ObjectLists.ContainsKey(tag))
                 return ObjectLists[tag][0];
-            
-            return GameObject.FindWithTag(tag);
+
+            return null;
         }
 
         public static GameObject[] FindGameObjects(string tag)
@@ -85,7 +92,7 @@ namespace GameTemplate
             if (ObjectLists.ContainsKey(tag))
                 return ObjectLists[tag].ToArray();
 
-            return GameObject.FindGameObjectsWithTag(tag);
+            return EmptyArray;
         }
 
         public static int FindGameObjectsNonAlloc(string tag, GameObject[] container)
