@@ -21,7 +21,7 @@ namespace GameTemplate
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.isTrigger || !CheckObject(other.gameObject)) 
+            if (!CheckObject(other.gameObject)) 
                 return;
         
             OnTriggerEnterEvent.Invoke(other);
@@ -29,7 +29,7 @@ namespace GameTemplate
 
         private void OnTriggerExit(Collider other)
         {
-            if (other.isTrigger || !CheckObject(other.gameObject)) 
+            if (!CheckObject(other.gameObject)) 
                 return;
         
             OnTriggerExitEvent.Invoke(other);
