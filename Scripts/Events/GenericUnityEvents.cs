@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace GameTemplate
@@ -14,4 +15,7 @@ namespace GameTemplate
 
     [Serializable]
     public class UnityEventString : UnityEvent<string> {}
+    
+    [Serializable]
+    public class UnityEventGameObject : UnityEvent<GameObject> {}
 }
