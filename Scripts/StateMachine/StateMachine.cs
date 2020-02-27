@@ -12,13 +12,13 @@ namespace GameTemplate
         private IFixedUpdate _fixedUpdate;
         private ILateUpdate _lateUpdate;
         private IUpdate _update;
-
-        private AbstractState _basePushState;
+        private AbstractPushState _currentPushState;
 
         public Action<Type> OnNewState;
 
         public bool IsRunning { get; private set; }
         public Type CurrentStateType => _currentState?.GetType();
+        public Type CurrentPushStateType => _currentPushState?.GetType();
 
         public void Run(AbstractState firstState)
         {
@@ -91,6 +91,9 @@ namespace GameTemplate
 
         private IEnumerator PushStateRoutine(AbstractPushState pushState)
         {
+            var pushStateCache = _currentPushState;
+            _currentPushState = pushState;
+            
             SetUpdates(pushState);
             pushState.SetGameObject(gameObject);
             pushState.OnEnter();
@@ -102,6 +105,7 @@ namespace GameTemplate
             }
             
             pushState.OnExit();
+            _currentPushState = pushStateCache;
         }
 
         private IEnumerator PushStateTransitionRoutine(AbstractStateBase currentState)
