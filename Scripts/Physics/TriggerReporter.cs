@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -22,20 +23,24 @@ namespace GameTemplate
         public Action<Collider> TriggerEnterEvent;
         public Action<Collider> TriggerExitEvent;
 
+        private readonly List<Collider> _colliders = new List<Collider>();
+
         private void OnTriggerEnter(Collider other)
         {
-            if (!CheckObject(other.gameObject)) 
+            if (!CheckObject(other.gameObject) || _colliders.Contains(other)) 
                 return;
         
+            _colliders.Add(other);
             OnTriggerEnterEvent?.Invoke(other);
             TriggerEnterEvent?.Invoke(other);
         }
 
         private void OnTriggerExit(Collider other)
         {
-            if (!CheckObject(other.gameObject)) 
+            if (!CheckObject(other.gameObject) || !_colliders.Contains(other)) 
                 return;
-        
+
+            _colliders.Remove(other);
             OnTriggerExitEvent?.Invoke(other);
             TriggerExitEvent?.Invoke(other);
         }
