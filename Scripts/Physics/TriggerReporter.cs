@@ -23,6 +23,9 @@ namespace GameTemplate
         public Action<Collider> TriggerEnterEvent;
         public Action<Collider> TriggerExitEvent;
 
+        public Action<Collider, TriggerReporter> TriggerEnterReporterEvent;
+        public Action<Collider, TriggerReporter> TriggerExitReporterEvent;
+
         private readonly List<Collider> _colliders = new List<Collider>();
 
         private void OnTriggerEnter(Collider other)
@@ -33,6 +36,7 @@ namespace GameTemplate
             _colliders.Add(other);
             OnTriggerEnterEvent?.Invoke(other);
             TriggerEnterEvent?.Invoke(other);
+            TriggerEnterReporterEvent?.Invoke(other, this);
         }
 
         private void OnTriggerExit(Collider other)
@@ -43,6 +47,7 @@ namespace GameTemplate
             _colliders.Remove(other);
             OnTriggerExitEvent?.Invoke(other);
             TriggerExitEvent?.Invoke(other);
+            TriggerExitReporterEvent?.Invoke(other, this);
         }
 
         private bool CheckObject(GameObject obj)
