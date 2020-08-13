@@ -26,14 +26,16 @@ namespace GameTemplate
         public Action<Collider, TriggerReporter> TriggerEnterReporterEvent;
         public Action<Collider, TriggerReporter> TriggerExitReporterEvent;
 
-        private readonly List<Collider> _colliders = new List<Collider>();
+        private readonly List<Rigidbody> _rigidbodies = new List<Rigidbody>();
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!CheckObject(other.gameObject) || _colliders.Contains(other)) 
+            var rb = other.attachedRigidbody;
+            
+            if (rb == null || !CheckObject(other.gameObject) || _rigidbodies.Contains(rb)) 
                 return;
         
-            _colliders.Add(other);
+            _rigidbodies.Add(rb);
             OnTriggerEnterEvent?.Invoke(other);
             TriggerEnterEvent?.Invoke(other);
             TriggerEnterReporterEvent?.Invoke(other, this);
@@ -41,10 +43,12 @@ namespace GameTemplate
 
         private void OnTriggerExit(Collider other)
         {
-            if (!CheckObject(other.gameObject) || !_colliders.Contains(other)) 
+            var rb = other.attachedRigidbody;
+            
+            if (rb == null || !CheckObject(other.gameObject) || !_rigidbodies.Contains(rb)) 
                 return;
 
-            _colliders.Remove(other);
+            _rigidbodies.Remove(rb);
             OnTriggerExitEvent?.Invoke(other);
             TriggerExitEvent?.Invoke(other);
             TriggerExitReporterEvent?.Invoke(other, this);
