@@ -49,10 +49,7 @@ public abstract class SingletonAsset : ScriptableObject
 
     public static T Instance<T>() where T : SingletonAsset
     {
-        Debug.Assert(AssetDictionary.ContainsKey(typeof(T)),
-            $"Something went wrong loading the SingletonAsset {nameof(T)}");
-        
-        return (T) AssetDictionary[typeof(T)];
+        return (T) (AssetDictionary.ContainsKey(typeof(T)) ? AssetDictionary[typeof(T)] : Resources.Load<T>(typeof(T).Name));
     }
     
     /// <summary>
