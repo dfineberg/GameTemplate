@@ -12,7 +12,7 @@ using UnityEngine;
 public abstract class SingletonAsset : ScriptableObject
 {
     private static readonly Dictionary<Type, SingletonAsset> AssetDictionary = new Dictionary<Type, SingletonAsset>();
-    private static readonly Promise LoadedPromise = Promise.Create();
+    private static Promise LoadedPromise = Promise.Create();
 
     public static bool Loaded => LoadedPromise.CurrentState == EPromiseState.Resolved;
     public static IPromise WaitUntilLoaded => LoadedPromise;
@@ -39,6 +39,18 @@ public abstract class SingletonAsset : ScriptableObject
             .ThenDo(() => LoadedPromise.Resolve());
     }
 
+    public static IPromise UnloadAll()
+    {
+        if (!Loaded) return Promise.Resolved();
+        
+        return Promise.All(AssetDictionary.Values.Select(o => o.OnAssetsUnloaded()))
+            .ThenDo(() =>
+            {
+                AssetDictionary.Clear();
+                LoadedPromise = Promise.Create();
+            });
+    }
+
     public static Type[] GetTypes()
     {
         return AppDomain.CurrentDomain.GetAssemblies() // in all the currently loaded assemblies,
@@ -58,6 +70,11 @@ public abstract class SingletonAsset : ScriptableObject
     /// so make sure no asset relies on another asset being initialised.
     /// </summary>
     protected virtual IPromise OnAssetsLoaded()
+    {
+        return Promise.Resolved();
+    }
+
+    protected virtual IPromise OnAssetsUnloaded()
     {
         return Promise.Resolved();
     }
