@@ -26,16 +26,23 @@ namespace GameTemplate
         public Action<Collider, TriggerReporter> TriggerEnterReporterEvent;
         public Action<Collider, TriggerReporter> TriggerExitReporterEvent;
 
+        /// <summary>
+        /// A list of the rigidbodies inside this trigger. Used as part of the AbstractPlayerTrigger system.
+        ///
+        /// If this reporter is attached to an object with a rigidbody, it means we're looking to get callbacks when
+        /// it enters triggers. For that, we don't need to keep track of rigidbodies, though this means the reporter
+        /// won't play nicely with nested triggers.
+        /// </summary>
         private readonly List<Rigidbody> _rigidbodies = new List<Rigidbody>();
 
         private void OnTriggerEnter(Collider other)
         {
             var rb = other.attachedRigidbody;
             
-            if (rb == null || !CheckObject(other.gameObject) || _rigidbodies.Contains(rb)) 
+            if (!CheckObject(other.gameObject) || _rigidbodies.Contains(rb)) 
                 return;
         
-            _rigidbodies.Add(rb);
+            if (rb != null) _rigidbodies.Add(rb);
             OnTriggerEnterEvent?.Invoke(other);
             TriggerEnterEvent?.Invoke(other);
             TriggerEnterReporterEvent?.Invoke(other, this);
@@ -45,7 +52,7 @@ namespace GameTemplate
         {
             var rb = other.attachedRigidbody;
             
-            if (rb == null || !CheckObject(other.gameObject) || !_rigidbodies.Contains(rb)) 
+            if (!CheckObject(other.gameObject) || rb != null && !_rigidbodies.Contains(rb)) 
                 return;
 
             _rigidbodies.Remove(rb);
