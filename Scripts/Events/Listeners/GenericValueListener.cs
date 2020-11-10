@@ -10,12 +10,20 @@ public abstract class GenericValueListener<T, TU> : MonoBehaviour where T : Gene
 
     private void OnEnable()
     {
+        if (Value == null)
+        {
+            Debug.LogError(gameObject.name + " doesn't have listener value set!");
+            return;
+        }
+
         if (FireOnEnable) Listener(Value.Value);
         Value.Subscribe(Listener);
     }
 
     private void OnDisable()
     {
+        if (Value == null) return;
+
         Value.Unsubscribe(Listener);
     }
 
