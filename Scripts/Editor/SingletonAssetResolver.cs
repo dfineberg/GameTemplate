@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System.IO;
+using UnityEditor;
 using UnityEngine;
 
 [InitializeOnLoad]
@@ -11,6 +12,8 @@ public static class SingletonAssetResolver
 
     private static void Resolve()
     {
+        if (EditorApplication.isCompiling) return;
+
         if (!AssetDatabase.IsValidFolder("Assets/Resources"))
         {
             AssetDatabase.CreateFolder("Assets", "Resources");
@@ -24,6 +27,7 @@ public static class SingletonAssetResolver
         {
             var assetPath = $"Assets/Resources/{type.Name}.asset";
             if (AssetDatabase.LoadAssetAtPath(assetPath, type) != null) continue;
+            if (File.Exists(assetPath)) continue;
 
             Debug.Log($"Creating new SingletonAsset: {type.Name}");
             assetCreated = true;
