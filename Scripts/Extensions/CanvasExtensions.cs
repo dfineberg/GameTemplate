@@ -27,7 +27,7 @@ namespace GameTemplate
         public static GameObject InstantiateBehindLoadingScreenAndUnloadResource(this Canvas canvas, GameObject prefab)
         {
             var go = InstantiateBehindLoadingScreen(canvas, prefab);
-            Resources.UnloadAsset(prefab);
+            // TODO: unload prefab from memory if we switch to addressable assets
             return go;
         }
 
