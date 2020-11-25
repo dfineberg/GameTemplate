@@ -24,6 +24,14 @@ namespace GameTemplate
         }
 
         [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+        public static GameObject InstantiateBehindLoadingScreenAndUnloadResource(this Canvas canvas, GameObject prefab)
+        {
+            var go = InstantiateBehindLoadingScreen(canvas, prefab);
+            Resources.UnloadAsset(prefab);
+            return go;
+        }
+
+        [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
         public static GameObject InstantiateBehindLoadingScreen(this Canvas canvas, GameObject prefab)
         {
             var newScreenObject = Object.Instantiate(prefab, canvas.transform);

@@ -76,6 +76,7 @@ public abstract class SingletonAsset : ScriptableObject
 
     protected virtual IPromise OnAssetsUnloaded()
     {
+        Resources.UnloadAsset(this);
         return Promise.Resolved();
     }
 }
