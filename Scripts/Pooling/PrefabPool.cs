@@ -7,6 +7,8 @@ public class PrefabPool<T> where T : Component
     private readonly bool _sameParent;
     private readonly Stack<T> _pool;
 
+    public int Count => _pool.Count;
+
     public PrefabPool(T prefab, bool sameParent = false)
     {
         _prefab = prefab;
@@ -40,9 +42,9 @@ public class PrefabPool<T> where T : Component
     {
         while (objList.Count > 0)
         {
-            var o = objList[0];
+            var o = objList[objList.Count - 1];
             Push(o);
-            objList.RemoveAt(0);
+            objList.RemoveAt(objList.Count - 1);
         }
     }
 
