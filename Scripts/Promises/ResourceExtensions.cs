@@ -7,7 +7,16 @@ namespace GameTemplate.Promises
     {
         public static IPromise LoadAsync(string path)
         {
-            var p = Promise.Create();
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                var promise = Promise.Create();       
+                promise.Resolve(Resources.Load(path));
+                return promise;
+            }
+#endif
+
+            var p = Promise.Create();          
             var resourceRequest = Resources.LoadAsync(path);
 
             CoroutineExtensions.WaitUntil(resourceRequest)
