@@ -21,12 +21,33 @@ public class PrefabPool<T> where T : Component
         Clear();
     }
 
-    public T Pop()
+    public T Pop(bool activate = true)
     {
-        var obj = _pool.Count == 0
-            ? Object.Instantiate(_prefab, _sameParent ? _prefab.transform.parent : null)
-            : _pool.Pop();
-        obj.gameObject.SetActive(true);
+        return Pop(out bool createdNew, activate);
+    }
+
+    public T Pop(out bool createdNew, bool activate = true)
+    {
+        createdNew = false;
+
+        T obj = null;
+
+        if (_pool.Count > 0)
+        {
+            do
+            {
+                obj = _pool.Pop();
+                Debug.Assert(obj != null, $"Instance of {_prefab.name} was destoryed while in pool!");
+            } while (obj == null && _pool.Count > 0);
+        }
+        
+        if (obj == null)
+        {
+            obj = Object.Instantiate(_prefab, _sameParent ? _prefab.transform.parent : null);
+            createdNew = true;
+        }
+
+        if (activate) obj.gameObject.SetActive(true);
         obj.gameObject.hideFlags = HideFlags.None;
         return obj;
     }
