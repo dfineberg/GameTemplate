@@ -237,6 +237,24 @@ namespace GameTemplate.Promises
             return this;
         }
 
+        public static IPromise Sequence(params Func<IPromise>[] promiseFuncs)
+        {
+            var promisedObjects = new object[promiseFuncs.Length];
+
+            var sequence = Resolved();
+            int i = 0;
+            foreach (var promiseFunc in promiseFuncs)
+            {
+                int index = i;
+                sequence = sequence.Then(promiseFunc).ThenDo<object>(o => promisedObjects[index] = o);
+                i++;
+            }
+
+            var p = Create();
+            sequence.ThenDo(() => p.Resolve(promisedObjects));
+            return p;
+        }
+
         public static IPromise All(IEnumerable<IPromise> promises)
         {
             var returnPromise = Create();
