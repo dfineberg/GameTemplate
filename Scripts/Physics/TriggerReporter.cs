@@ -68,5 +68,10 @@ namespace GameTemplate
 
             return obj.HasTag(TriggerTag);
         }
+
+        public void ForceRemoveRigidbody(Rigidbody rb)
+        {
+            _rigidbodies.Remove(rb);
+        }
     }
 }
