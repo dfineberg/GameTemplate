@@ -25,7 +25,15 @@ public static class SingletonAssetResolver
 
         foreach (var type in singletonTypes)
         {
-            var assetPath = $"Assets/Resources/{type.Name}.asset";
+            string assetPath;
+            if (type.IsSubclassOf(typeof(AddressableSingletonAsset)))
+            {
+               assetPath = $"Assets/Resources_moved/{type.Name}.asset";
+            }
+            else
+            {
+               assetPath = $"Assets/Resources/{type.Name}.asset";
+            }
             if (AssetDatabase.LoadAssetAtPath(assetPath, type) != null) continue;
             if (File.Exists(assetPath)) continue;
 

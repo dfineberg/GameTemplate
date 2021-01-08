@@ -23,7 +23,7 @@ public abstract class SingletonAsset : ScriptableObject
         var loadPromises = types.Select(t =>
         {
             var argName = t.Name;
-            if (t.IsInstanceOfType(typeof(AddressableSingletonAsset)))
+            if (t.IsSubclassOf(typeof(AddressableSingletonAsset)))
             {
                 return AddressableExtensions.LoadAsync<AddressableSingletonAsset>(argName);
             }
