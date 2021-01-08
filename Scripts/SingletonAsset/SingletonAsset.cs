@@ -11,7 +11,7 @@ using UnityEngine;
 /// </summary>
 public abstract class SingletonAsset : ScriptableObject
 {
-    private static readonly Dictionary<Type, SingletonAsset> AssetDictionary = new Dictionary<Type, SingletonAsset>();
+    protected static readonly Dictionary<Type, SingletonAsset> AssetDictionary = new Dictionary<Type, SingletonAsset>();
     private static Promise LoadedPromise = Promise.Create();
 
     public static bool Loaded => LoadedPromise.CurrentState == EPromiseState.Resolved;
@@ -38,7 +38,9 @@ public abstract class SingletonAsset : ScriptableObject
             {
                 for (var i = 0; i < assets.Length; i++)
                 {
+                    if (assets[i] == null) Debug.LogError("#" + i + " ("+types[i].Name+") is null(1)!");
                     var singletonAsset = (SingletonAsset) assets[i];
+                    if (singletonAsset == null) Debug.LogError("#" + i + " ("+types[i].Name+") is null(2)!");
                     AssetDictionary.Add(types[i], singletonAsset);
                 }
             })
@@ -68,7 +70,18 @@ public abstract class SingletonAsset : ScriptableObject
 
     public static T Instance<T>() where T : SingletonAsset
     {
-        return (T) (AssetDictionary.ContainsKey(typeof(T)) ? AssetDictionary[typeof(T)] : Resources.Load<T>(typeof(T).Name));
+        if (AssetDictionary.TryGetValue(typeof(T), out var asset))
+        {
+            return (T) asset;
+        }
+
+        if (typeof(T).IsSubclassOf(typeof(AddressableSingletonAsset)))
+        {
+            Debug.LogError(typeof(T).Name + " was not preloaded, unable to find it's instance!");
+            return null;
+        } 
+
+        return Resources.Load<T>(typeof(T).Name);
     }
     
     /// <summary>
