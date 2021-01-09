@@ -17,10 +17,10 @@ public abstract class SingletonAsset : ScriptableObject
     public static bool Loaded => LoadedPromise.CurrentState == EPromiseState.Resolved;
     public static IPromise WaitUntilLoaded => LoadedPromise;
 
-    public static IPromise LoadAll()
+    public static IPromise PreloadAll()
     {
         var types = GetTypes();
-        var loadPromises = types.Select(t =>
+        var preloadPromises = types.Select(t =>
         {
             var argName = t.Name;
             if (t.IsSubclassOf(typeof(AddressableSingletonAsset)))
@@ -33,18 +33,20 @@ public abstract class SingletonAsset : ScriptableObject
             }
         });
 
-        return Promise.All(loadPromises)
+        return Promise.All(preloadPromises)
             .ThenDo<object[]>(assets =>
             {
                 for (var i = 0; i < assets.Length; i++)
                 {
-                    if (assets[i] == null) Debug.LogError("#" + i + " ("+types[i].Name+") is null(1)!");
                     var singletonAsset = (SingletonAsset) assets[i];
-                    if (singletonAsset == null) Debug.LogError("#" + i + " ("+types[i].Name+") is null(2)!");
                     AssetDictionary.Add(types[i], singletonAsset);
                 }
-            })
-            .ThenAll(() => AssetDictionary.Values.Select(asset => asset.OnAssetsLoaded()))
+            });
+    }
+
+    public static IPromise LoadAll()
+    {
+        return Promise.All(AssetDictionary.Values.Select(asset => asset.OnAssetsLoaded()))
             .ThenDo(() => LoadedPromise.Resolve());
     }
 
@@ -55,7 +57,6 @@ public abstract class SingletonAsset : ScriptableObject
         return Promise.All(AssetDictionary.Values.Select(o => o.OnAssetsUnloaded()))
             .ThenDo(() =>
             {
-                AssetDictionary.Clear();
                 LoadedPromise = Promise.Create();
             });
     }
@@ -81,7 +82,9 @@ public abstract class SingletonAsset : ScriptableObject
             return null;
         } 
 
-        return Resources.Load<T>(typeof(T).Name);
+        asset = Resources.Load<T>(typeof(T).Name);
+        AssetDictionary[typeof(T)] = asset;
+        return (T) asset;
     }
     
     /// <summary>
@@ -96,7 +99,6 @@ public abstract class SingletonAsset : ScriptableObject
 
     protected virtual IPromise OnAssetsUnloaded()
     {
-        Resources.UnloadAsset(this);
         return Promise.Resolved();
     }
 }
