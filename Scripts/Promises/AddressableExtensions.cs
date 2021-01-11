@@ -40,7 +40,7 @@ public static class AddressableExtensions
 
     public static IPromise LoadAllAsync<T>(IList<string> addresses, Action<T> callbackPerAsset = null)
     {
-        var request = Addressables.LoadAssetsAsync<T>(addresses, callbackPerAsset);
+        var request = Addressables.LoadAssetsAsync<T>(addresses, callbackPerAsset, Addressables.MergeMode.Union);
         return WaitForRequest(request, "Loaded multiple addressables");
     }
 
