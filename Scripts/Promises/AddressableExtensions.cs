@@ -16,26 +16,37 @@ public static class AddressableExtensions
         return WaitForRequest(request, "Initialized Addressables");
     }
 
-    public static IPromise LoadAsync<T>(string path)
+    public static IPromise LoadAsync<T>(string address)
     {
 #if UNITY_EDITOR
         if (!Application.isPlaying)
         {
             var promise = Promise.Create();
-            var load = Addressables.LoadAssetAsync<T>(path);
+            var load = Addressables.LoadAssetAsync<T>(address);
             load.Completed += (result) => promise.Resolve(result);
             return promise;
         }
 #endif
         
-        var request = Addressables.LoadAssetAsync<T>(path);        
-        return WaitForRequest(request, "Loaded addressable at: " + path);
+        var request = Addressables.LoadAssetAsync<T>(address);        
+        return WaitForRequest(request, "Loaded addressable at: " + address);
     }
 
-    public static IPromise LoadAllAsync<T>(string path, Action<T> callbackPerAsset = null)
+    public static IPromise LoadAllAsync<T>(string address, Action<T> callbackPerAsset = null)
     {
-        var request = Addressables.LoadAssetsAsync<T>(path, callbackPerAsset);
-        return WaitForRequest(request, "Loaded addressables at: " + path);
+        var request = Addressables.LoadAssetsAsync<T>(address, callbackPerAsset);
+        return WaitForRequest(request, "Loaded addressables at: " + address);
+    }
+
+    public static IPromise LoadAllAsync<T>(IList<string> addresses, Action<T> callbackPerAsset = null)
+    {
+        var request = Addressables.LoadAssetsAsync<T>(addresses, callbackPerAsset);
+        return WaitForRequest(request, "Loaded multiple addressables");
+    }
+
+    public static IPromise LoadAllFromStringLibrary<T>(StringLibrary lib, Action<T> callbackPerAsset = null)
+    {
+        return LoadAllAsync<T>(lib.StringsWithResourcesDirectory, callbackPerAsset);
     }
 
     public static void Release<T>(T obj)
