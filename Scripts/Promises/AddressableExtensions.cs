@@ -8,6 +8,11 @@ using UnityEngine.SceneManagement;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using System;
 
+#if UNITY_EDITOR
+using UnityEditor;
+using UnityEditor.AddressableAssets;
+#endif
+
 public static class AddressableExtensions
 {
     public static IPromise Init()
@@ -21,10 +26,20 @@ public static class AddressableExtensions
 #if UNITY_EDITOR
         if (!Application.isPlaying)
         {
-            var promise = Promise.Create();
-            var load = Addressables.LoadAssetAsync<T>(address);
-            load.Completed += (result) => promise.Resolve(result);
-            return promise;
+            var settings = AddressableAssetSettingsDefaultObject.Settings;
+            foreach (var group in settings.groups)
+            {
+                foreach (var entry in group.entries)
+                {
+                    if (entry.address == address)
+                    {
+                        return Promise.Resolved(AssetDatabase.LoadAssetAtPath(entry.AssetPath, typeof(T)));
+                    }
+                }
+            }
+            
+            Debug.LogError("Unable to load addressable in editor with address: " + address);
+            return Promise.Resolved(null);
         }
 #endif
         
