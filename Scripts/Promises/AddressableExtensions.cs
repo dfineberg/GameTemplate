@@ -66,6 +66,13 @@ public static class AddressableExtensions
 
     public static void Release<T>(T obj)
     {
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+        {
+            return;
+        }
+#endif
+
         Addressables.Release<T>(obj);
     }
 
