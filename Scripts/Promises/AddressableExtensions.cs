@@ -93,8 +93,18 @@ public static class AddressableExtensions
     {
         var p = Promise.Create();
         
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+        var stopwatch = new System.Diagnostics.Stopwatch();
+        stopwatch.Start();
+#endif
+
         CoroutineExtensions.WaitUntil(() => request.IsDone)
             .ThenDo(() => {
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+                stopwatch.Stop();
+                message += $" (took {stopwatch.ElapsedMilliseconds}ms)";
+#endif
+
                 if (!request.IsValid()) // request was auto-collected
                 {
                     Debug.Log(message);
