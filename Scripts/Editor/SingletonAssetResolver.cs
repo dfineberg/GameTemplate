@@ -37,10 +37,20 @@ public static class SingletonAssetResolver
             if (AssetDatabase.LoadAssetAtPath(assetPath, type) != null) continue;
             if (File.Exists(assetPath)) continue;
 
-            Debug.Log($"Creating new SingletonAsset: {type.Name}");
-            assetCreated = true;
-            var newAsset = ScriptableObject.CreateInstance(type);
-            AssetDatabase.CreateAsset(newAsset, assetPath);
+            string oldPath = assetPath.Replace("Resources_moved", "Resources");
+            if (type.IsSubclassOf(typeof(AddressableSingletonAsset)) && File.Exists(oldPath))
+            {
+                Debug.Log($"Moving AddressableSingletonAsset: {type.Name}");
+                AssetDatabase.MoveAsset(oldPath, assetPath);
+                assetCreated = true;
+            }
+            else
+            {
+                Debug.Log($"Creating new SingletonAsset: {type.Name}");
+                assetCreated = true;
+                var newAsset = ScriptableObject.CreateInstance(type);
+                AssetDatabase.CreateAsset(newAsset, assetPath);
+            }
         }
 
         if (assetCreated) AssetDatabase.Refresh();
