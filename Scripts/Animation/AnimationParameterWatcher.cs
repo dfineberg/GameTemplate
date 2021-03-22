@@ -19,7 +19,7 @@ public class AnimationParameterWatcher : MonoBehaviour
             _lastValues[i] = _animator.GetFloat(Parameters[i]);
     }
 
-    private void LateUpdate()
+    private void FixedUpdate()
     {
         for (var i = 0; i < Parameters.Length; i++)
         {
