@@ -14,6 +14,7 @@ namespace GameTemplate.Promises
             ~PromiseResolution()
             {
                 Dispose();
+                System.GC.ReRegisterForFinalize(this);
             }
         }
 

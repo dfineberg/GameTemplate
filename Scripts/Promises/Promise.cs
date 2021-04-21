@@ -66,6 +66,7 @@ namespace GameTemplate.Promises
         ~Promise()
         {
             Dispose();
+            System.GC.ReRegisterForFinalize(this);
         }
 
         public static Promise Create()
@@ -77,6 +78,8 @@ namespace GameTemplate.Promises
 
         public void Dispose()
         {
+            if (CurrentState == EPromiseState.Pooled) return;
+            
             _resolutions.Clear();
             _rejectCallbacks.Clear();
             CurrentState = EPromiseState.Pooled;
