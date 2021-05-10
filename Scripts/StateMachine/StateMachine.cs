@@ -78,8 +78,11 @@ namespace GameTemplate
 
         public void ForceNextState(AbstractState forceState)
         {
-            _currentState.ForceNextStateEvent -= ForceNextState;
-            _currentState.OnExit();
+            if (_currentState != null)
+            {
+                _currentState.ForceNextStateEvent -= ForceNextState;
+                _currentState.OnExit();
+            }
 
             SetCurrentState(forceState);
 
