@@ -10,12 +10,18 @@ namespace GameTemplate
 
             public static T Pop()
             {
-                return Pool.Count == 0 ? new T() : Pool.Pop();
+                while (Pool.Count > 0)
+                {
+                    var o = Pool.Pop();
+                    if (o != null) return o;
+                }
+
+                return new T();
             }
 
             public static void Push(T obj)
             {
-                if (Pool.Contains(obj)) return;
+                if (obj == null || Pool.Contains(obj)) return;
                 Pool.Push(obj);
             }
         }
