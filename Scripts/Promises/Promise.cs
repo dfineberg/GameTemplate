@@ -262,7 +262,24 @@ namespace GameTemplate.Promises
         {
             var returnPromise = Create();
 
+            if (promises == null)
+            {
+                var e = new ArgumentNullException(nameof(promises), "Tried to pass a null argument to Promise.All");
+                Debug.LogException(e);
+                returnPromise.Reject(e);
+                return returnPromise;
+            }
+            
             var promisesArray = promises as IPromise[] ?? promises.ToArray();
+
+            if (promisesArray.Any(p => p == null))
+            {
+                var e = new ArgumentException("Tried to pass a null promise into Promise.All");
+                Debug.LogException(e);
+                returnPromise.Reject(e);
+                return returnPromise;
+            }
+            
             var promisedObjects = new object[promisesArray.Length];
 
             if (promisesArray.Length == 0)
