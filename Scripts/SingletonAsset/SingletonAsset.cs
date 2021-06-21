@@ -19,6 +19,7 @@ public abstract class SingletonAsset : ScriptableObject
 
     public static IPromise PreloadAll()
     {
+        AssetDictionary.Clear();
         var types = GetTypes();
         var preloadPromises = types.Select(t =>
         {
