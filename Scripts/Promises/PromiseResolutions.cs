@@ -100,6 +100,7 @@ namespace GameTemplate.Promises
             public override void Dispose()
             {
                 _promise = null;
+                _promisedObject = null;
                 ObjectPool.Push(this);
             }
 
@@ -236,6 +237,7 @@ namespace GameTemplate.Promises
             {
                 _func = null;
                 _yieldInstruction = null;
+                _promise = null;
                 ObjectPool.Push(this);
             }
 
