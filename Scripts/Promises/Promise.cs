@@ -80,10 +80,6 @@ namespace GameTemplate.Promises
         {
             if (CurrentState == EPromiseState.Pooled) return;
             
-            foreach (var resolution in _resolutions)
-            {
-                resolution.Dispose();
-            }
             _resolutions.Clear();
             _rejectCallbacks.Clear();
             RejectedException = null;
