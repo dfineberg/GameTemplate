@@ -2,7 +2,7 @@
 
 public static class GradientExtensions
 {
-    public static Texture2D GetTexture(this Gradient gradient, int resolution)
+    public static Texture2D GetTexture(this Gradient gradient, int resolution, string textureName)
     {
         TextureFormat format; // prefer more bits per channel to avoid banding
         if (SystemInfo.SupportsTextureFormat(TextureFormat.RGBAFloat))
@@ -20,7 +20,8 @@ public static class GradientExtensions
 
         var tex = new Texture2D(resolution, 1, format, false)
         {
-            wrapMode = TextureWrapMode.Clamp
+            wrapMode = TextureWrapMode.Clamp,
+            name = textureName,
         };
 
         var colours = new Color[resolution];

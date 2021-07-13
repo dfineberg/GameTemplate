@@ -7,6 +7,7 @@ namespace GameTemplate
         public static Texture2D ScreenshotToTexture(Rect screenRect)
         {
             var tex = new Texture2D((int)screenRect.width, (int)screenRect.height, TextureFormat.RGB24, false);
+            tex.name = "ScreenshotWriteTex";
 
             tex.ReadPixels(screenRect, 0, 0);
             tex.Apply();
@@ -32,6 +33,7 @@ namespace GameTemplate
         public static Texture2D ByteArrayToTexture(byte[] bytes)
         {
             var tex = new Texture2D(1, 1);
+            tex.name = "ScreenshotReadTex";
             tex.LoadImage(bytes);
 
             return tex;
