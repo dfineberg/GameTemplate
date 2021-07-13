@@ -2,12 +2,34 @@
 
 namespace GameTemplate
 {
-    public static class ScreenshotUtility {
+    public static class ScreenshotUtility
+    {
+        private static Texture2D previousScreenshotTexture = null;
+        private static Vector2Int previousScreenSize;
 
-        public static Texture2D ScreenshotToTexture(Rect screenRect)
+        private static Texture2D ScreenshotToTexture(Rect screenRect)
         {
-            var tex = new Texture2D((int)screenRect.width, (int)screenRect.height, TextureFormat.RGB24, false);
-            tex.name = "ScreenshotWriteTex";
+            Texture2D tex;
+
+            Vector2Int screenSize = new Vector2Int((int)screenRect.width, (int)screenRect.height);
+
+            if (screenSize == previousScreenSize)
+            {
+                tex = previousScreenshotTexture;
+            }
+            else
+            {
+                if (previousScreenshotTexture != null)
+                {
+                    Object.DestroyImmediate(previousScreenshotTexture);
+                }
+
+                tex = new Texture2D(screenSize.x, screenSize.y, TextureFormat.RGB24, false);
+                tex.name = "ScreenshotWriteTex";
+            
+                previousScreenshotTexture = tex;
+                previousScreenSize = screenSize;
+            }
 
             tex.ReadPixels(screenRect, 0, 0);
             tex.Apply();
