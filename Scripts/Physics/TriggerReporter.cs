@@ -26,6 +26,8 @@ namespace GameTemplate
         public Action<Collider, TriggerReporter> TriggerEnterReporterEvent;
         public Action<Collider, TriggerReporter> TriggerExitReporterEvent;
 
+        public static bool IgnoreEnterAndExitEvents { get; set; }
+        
         /// <summary>
         /// A list of the rigidbodies inside this trigger. Used as part of the AbstractPlayerTrigger system.
         ///
@@ -37,6 +39,8 @@ namespace GameTemplate
 
         private void OnTriggerEnter(Collider other)
         {
+            if (IgnoreEnterAndExitEvents) return;
+            
             var rb = other.attachedRigidbody;
             
             if (!CheckObject(other.gameObject) || _rigidbodies.Contains(rb)) 
@@ -50,6 +54,8 @@ namespace GameTemplate
 
         private void OnTriggerExit(Collider other)
         {
+            if (IgnoreEnterAndExitEvents) return;
+            
             var rb = other.attachedRigidbody;
             
             if (!CheckObject(other.gameObject) || rb != null && !_rigidbodies.Contains(rb)) 
