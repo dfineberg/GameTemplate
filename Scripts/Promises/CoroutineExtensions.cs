@@ -66,10 +66,29 @@ namespace GameTemplate.Promises
             _instance.StopAllCoroutines();
         }
 
-        private IEnumerator WaitForCoroutine(IEnumerator coroutine, Promise promise)
-        {
-            _lastRoutineCache = StartCoroutine(coroutine);
-            yield return _lastRoutineCache;
+        private IEnumerator WaitForCoroutine(IEnumerator enumerator, Promise promise)
+        {            
+            IEnumerator returnObj = null;
+
+            while (true)
+            {
+                try
+                {
+                    if (!enumerator.MoveNext())
+                    {
+                        break;
+                    }
+                    returnObj = enumerator.Current as IEnumerator;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                    break;
+                }
+
+                yield return returnObj;
+            }
+
             promise.Resolve();
         }
 
@@ -111,13 +130,28 @@ namespace GameTemplate.Promises
 
             while (f <= time)
             {
-                onUpdate(from, to, Easing.Interpolate(f / time, easing));
+                try
+                {
+                    onUpdate(from, to, Easing.Interpolate(f / time, easing));
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                }
+
                 var deltaTime = unscaled ? Time.unscaledDeltaTime : Time.deltaTime;
                 f += deltaTime;
                 yield return null;
             }
 
-            onUpdate(from, to, 1f);
+            try
+            {
+                onUpdate(from, to, 1f);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
     }
 }
