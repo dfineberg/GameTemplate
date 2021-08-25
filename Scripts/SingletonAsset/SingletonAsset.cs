@@ -39,6 +39,7 @@ public abstract class SingletonAsset : ScriptableObject
             {
                 for (var i = 0; i < assets.Length; i++)
                 {
+                    if (AssetDictionary.ContainsKey(types[i])) continue;
                     var singletonAsset = (SingletonAsset) assets[i];
                     AssetDictionary.Add(types[i], singletonAsset);
                 }
