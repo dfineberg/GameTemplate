@@ -67,28 +67,9 @@ namespace GameTemplate.Promises
         }
 
         private IEnumerator WaitForCoroutine(IEnumerator enumerator, Promise promise)
-        {            
-            IEnumerator returnObj = null;
-
-            while (true)
-            {
-                try
-                {
-                    if (!enumerator.MoveNext())
-                    {
-                        break;
-                    }
-                    returnObj = enumerator.Current as IEnumerator;
-                }
-                catch (Exception e)
-                {
-                    Debug.LogException(e);
-                    break;
-                }
-
-                yield return returnObj;
-            }
-
+        {
+            _lastRoutineCache = StartCoroutine(enumerator);
+            yield return _lastRoutineCache;
             promise.Resolve();
         }
 
