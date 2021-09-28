@@ -2,6 +2,7 @@
 using GameTemplate.Promises;
 using Unity.Collections;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
 
 namespace GameTemplate
@@ -10,8 +11,9 @@ namespace GameTemplate
     {
         private static RenderTexture screenshotTexture = null;
         private static Vector2Int previousScreenSize;
+        private static NativeArray<byte> buffer;
 
-        public static void SaveScreenshot(Action<NativeArray<byte>> dataWriteCallback)
+        public static void SaveScreenshot(Action<byte[]> dataWriteCallback)
         {
             Vector2Int screenSize = new Vector2Int(Screen.width, Screen.height);
 
@@ -24,18 +26,32 @@ namespace GameTemplate
                         {
                             screenshotTexture.Release();
                             UnityEngine.Object.DestroyImmediate(screenshotTexture);
+                            buffer.Dispose();
                         }
 
                         screenshotTexture = new RenderTexture(screenSize.x, screenSize.y, 0, RenderTextureFormat.ARGB32, 0);
                         screenshotTexture.name = "ScreenshotWriteTex";
+
+                        buffer = new NativeArray<byte>(screenSize.x * screenSize.y * 3, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
                     }
                     
-                    ScreenCapture.CaptureScreenshotIntoRenderTexture(screenshotTexture);
-                    AsyncGPUReadback.Request(screenshotTexture, 0, TextureFormat.RGBA32, (AsyncGPUReadbackRequest request) =>
+                    var flipped = RenderTexture.GetTemporary(screenshotTexture.descriptor);
+                    ScreenCapture.CaptureScreenshotIntoRenderTexture(flipped);
+                    Graphics.Blit(flipped, screenshotTexture, new Vector2(1, -1), new Vector2(0, 1));
+                    RenderTexture.ReleaseTemporary(flipped);
+                    
+                    AsyncGPUReadback.RequestIntoNativeArray(ref buffer, screenshotTexture, 0, TextureFormat.RGB24, (AsyncGPUReadbackRequest request) =>
                     {
-                        using (NativeArray<byte> imageBytes = request.GetData<byte>())
+                        if (request.hasError)
                         {
-                            dataWriteCallback(imageBytes);
+                            Debug.LogError("AsyncGPUReadback encountered an error");
+                            dataWriteCallback(null);
+                            return;
+                        }
+
+                        using (NativeArray<byte> encodedBytes = ImageConversion.EncodeNativeArrayToPNG(buffer, GraphicsFormat.R8G8B8_SRGB, (uint)screenSize.x, (uint)screenSize.y))
+                        {
+                            dataWriteCallback(encodedBytes.ToArray());
                         }
                     }); 
                 });

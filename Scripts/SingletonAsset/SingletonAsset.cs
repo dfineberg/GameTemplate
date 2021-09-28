@@ -80,7 +80,6 @@ public abstract class SingletonAsset : ScriptableObject
 
         if (typeof(T).IsSubclassOf(typeof(AddressableSingletonAsset)))
         {
-            Debug.LogError(typeof(T).Name + " was not preloaded, unable to find it's instance!");
             return null;
         } 
 
