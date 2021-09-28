@@ -24,9 +24,7 @@ namespace GameTemplate
                     {
                         if (screenshotTexture != null)
                         {
-                            screenshotTexture.Release();
-                            UnityEngine.Object.DestroyImmediate(screenshotTexture);
-                            buffer.Dispose();
+                            Destroy();
                         }
 
                         screenshotTexture = new RenderTexture(screenSize.x, screenSize.y, 0, RenderTextureFormat.ARGB32, 0);
@@ -55,6 +53,14 @@ namespace GameTemplate
                         }
                     }); 
                 });
+        }
+
+        public static void Destroy()
+        {
+            screenshotTexture.Release();
+            UnityEngine.Object.DestroyImmediate(screenshotTexture);
+            screenshotTexture = null;
+            buffer.Dispose();
         }
 
         public static Texture2D ByteArrayToTexture(byte[] bytes)

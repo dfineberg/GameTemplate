@@ -20,6 +20,11 @@ namespace GameTemplate
                 .ThenDo(RunStateMachine);
         }
 
+        protected virtual void OnDestroy()
+        {
+            ScreenshotUtility.Destroy();
+        }
+
         protected virtual void Init()
         {
             LoadingScreen = GetComponentInChildren<AnimateOnOffGroup>();
