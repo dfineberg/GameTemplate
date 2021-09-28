@@ -57,10 +57,16 @@ namespace GameTemplate
 
         public static void Destroy()
         {
-            screenshotTexture.Release();
-            UnityEngine.Object.DestroyImmediate(screenshotTexture);
-            screenshotTexture = null;
-            buffer.Dispose();
+            if (screenshotTexture != null)
+            {
+                screenshotTexture.Release();
+                UnityEngine.Object.DestroyImmediate(screenshotTexture);
+                screenshotTexture = null;
+            }
+            if (buffer != null && buffer.IsCreated)
+            {
+                buffer.Dispose();
+            }
         }
 
         public static Texture2D ByteArrayToTexture(byte[] bytes)
