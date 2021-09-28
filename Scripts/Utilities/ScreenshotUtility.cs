@@ -1,55 +1,44 @@
-﻿using UnityEngine;
+﻿using System;
+using GameTemplate.Promises;
+using Unity.Collections;
+using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace GameTemplate
 {
     public static class ScreenshotUtility
     {
-        private static Texture2D previousScreenshotTexture = null;
+        private static RenderTexture screenshotTexture = null;
         private static Vector2Int previousScreenSize;
 
-        private static Texture2D ScreenshotToTexture(Rect screenRect)
+        public static void SaveScreenshot(Action<NativeArray<byte>> dataWriteCallback)
         {
-            Texture2D tex;
+            Vector2Int screenSize = new Vector2Int(Screen.width, Screen.height);
 
-            Vector2Int screenSize = new Vector2Int((int)screenRect.width, (int)screenRect.height);
-
-            if (screenSize == previousScreenSize)
-            {
-                tex = previousScreenshotTexture;
-            }
-            else
-            {
-                if (previousScreenshotTexture != null)
+            CoroutineExtensions.WaitForEndOfFrame()
+                .ThenDo(() =>
                 {
-                    Object.DestroyImmediate(previousScreenshotTexture);
-                }
+                    if (screenSize != previousScreenSize)
+                    {
+                        if (screenshotTexture != null)
+                        {
+                            screenshotTexture.Release();
+                            UnityEngine.Object.DestroyImmediate(screenshotTexture);
+                        }
 
-                tex = new Texture2D(screenSize.x, screenSize.y, TextureFormat.RGB24, false);
-                tex.name = "ScreenshotWriteTex";
-            
-                previousScreenshotTexture = tex;
-                previousScreenSize = screenSize;
-            }
-
-            tex.ReadPixels(screenRect, 0, 0);
-            tex.Apply();
-
-            return tex;
-        }
-
-        public static Texture2D ScreenshotToTexture()
-        {
-            return ScreenshotToTexture(new Rect(0, 0, Screen.width, Screen.height));
-        }
-
-        public static byte[] ScreenshotToByteArray(Rect screenRect)
-        {
-            return ScreenshotToTexture(screenRect).EncodeToPNG();
-        }
-
-        public static byte[] ScreenshotToByteArray()
-        {
-            return ScreenshotToTexture().EncodeToPNG();
+                        screenshotTexture = new RenderTexture(screenSize.x, screenSize.y, 0, RenderTextureFormat.ARGB32, 0);
+                        screenshotTexture.name = "ScreenshotWriteTex";
+                    }
+                    
+                    ScreenCapture.CaptureScreenshotIntoRenderTexture(screenshotTexture);
+                    AsyncGPUReadback.Request(screenshotTexture, 0, TextureFormat.RGBA32, (AsyncGPUReadbackRequest request) =>
+                    {
+                        using (NativeArray<byte> imageBytes = request.GetData<byte>())
+                        {
+                            dataWriteCallback(imageBytes);
+                        }
+                    }); 
+                });
         }
 
         public static Texture2D ByteArrayToTexture(byte[] bytes)
@@ -59,13 +48,6 @@ namespace GameTemplate
             tex.LoadImage(bytes);
 
             return tex;
-        }
-
-        public static Sprite ByteArrayToSprite(byte[] bytes)
-        {
-            var tex = ByteArrayToTexture(bytes);
-
-            return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 1);
         }
     }
 }
