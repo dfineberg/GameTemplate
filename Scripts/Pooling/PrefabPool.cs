@@ -21,12 +21,12 @@ public class PrefabPool<T> where T : Component
         Clear();
     }
 
-    public T Pop(bool activate = true)
+    public T Pop(bool activate = true, Transform parent = null)
     {
-        return Pop(out bool createdNew, activate);
+        return Pop(out var _, activate, parent);
     }
 
-    public T Pop(out bool createdNew, bool activate = true)
+    public T Pop(out bool createdNew, bool activate = true, Transform parent = null)
     {
         createdNew = false;
 
@@ -43,8 +43,12 @@ public class PrefabPool<T> where T : Component
         
         if (obj == null)
         {
-            obj = Object.Instantiate(_prefab, _sameParent ? _prefab.transform.parent : null);
+            obj = Object.Instantiate(_prefab, _sameParent ? _prefab.transform.parent : parent);
             createdNew = true;
+        }
+        else
+        {
+            obj.transform.SetParent(_sameParent ? _prefab.transform.parent : parent);
         }
 
         if (activate) obj.gameObject.SetActive(true);
