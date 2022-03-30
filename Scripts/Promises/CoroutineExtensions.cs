@@ -66,6 +66,14 @@ namespace GameTemplate.Promises
             _instance.StopAllCoroutines();
         }
 
+        public static void StopRoutine(IEnumerator enumerator)
+        {
+            if (!_instance)
+                return;
+
+            _instance.StopCoroutine(enumerator);
+        }
+
         private IEnumerator WaitForCoroutine(IEnumerator enumerator, Promise promise)
         {
             _lastRoutineCache = StartCoroutine(enumerator);
