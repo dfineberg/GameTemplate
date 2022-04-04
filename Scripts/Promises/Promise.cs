@@ -69,6 +69,20 @@ namespace GameTemplate.Promises
             System.GC.ReRegisterForFinalize(this);
         }
 
+        public static Promise[] MakeBatch(int size)
+        {
+            Promise[] batch = new Promise[size];
+            for (int i = 0; i < size; i++)
+            {
+                batch[i] = new Promise();
+            }
+            for (int i = 0; i < size; i++)
+            {
+                batch[i].CurrentState = EPromiseState.Pending;
+            }
+            return batch;
+        }
+
         public static Promise Create()
         {
             var promise = ObjectPool.Pop<Promise>();
