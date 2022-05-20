@@ -8,5 +8,10 @@ namespace GameTemplate
         {
             return rb.rotation * Vector3.forward;
         }
+
+        public static Vector3 Up(this Rigidbody rb)
+        {
+            return rb.rotation * Vector3.up;
+        }
     }
 }
