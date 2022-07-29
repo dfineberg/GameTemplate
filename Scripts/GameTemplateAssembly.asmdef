@@ -3,7 +3,9 @@
     "references": [
         "Unity.Addressables",
         "Unity.ResourceManager",
-        "Unity.Addressables.Editor"
+        "Unity.Addressables.Editor",
+        "Unity.VisualScripting.Core",
+        "Unity.VisualScripting.Flow"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
