@@ -56,8 +56,8 @@ namespace GameTemplate
                 Debug.Assert(_currentState != null, "Please provide a state");
                 _currentState.ForceNextStateEvent += ForceNextState;
                 _currentState.SetGameObject(gameObject);
-                OnNewState?.Invoke(CurrentStateType);
                 _currentState.OnEnter();
+                OnNewState?.Invoke(CurrentStateType);
 
                 while (_nextState == null && IsRunning)
                 {
@@ -88,8 +88,8 @@ namespace GameTemplate
 
             _currentState.SetGameObject(gameObject);
             _currentState.ForceNextStateEvent += ForceNextState;
-            OnNewState?.Invoke(CurrentStateType);
             _currentState.OnEnter();
+            OnNewState?.Invoke(CurrentStateType);
         }
 
         private IEnumerator PushStateRoutine(AbstractPushState pushState)
