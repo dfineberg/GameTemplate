@@ -21,14 +21,30 @@ public class AnimationParameterWatcher : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (_animator.updateMode == AnimatorUpdateMode.AnimatePhysics)
+        {
+            UpdateParameters();
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (_animator.updateMode != AnimatorUpdateMode.AnimatePhysics)
+        {
+            UpdateParameters();
+        }
+    }
+
+    private void UpdateParameters()
+    {
         for (var i = 0; i < Parameters.Length; i++)
         {
             var thisValue = _animator.GetFloat(Parameters[i]);
             var lastValue = _lastValues[i];
-            
-            if(lastValue < 0 && thisValue > 0)
+
+            if (lastValue < 0 && thisValue > 0)
                 OnZeroCross?.Invoke(Parameters[i], true);
-            else if(lastValue > 0 && thisValue < 0)
+            else if (lastValue > 0 && thisValue < 0)
                 OnZeroCross?.Invoke(Parameters[i], false);
 
             _lastValues[i] = thisValue;
