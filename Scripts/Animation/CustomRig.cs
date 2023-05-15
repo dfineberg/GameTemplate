@@ -17,8 +17,8 @@ public class CustomRig : MonoBehaviour
             if (renderer == null || renderer.sharedMesh == null)
                 return 0f;
             
-            var posIndex = PositiveAxis.Length > 0 ? renderer.sharedMesh.GetBlendShapeIndex(PositiveAxis[0]) : -1;
-            var negIndex = NegativeAxis.Length > 0 ? renderer.sharedMesh.GetBlendShapeIndex(NegativeAxis[0]) : -1;
+            var posIndex = PositiveAxis != null && PositiveAxis.Length > 0 ? renderer.sharedMesh.GetBlendShapeIndex(PositiveAxis[0]) : -1;
+            var negIndex = NegativeAxis != null && NegativeAxis.Length > 0 ? renderer.sharedMesh.GetBlendShapeIndex(NegativeAxis[0]) : -1;
             
             var posValue = posIndex > -1 ? renderer.GetBlendShapeWeight(posIndex) : 0f;
             var negValue = negIndex > -1 ? renderer.GetBlendShapeWeight(negIndex) : 0f;
@@ -30,16 +30,22 @@ public class CustomRig : MonoBehaviour
             var posWeight = Mathf.Max(newValue, 0f);
             var negWeight = Mathf.Abs(Math.Min(newValue, 0f));
 
-            for (var i = 0; i < PositiveAxis.Length; i++)
+            if (PositiveAxis != null)
             {
-                var shapeIndex = renderer.sharedMesh.GetBlendShapeIndex(PositiveAxis[i]);
-                if (shapeIndex != -1) renderer.SetBlendShapeWeight(shapeIndex, posWeight);
+                for (var i = 0; i < PositiveAxis.Length; i++)
+                {
+                    var shapeIndex = renderer.sharedMesh.GetBlendShapeIndex(PositiveAxis[i]);
+                    if (shapeIndex != -1) renderer.SetBlendShapeWeight(shapeIndex, posWeight);
+                }
             }
 
-            for (var i = 0; i < NegativeAxis.Length; i++)
+            if (NegativeAxis != null)
             {
-                var shapeIndex = renderer.sharedMesh.GetBlendShapeIndex(NegativeAxis[i]);
-                if (shapeIndex != -1) renderer.SetBlendShapeWeight(shapeIndex, negWeight);
+                for (var i = 0; i < NegativeAxis.Length; i++)
+                {
+                    var shapeIndex = renderer.sharedMesh.GetBlendShapeIndex(NegativeAxis[i]);
+                    if (shapeIndex != -1) renderer.SetBlendShapeWeight(shapeIndex, negWeight);
+                }
             }
         }
     }
