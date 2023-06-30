@@ -37,8 +37,9 @@ namespace GameTemplate
             if (IgnoreEnterAndExitEvents) return;
             
             var rb = other.attachedRigidbody;
+            var objectToCheck = rb ? rb.gameObject : other.gameObject;
             
-            if (!CheckObject(other.gameObject) || _rigidbodies.Contains(rb)) 
+            if (!CheckObject(objectToCheck) || _rigidbodies.Contains(rb)) 
                 return;
         
             if (rb != null) _rigidbodies.Add(rb);
