@@ -80,6 +80,9 @@ public abstract class SingletonAsset : ScriptableObject
 
         if (typeof(T).IsSubclassOf(typeof(AddressableSingletonAsset)))
         {
+#if UNITY_EDITOR
+            if (!UnityEditor.EditorApplication.isPlaying) return AddressableExtensions.LoadAsync<T>(typeof(T).Name).PromisedObject as T;
+#endif
             return null;
         } 
 
