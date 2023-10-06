@@ -13,9 +13,13 @@ namespace GameTemplate.Promises
 
         private static void Init()
         {
-            var obj = new GameObject("CoroutineExtensions") {hideFlags = HideFlags.HideInHierarchy};
-            DontDestroyOnLoad(obj);
+            var obj = new GameObject("CoroutineExtensions") {hideFlags = HideFlags.HideAndDontSave};
             _instance = obj.AddComponent<CoroutineExtensions>();
+        }
+
+        private void Awake()
+        {
+            DontDestroyOnLoad(gameObject);
         }
 
         public static IPromise WaitForCoroutine(IEnumerator coroutine)

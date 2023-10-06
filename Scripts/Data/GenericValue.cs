@@ -7,7 +7,7 @@ namespace GameTemplate
 {
     public abstract class GenericValue<T> : GenericEvent<T>
     {
-        [SerializeField] private T _value;
+        [SerializeField] protected T _value;
 
         [Header("Debug Command Options")]
         public bool IsDebugCommand;
@@ -21,20 +21,25 @@ namespace GameTemplate
             {
                 if (Equals(value)) return;
                 if (!Application.isPlaying) _defaultValue = value;
-                _value = value;
-#if UNITY_EDITOR
-                if (EditorApplication.isPlayingOrWillChangePlaymode) // don't invoke if we're leaving play mode
-#endif
-                Invoke(_value);
+                SetValue(value);
             }
         }
 
-        protected void OnEnable()
+        protected virtual void OnEnable()
         {
             ResetToDefault();
 #if UNITY_EDITOR
             EditorApplication.playModeStateChanged += HandlePlayModeStateChanged;
 #endif
+        }
+
+        protected virtual void SetValue(T value)
+        {
+            _value = value;
+#if UNITY_EDITOR
+            if (!EditorApplication.isPlayingOrWillChangePlaymode) return; // don't invoke if we're leaving play mode
+#endif
+            Invoke(_value);
         }
 
 #if UNITY_EDITOR
@@ -57,7 +62,7 @@ namespace GameTemplate
         }
 #endif
 
-        public void ResetToDefault()
+        public virtual void ResetToDefault()
         {
             Value = _defaultValue;
         }
