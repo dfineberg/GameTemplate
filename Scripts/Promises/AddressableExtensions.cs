@@ -84,7 +84,7 @@ public static class AddressableExtensions
 
     public static IPromise LoadSceneAsync(AssetReference sceneReference, LoadSceneMode mode = LoadSceneMode.Additive, bool activateOnLoad = true, int priority = 100)
     {
-        var request = sceneReference.LoadSceneAsync(mode, activateOnLoad, priority);
+        var request = Addressables.LoadSceneAsync(sceneReference, mode, activateOnLoad, priority);
         return WaitForRequest(request, "Loaded addressable scene: " + sceneReference.RuntimeKey);
     }
 
