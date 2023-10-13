@@ -95,12 +95,6 @@ public static class AddressableExtensions
         return WaitForRequest(request, "Unloaded addressable scene: " + name);
     }
 
-    public static IPromise UnloadSceneAsync(AssetReference sceneReference)
-    {
-        var request = sceneReference.UnLoadScene();
-        return WaitForRequest(request, "Unloaded addressable scene: " + sceneReference.RuntimeKey);
-    }
-
     private static IPromise WaitForRequest<T>(AsyncOperationHandle<T> request, string message)
     {
         var p = Promise.Create();
