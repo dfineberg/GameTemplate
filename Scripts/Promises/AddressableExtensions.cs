@@ -82,11 +82,23 @@ public static class AddressableExtensions
         return WaitForRequest(request, "Loaded addressable scene: " + address);
     }
 
+    public static IPromise LoadSceneAsync(AssetReference sceneReference, LoadSceneMode mode = LoadSceneMode.Additive, bool activateOnLoad = true, int priority = 100)
+    {
+        var request = sceneReference.LoadSceneAsync(mode, activateOnLoad, priority);
+        return WaitForRequest(request, "Loaded addressable scene: " + sceneReference.RuntimeKey);
+    }
+
     public static IPromise UnloadSceneAsync(SceneInstance scene)
     {
         string name = scene.Scene.name;
         var request = Addressables.UnloadSceneAsync(scene);
         return WaitForRequest(request, "Unloaded addressable scene: " + name);
+    }
+
+    public static IPromise UnloadSceneAsync(AssetReference sceneReference)
+    {
+        var request = sceneReference.UnLoadScene();
+        return WaitForRequest(request, "Unloaded addressable scene: " + sceneReference.RuntimeKey);
     }
 
     private static IPromise WaitForRequest<T>(AsyncOperationHandle<T> request, string message)
