@@ -63,6 +63,12 @@ public abstract class SingletonAsset : ScriptableObject
             });
     }
 
+    public static void ForceUnloadAll()
+    {
+        foreach (var singletonAsset in AssetDictionary.Values) singletonAsset.ForceUnload();
+        AssetDictionary.Clear();
+    }
+
     public static Type[] GetTypes()
     {
         return AppDomain.CurrentDomain.GetAssemblies() // in all the currently loaded assemblies,
@@ -104,5 +110,10 @@ public abstract class SingletonAsset : ScriptableObject
     protected virtual IPromise OnAssetsUnloaded()
     {
         return Promise.Resolved();
+    }
+
+    protected virtual void ForceUnload()
+    {
+        
     }
 }
