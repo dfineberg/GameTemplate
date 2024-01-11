@@ -7,6 +7,7 @@ public static class SingletonAssetResolver
 {
     static SingletonAssetResolver()
     {
+        EditorApplication.playModeStateChanged += HandlePlayModeStateChange;
         Resolve();
     }
 
@@ -54,5 +55,11 @@ public static class SingletonAssetResolver
         }
 
         if (assetCreated) AssetDatabase.Refresh();
+    }
+
+    private static void HandlePlayModeStateChange(PlayModeStateChange state)
+    {
+        if (state != PlayModeStateChange.EnteredEditMode) return;
+        SingletonAsset.ForceUnloadAll();
     }
 }
