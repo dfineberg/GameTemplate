@@ -120,7 +120,14 @@ namespace GameTemplate
 
         private ITouchInputHandler TouchInputHandler(bool setDragHandler)
         {
-            var hitComponent = Mode == RaycastMode.Physics3D ? (Component) RaycastTouchPosition() : OverlapTouchPosition2D();
+            Component hitComponent;
+#if PHYSICS2D_ENABLED && PHYSICS3D_ENABLED
+            hitComponent = Mode == RaycastMode.Physics3D ? (Component) RaycastTouchPosition() : OverlapTouchPosition2D();
+#elif PHYSICS3D_ENABLED
+            hitComponent = RaycastTouchPosition();
+#elif PHYSICS2D_ENABLED
+            hitComponent = OverlapTouchPosition2D();
+#endif
 
             if (!hitComponent) 
                 return null;
@@ -142,6 +149,7 @@ namespace GameTemplate
             return hit.collider;
         }
 
+#if PHYSICS2D_ENABLED
         public Collider2D OverlapTouchPosition2D()
         {
             return Physics2D.OverlapPoint(ScreenToWorldPoint);
@@ -151,5 +159,6 @@ namespace GameTemplate
         {
             return Physics2D.OverlapPointAll(ScreenToWorldPoint);
         }
+#endif
     }
 }

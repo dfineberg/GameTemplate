@@ -1,3 +1,5 @@
+#if PHYSICS2D_ENABLED
+
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -77,3 +79,5 @@ namespace GameTemplate
         }
     }
 }
+
+#endif
