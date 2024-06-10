@@ -10,6 +10,8 @@ namespace GameTemplate
 
         public bool IsActive => references.Count > 0;
 
+        public IEnumerable<T> References => references;
+
         public ReferenceCountedToggle(Action<bool> onToggle, bool callToInit)
         {
             references = new HashSet<T>();
