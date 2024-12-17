@@ -105,7 +105,7 @@ public class CustomRig : MonoBehaviour
 
     private void Start()
     {
-        InitTalkingGraph();
+        BuildTalkingPlayableGraph();
     }
 
     private void Update()
@@ -113,10 +113,19 @@ public class CustomRig : MonoBehaviour
         UpdateTalkingGraph();
     }
 
-    private void InitTalkingGraph()
+    private void OnDestroy()
+    {
+        if (_talkingGraph.IsValid()) 
+            _talkingGraph.Destroy();
+    }
+
+    public void BuildTalkingPlayableGraph()
     {
         if (ConsonantClips.Length == 0 || VowelClips.Length == 0)
             return;
+        
+        if (_talkingGraph.IsValid())
+            _talkingGraph.Destroy();
 
         var animator = GetComponent<Animator>();
         _talkingMixerPlayable = AnimationPlayableUtilities.PlayMixer(animator, MouthClipCount, out _talkingGraph);
