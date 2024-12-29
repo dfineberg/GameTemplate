@@ -21,7 +21,11 @@ public class AnimationParameterWatcher : MonoBehaviour
 
     private void FixedUpdate()
     {
+#if UNITY_2023_2_OR_NEWER
+        if (_animator.updateMode == AnimatorUpdateMode.Fixed)
+#else
         if (_animator.updateMode == AnimatorUpdateMode.AnimatePhysics)
+#endif
         {
             UpdateParameters();
         }
@@ -29,7 +33,11 @@ public class AnimationParameterWatcher : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (_animator.updateMode != AnimatorUpdateMode.AnimatePhysics)
+#if UNITY_2023_2_OR_NEWER
+        if (_animator.updateMode == AnimatorUpdateMode.Fixed)
+#else
+        if (_animator.updateMode == AnimatorUpdateMode.AnimatePhysics)
+#endif
         {
             UpdateParameters();
         }
