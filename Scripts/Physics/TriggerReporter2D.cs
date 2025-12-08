@@ -77,6 +77,24 @@ namespace GameTemplate
         {
             _rigidbodies.Remove(rb);
         }
+
+        public void ForceAddRigidbody(Rigidbody2D rb)
+        {
+            var colliders = ObjectPool.Pop<List<Collider2D>>();
+            var count = rb.GetAttachedColliders(colliders);
+
+            if (count > 0)
+            {
+                var firstCollider = colliders[0];
+                var ignoreCache = IgnoreEnterAndExitEvents;
+                IgnoreEnterAndExitEvents = false;
+                OnTriggerEnter2D(firstCollider);
+                IgnoreEnterAndExitEvents = ignoreCache;
+            }
+            
+            colliders.Clear();
+            ObjectPool.Push(colliders);
+        }
     }
 }
 

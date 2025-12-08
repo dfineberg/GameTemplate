@@ -21,6 +21,11 @@ namespace GameTemplate
             Action -= a;
         }
 
+        public void ClearAllListeners()
+        {
+            Action = null;
+        }
+
         public void Invoke(T arg)
         {
             Action?.Invoke(arg);
