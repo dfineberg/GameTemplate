@@ -119,6 +119,17 @@ public class CustomRig : MonoBehaviour
             _talkingGraph.Destroy();
     }
 
+    // copied from AnimationPlayableUtilities.PlayMixer so we can give the graph a name for the visualiser
+    private AnimationMixerPlayable PlayMixer(Animator animator, int inputCount, out PlayableGraph graph)
+    {
+        graph = PlayableGraph.Create($"{gameObject.name}_Talking_Animation_Graph");
+        AnimationPlayableOutput output = AnimationPlayableOutput.Create(graph, "Mixer", animator);
+        AnimationMixerPlayable animationMixerPlayable = AnimationMixerPlayable.Create(graph, inputCount);
+        output.SetSourcePlayable<AnimationPlayableOutput, AnimationMixerPlayable>(animationMixerPlayable);
+        graph.Play();
+        return animationMixerPlayable;
+    }
+
     public void BuildTalkingPlayableGraph()
     {
         if (ConsonantClips.Length == 0 || VowelClips.Length == 0)
@@ -128,17 +139,19 @@ public class CustomRig : MonoBehaviour
             _talkingGraph.Destroy();
 
         var animator = GetComponent<Animator>();
-        _talkingMixerPlayable = AnimationPlayableUtilities.PlayMixer(animator, MouthClipCount, out _talkingGraph);
+        _talkingMixerPlayable = PlayMixer(animator, MouthClipCount, out _talkingGraph);
 
         for (var i = 0; i < ConsonantClips.Length; i++)
         {
             var clipPlayable = AnimationClipPlayable.Create(_talkingGraph, ConsonantClips[i]);
+            clipPlayable.SetApplyFootIK(false);
             _talkingGraph.Connect(clipPlayable, 0, _talkingMixerPlayable, i);
         }
 
         for (var i = 0; i < VowelClips.Length; i++)
         {
             var clipPlayable = AnimationClipPlayable.Create(_talkingGraph, VowelClips[i]);
+            clipPlayable.SetApplyFootIK(false);
             _talkingGraph.Connect(clipPlayable, 0, _talkingMixerPlayable, ConsonantClips.Length + i);
         }
     }
@@ -151,9 +164,13 @@ public class CustomRig : MonoBehaviour
         
         if (!Talk)
         {
-            if (_talkingGraph.IsPlaying()) 
+            if (_talkingGraph.IsPlaying())
+            {
                 _talkingGraph.Stop();
-            
+                
+                for (var i = 0; i < _talkingMixerPlayable.GetInputCount(); i++)
+                    _talkingMixerPlayable.SetInputWeight(i, 0f);
+            }
             return;
         }
 
