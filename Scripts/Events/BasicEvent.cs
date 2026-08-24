@@ -8,6 +8,8 @@ namespace GameTemplate
     {
         private event Action Action;
 
+        public int ListenerCount => Action != null ? Action.GetInvocationList().Length : 0;
+
         public void Subscribe(Action a)
         {
             Action += a;
