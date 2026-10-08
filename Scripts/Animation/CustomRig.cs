@@ -186,4 +186,9 @@ public class CustomRig : MonoBehaviour
         for (var i = 0; i < MouthClipCount; i++)
             _talkingMixerPlayable.SetInputWeight(i, i == shapeIndex ? 1f : 0f);
     }
+
+    public void Footstep()
+    {
+        
+    }
 }
